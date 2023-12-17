@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Example Pet Store API written with SpringBoot with the aws-serverless-java-container library
+Description: Animore appliaction server api
 
 Globals:
   Api:
@@ -17,7 +17,7 @@ Resources:
       MemorySize: 2048
       SnapStart:
         ApplyOn: "PublishedVersions"
-      AutoPublishAlias: "prod"
+      AutoPublishAlias: "stage"
       Policies: AWSLambdaBasicExecutionRole
       Timeout: 60
       Events:
