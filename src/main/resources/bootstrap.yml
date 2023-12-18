@@ -1,0 +1,8 @@
+aws:
+  secretsmanager:
+    name: rds-db-credentials/animoresdbinstatnce1/admin/1702189030443
+
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2

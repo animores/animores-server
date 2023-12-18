@@ -1,4 +1,6 @@
 spring:
+  config:
+    import: 'optional:aws-secretsmanager:rds-db-credentials/animoresdbinstatnce1/admin/1702189030443'
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
