@@ -11,7 +11,7 @@ Resources:
   SpringOnLambdaFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: animores.animoresserverapi.LambdaHandler::handleRequest
+      Handler: animores.serverapi.LambdaHandler::handleRequest
       Runtime: java17
       CodeUri: .
       MemorySize: 2048

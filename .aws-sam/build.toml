@@ -4,7 +4,7 @@
 codeuri = "D:\\project\\animores-server-api"
 runtime = "java17"
 architecture = "x86_64"
-handler = "animores.animoresserverapi.LambdaHandler::handleRequest"
+handler = "animores.serverapi.LambdaHandler::handleRequest"
 manifest_hash = ""
 packagetype = "Zip"
 functions = ["SpringOnLambdaFunction"]

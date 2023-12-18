@@ -1,4 +1,4 @@
-package animores.animoresserverapi;
+package animores.serverapi;
 
 import com.amazonaws.serverless.proxy.model.AwsProxyRequest;
 import com.amazonaws.serverless.proxy.model.AwsProxyResponse;
