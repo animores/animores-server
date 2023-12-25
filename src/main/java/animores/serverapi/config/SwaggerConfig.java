@@ -5,26 +5,27 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.servers.Server;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class SwaggerConfig {
 
+	@Value("${server-url}")
+	private String serverUrl;
+
 	@Bean
 	public OpenAPI openAPI() {
 		// HTTPS
 		Server httpsServer = new Server();
-		httpsServer.setUrl("https://strawberryfarm.shop/");
-
-		// HTTP
-		Server httpServer = new Server();
-		httpServer.setUrl("http://strawberryfarm.shop/");
+		httpsServer.setUrl(serverUrl);
 
 		return new OpenAPI()
 				.components(new Components())
 				.info(apiInfo())
-				.servers(List.of(httpsServer, httpServer));
+				.servers(List.of(httpsServer));
 	}
 
 	private Info apiInfo() {

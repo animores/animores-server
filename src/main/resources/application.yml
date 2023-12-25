@@ -15,3 +15,5 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
+
+server-url: https://60k8v8szkl.execute-api.ap-northeast-2.amazonaws.com/Stage
