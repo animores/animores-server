@@ -8,24 +8,57 @@ Globals:
     EndpointConfiguration: REGIONAL
 
 Resources:
+  MyLambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: MyLambdaExecutionRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: MySecretsManagerPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: secretsmanager:GetSecretValue
+                Resource: "arn:aws:secretsmanager:ap-northeast-2:142111257198:secret:rds-db-credentials/animoresdbinstatnce1/admin/1702189030443-4YKkVI"
+        - PolicyName: AWSLambdaBasicExecutionRole
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: '*'
+
+
   SpringOnLambdaFunction:
     Type: AWS::Serverless::Function
     Properties:
       Handler: animores.serverapi.LambdaHandler::handleRequest
       Runtime: java17
       CodeUri: .
-      MemorySize: 2048
+      MemorySize: 1024
       SnapStart:
         ApplyOn: "PublishedVersions"
-      AutoPublishAlias: "stage"
+      AutoPublishAlias: "prod"
       Policies: AWSLambdaBasicExecutionRole
       Timeout: 60
+      Role: !GetAtt MyLambdaExecutionRole.Arn
       Events:
         HttpApiEvent:
           Type: Api
           Properties:
             Path: /{proxy+}
             Method: ANY
+
 
 #Outputs:
 #  AnimoresServerApi:

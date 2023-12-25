@@ -1,13 +1,13 @@
 version = 0.1
 
 [default]
-[default.global.parameters]
-region = "ap-northeast-2"
 
 [default.deploy.parameters]
-stack_name = "sam-app"
+stack_name = "animores-server"
 resolve_s3 = true
-s3_prefix = "sam-app"
+region = "ap-northeast-2"
 confirm_changeset = true
-capabilities = "CAPABILITY_IAM"
+capabilities = "CAPABILITY_NAMED_IAM"
 image_repositories = []
+disable_rollback = true
+s3_prefix = "animores-server"
