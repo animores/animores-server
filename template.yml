@@ -4,7 +4,10 @@ Description: Animore appliaction server api
 
 Globals:
   Api:
-    # API Gateway regional endpoints
+    Cors:
+      AllowMethods: "'GET,POST,OPTIONS'"
+      AllowHeaders: "'content-type'"
+      AllowOrigin: "'*'"
     EndpointConfiguration: REGIONAL
 
 Resources:
