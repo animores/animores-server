@@ -4,16 +4,19 @@ import animores.serverapi.to_do.dto.request.ToDoCreateRequest;
 import animores.serverapi.to_do.dto.request.ToDoPatchRequest;
 import animores.serverapi.to_do.dto.response.ToDoDetailResponse;
 import animores.serverapi.to_do.dto.response.ToDoResponse;
+import animores.serverapi.to_do.repository.ToDoRepository;
 import animores.serverapi.to_do.service.ToDoService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class ToDoServiceImpl implements ToDoService {
+	private final ToDoRepository toDoRepository;
 	@Override
 	public void createToDo(ToDoCreateRequest request) {
-
 	}
 
 	@Override
