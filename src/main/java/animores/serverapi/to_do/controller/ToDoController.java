@@ -22,7 +22,7 @@ public class ToDoController {
 	@PostMapping
 	public ResponseEntity<Void> createToDo(@RequestBody ToDoCreateRequest request) {
 		toDoService.createToDo(request);
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
 	@GetMapping("/today")

@@ -1,6 +1,7 @@
 package animores.serverapi.to_do;
 
 import animores.serverapi.config.BaseEntity;
+import animores.serverapi.to_do.dto.request.ToDoCreateRequest;
 import animores.serverapi.user.Account;
 import animores.serverapi.pet.Pet;
 import animores.serverapi.user.Profile;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Getter
 @Entity
@@ -18,11 +20,10 @@ public class ToDo extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private String id;
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Account account;
-	@ManyToOne(fetch = FetchType.LAZY)
-	private Pet pet;
+	@OneToMany
+	private List<PetToDoRelationship> pets;
 	@OneToOne(fetch = FetchType.LAZY)
 	@Column(name="create_profile_id")
 	private Profile createProfile;
@@ -32,7 +33,15 @@ public class ToDo extends BaseEntity {
 	private LocalTime time;
 
 	//반복에 대한 내용 추가
-	
 
+//	public static ToDo fromRequest(ToDoCreateRequest request, Account account) {
+//		ToDo toDo = new ToDo();
+//		toDo.title = request.title();
+//		toDo.account = account;
+//		toDo.pet = request.pet();
+//		toDo.date = request.date();
+//		toDo.time = request.time();
+//		return toDo;
+//	}
 
 }
