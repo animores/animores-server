@@ -92,7 +92,7 @@ class ToDoServiceImplTest {
 		assertTrue( result.get(2).isAllDay());
 		assertEquals(LocalDate.now(), result.get(2).date());
 		assertNull( result.get(2).time());
-		assertTrue(result.get(2).hasAlarm());
+		assertFalse(result.get(2).hasAlarm());
 		assertNull(result.get(2).repeatString());
 		assertEquals("blue",result.get(2).color());
 		assertNull( result.get(2).completeProfileImage());
@@ -117,7 +117,7 @@ class ToDoServiceImplTest {
 		assertNull(result.get(0).repeatString());
 		assertEquals("red",result.get(0).color());
 		assertEquals("아빠 사진1",result.get(0).completeProfileImage());
-		assertEquals(LocalDateTime.now(),result.get(0).completeDateTime());
+		assertEquals(LocalDateTime.of(2024,1,7,11,1,1),result.get(0).completeDateTime());
 	}
 
 
@@ -146,7 +146,7 @@ class ToDoServiceImplTest {
 	void getTodayToDo_DonePetFilter() {
 		//given
 		//when
-		List<ToDoResponse> result= serviceUnderTest.getTodayToDo(false, List.of(1L));
+		List<ToDoResponse> result= serviceUnderTest.getTodayToDo(true, List.of(1L));
 
 		//then
 		assertEquals(1, result.size());
@@ -160,14 +160,12 @@ class ToDoServiceImplTest {
 		assertNull(result.get(0).repeatString());
 		assertEquals("red",result.get(0).color());
 		assertEquals("아빠 사진1",result.get(0).completeProfileImage());
-		assertEquals(LocalDateTime.now(),result.get(0).completeDateTime());
+		assertEquals(LocalDateTime.of(2024,1,7,11,1,1),result.get(0).completeDateTime());
 	}
 
 	@Test
 	void getAllToDo_NotDoneNoPetFilter() {
 		//given
-		given(toDoRepository.findAllByAccountId()).willReturn(any());
-
 		//when
 		List<ToDoResponse> result = serviceUnderTest.getAllToDo(false,null);
 
@@ -201,7 +199,7 @@ class ToDoServiceImplTest {
 		assertTrue( result.get(2).isAllDay());
 		assertEquals(LocalDate.now(), result.get(2).date());
 		assertNull( result.get(2).time());
-		assertTrue(result.get(2).hasAlarm());
+		assertFalse(result.get(2).hasAlarm());
 		assertNull(result.get(2).repeatString());
 		assertEquals("blue",result.get(2).color());
 		assertNull( result.get(2).completeProfileImage());
@@ -211,8 +209,6 @@ class ToDoServiceImplTest {
 	@Test
 	void getToDoById() {
 		//given
-		given(toDoRepository.findById(any())).willReturn(any());
-
 		//when
 		var result = serviceUnderTest.getToDoById(1L);
 
@@ -268,8 +264,6 @@ class ToDoServiceImplTest {
 		ArgumentCaptor<ToDo> toDoArgumentCaptor = ArgumentCaptor.forClass(ToDo.class);
 
 		//then
-		verify(toDoRepository,times(1)).delete(toDoArgumentCaptor.capture());
-		ToDo toDo = toDoArgumentCaptor.getValue();
-		assertEquals(1L,toDo.getId());
+		verify(toDoRepository,times(1)).deleteById(1L);
 	}
 }

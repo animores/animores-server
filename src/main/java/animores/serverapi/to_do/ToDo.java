@@ -3,7 +3,6 @@ package animores.serverapi.to_do;
 import animores.serverapi.config.BaseEntity;
 import animores.serverapi.to_do.dto.request.ToDoCreateRequest;
 import animores.serverapi.user.Account;
-import animores.serverapi.pet.Pet;
 import animores.serverapi.user.Profile;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -34,14 +33,12 @@ public class ToDo extends BaseEntity {
 
 	//반복에 대한 내용 추가
 
-//	public static ToDo fromRequest(ToDoCreateRequest request, Account account) {
-//		ToDo toDo = new ToDo();
-//		toDo.title = request.title();
-//		toDo.account = account;
-//		toDo.pet = request.pet();
-//		toDo.date = request.date();
-//		toDo.time = request.time();
-//		return toDo;
-//	}
-
+	public static ToDo fromRequest(ToDoCreateRequest request, Account account) {
+		ToDo toDo = new ToDo();
+		toDo.title = request.title();
+		toDo.account = account;
+		toDo.date = request.date();
+		toDo.time = request.time();
+		return toDo;
+	}
 }
