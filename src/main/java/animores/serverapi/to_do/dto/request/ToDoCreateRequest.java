@@ -1,5 +1,7 @@
 package animores.serverapi.to_do.dto.request;
 
+import animores.serverapi.to_do.dto.Repeat;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -12,8 +14,8 @@ public record ToDoCreateRequest(
 		LocalTime time,
 		Boolean isAllDay,
 		String color,
-		Boolean hasAlarm
-		// TODO: 반복 관련 부분 추가
+		Boolean hasAlarm,
+		Repeat repeat
 ) {
 
 }
