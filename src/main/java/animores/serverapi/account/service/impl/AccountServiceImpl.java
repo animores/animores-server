@@ -18,11 +18,17 @@ public class AccountServiceImpl implements AccountService {
 
     public AccountCreateResponse createAccount(AccountCreateRequest request) {
         // 검증
-        emailDuplicationCheck(request.email());
-        nicknameDuplicationCheck(request.nickname());
+        if (isDuplicatedEmail(request.email())) {
+            return null;
+        }
+        if (isDuplicatedNickname(request.nickname())) {
+            return null;
+        }
         if (!request.password().equals(request.confirmPassword())) {
             return null;
         }
+
+        // TODO: 패스워드 암호화
 
         return AccountCreateResponse.toResponse(
                 accountRepository.save(Account.toEntity(request))
@@ -30,13 +36,13 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void emailDuplicationCheck(String email) {
-
+    public boolean isDuplicatedEmail(String email) {
+        return accountRepository.existsByEmail(email);
     }
 
     @Override
-    public void nicknameDuplicationCheck(String nickname) {
-
+    public boolean isDuplicatedNickname(String nickname) {
+        return false;
     }
 
 }
