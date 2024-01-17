@@ -2,6 +2,7 @@ package animores.serverapi.account.controller;
 
 import animores.serverapi.account.request.AccountCreateRequest;
 import animores.serverapi.account.service.AccountService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class AccountController {
     private final AccountService accountService;
 
     @PostMapping
-    public ResponseEntity<Void> createAccount(@RequestBody AccountCreateRequest request) {
+    public ResponseEntity<Void> createAccount(@Valid @RequestBody AccountCreateRequest request) {
         accountService.createAccount(request);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
