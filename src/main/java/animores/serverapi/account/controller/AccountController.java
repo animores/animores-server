@@ -1,10 +1,10 @@
 package animores.serverapi.account.controller;
 
 import animores.serverapi.account.request.AccountCreateRequest;
+import animores.serverapi.account.response.AccountCreateResponse;
 import animores.serverapi.account.service.AccountService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,10 +19,14 @@ public class AccountController {
     private final AccountService accountService;
 
     @PostMapping
-    public ResponseEntity<Void> createAccount(@Valid @RequestBody AccountCreateRequest request) {
-        accountService.createAccount(request);
+    public ResponseEntity<AccountCreateResponse> createAccount(@Valid @RequestBody AccountCreateRequest request) {
+        AccountCreateResponse response = accountService.createAccount(request);
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        if (response == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.ok().body(response);
     }
 
 }

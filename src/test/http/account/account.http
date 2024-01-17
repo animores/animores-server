@@ -1,0 +1,11 @@
+### createAccount
+POST http://localhost:8080/api/v1/account
+Content-Type: application/json
+
+{
+    "email": "22rkdmin@naver.com",
+    "password": "abcd1234!",
+    "confirmPassword": "abcd1234!",
+    "nickname": "나는 강민",
+    "ad_yn": true
+}
