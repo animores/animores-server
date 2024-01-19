@@ -28,7 +28,7 @@ public class AccountServiceImpl implements AccountService {
             return null;
         }
 
-        // TODO: 패스워드 암호화
+        // TODO: 패스워드 암호화 테스트할 때 귀찮으니 나~중에 해도댐
 
         return AccountCreateResponse.toResponse(
                 accountRepository.save(Account.toEntity(request))
