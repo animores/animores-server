@@ -42,7 +42,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public boolean isDuplicatedNickname(String nickname) {
-        return false;
+        return accountRepository.existsByNickname(nickname);
     }
 
 }
