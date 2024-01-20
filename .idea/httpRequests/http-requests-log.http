@@ -1,3 +1,226 @@
+POST http://localhost:8080/api/v1/account
+Content-Type: application/json
+Content-Length: 118
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+    "email": "22rkdmin@naver.com",
+    "password": "abcd1234!",
+    "nickname": "나는 강민",
+    "ad_yn": true
+}
+
+<> 2024-01-20T131632.400.json
+
+###
+
+POST http://localhost:8080/api/v1/account
+Content-Type: application/json
+Content-Length: 117
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+    "email": "22rkdmin@naver.com",
+    "password": "abcd1234!"
+    "nickname": "나는 강민",
+    "ad_yn": true
+}
+
+<> 2024-01-20T131623.400.json
+
+###
+
+POST http://localhost:8080/api/v1/account
+Content-Type: application/json
+Content-Length: 135
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+    "email": "22rkdmin@naver.com",
+    "password": "abcd1234!",
+    "confirmPassword": "abcd1234!",
+    "nickname": "나는 강민"
+}
+
+<> 2024-01-20T131544.400.json
+
+###
+
+POST http://localhost:8080/api/v1/account
+Content-Type: application/json
+Content-Length: 154
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+    "email": "22rkdmin@naver.com",
+    "password": "abcd1234!",
+    "confirmPassword": "abcd1234!",
+    "nickname": "나는 강민",
+    "ad_yn": true
+}
+
+<> 2024-01-20T131541.200.json
+
+###
+
+POST http://localhost:8080/api/v1/account
+Content-Type: application/json
+Content-Length: 135
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+    "email": "22rkdmin@naver.com",
+    "password": "abcd1234!",
+    "confirmPassword": "abcd1234!",
+    "nickname": "나는 강민"
+}
+
+<> 2024-01-20T131434.500.json
+
+###
+
+POST http://localhost:8080/api/v1/account
+Content-Type: application/json
+Content-Length: 117
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "email": "22rkdmin",
+  "password": "abcd1234!",
+  "confirmPassword": "abcd1234!",
+  "nickname": "나는 강민"
+}
+
+<> 2024-01-20T131427.400.json
+
+###
+
+POST http://localhost:8080/api/v1/account
+Content-Type: application/json
+Content-Length: 134
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "email": "22rkdmin",
+  "password": "abcd1234!",
+  "confirmPassword": "abcd1234!",
+  "nickname": "나는 강민",
+  "ad_yn": true
+}
+
+<> 2024-01-20T131246.400.json
+
+###
+
+POST http://localhost:8080/api/v1/account
+Content-Type: application/json
+Content-Length: 154
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+    "email": "22rkdmin@naver.com",
+    "password": "abcd1234!",
+    "confirmPassword": "abcd1234!",
+    "nickname": "나는 강민",
+    "ad_yn": true
+}
+
+<> 2024-01-20T131243.200.json
+
+###
+
+POST http://localhost:8080/api/v1/account
+Content-Type: application/json
+Content-Length: 154
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+    "email": "22rkdmin@naver.com",
+    "password": "abcd1234!",
+    "confirmPassword": "abcd1234!",
+    "nickname": "나는 강민",
+    "ad_yn": true
+}
+
+<> 2024-01-20T130719.500.json
+
+###
+
+POST http://localhost:8080/api/v1/account
+Content-Type: application/json
+Content-Length: 154
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+    "email": "22rkdmin@naver.com",
+    "password": "abcd1234!",
+    "confirmPassword": "abcd1234!",
+    "nickname": "나는 강민",
+    "ad_yn": true
+}
+
+<> 2024-01-20T130705.500.json
+
+###
+
+POST http://localhost:8080/api/v1/account
+Content-Type: application/json
+Content-Length: 134
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "email": "22rkdmin",
+  "password": "abcd1234!",
+  "confirmPassword": "abcd1234!",
+  "nickname": "나는 강민",
+  "ad_yn": true
+}
+
+<> 2024-01-20T130656.500.json
+
+###
+
+POST http://localhost:8080/api/v1/account
+Content-Type: application/json
+Content-Length: 134
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+{
+  "email": "22rkdmin",
+  "password": "abcd1234!",
+  "confirmPassword": "abcd1234!",
+  "nickname": "나는 강민",
+  "ad_yn": true
+}
+
+<> 2024-01-20T130647.500.json
+
+###
+
 GET http://localhost:8080/api/v1/account/check-nickname/122222222
 Connection: Keep-Alive
 User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
@@ -337,114 +560,6 @@ User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
 Accept-Encoding: br,deflate,gzip,x-gzip
 
 <> 2024-01-20T003408.200.json
-
-###
-
-GET http://localhost:8080/api/v1/account/check-nickname/1111111112131231241
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2024-01-20T000722-1.200.json
-
-###
-
-GET http://localhost:8080/api/v1/account/check-nickname/1111111112131231241
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2024-01-20T000722.200.json
-
-###
-
-GET http://localhost:8080/api/v1/account/check-nickname/1111111112131231241
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2024-01-20T000721.200.json
-
-###
-
-GET http://localhost:8080/api/v1/account/check-nickname/111111111
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2024-01-20T000718.200.json
-
-###
-
-GET http://localhost:8080/api/v1/account/check-nickname/111111111
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2024-01-20T000534.500.json
-
-###
-
-GET http://localhost:8080/api/v1/account/check-nickname/11111111111
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2024-01-20T000532.500.json
-
-###
-
-GET http://localhost:8080/api/v1/account/check-nickname/111111111111
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2024-01-20T000527.500.json
-
-###
-
-GET http://localhost:8080/api/v1/account/check-nickname/111111111111
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2024-01-20T000508.200.json
-
-###
-
-GET http://localhost:8080/api/v1/account/check-nickname/11111111111
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2024-01-20T000506.200.json
-
-###
-
-GET http://localhost:8080/api/v1/account/check-nickname/나는%20강민
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2024-01-20T000500.200.json
-
-###
-
-GET http://localhost:8080/api/v1/account/check-email/22rkdmin@naver.com
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> f-5.txt
-
-###
-
-GET http://localhost:8080/api/v1/account/check-email/2
-Connection: Keep-Alive
-User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.7)
-Accept-Encoding: br,deflate,gzip,x-gzip
-
-<> 2024-01-19T235946.200.json
 
 ###
 

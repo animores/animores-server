@@ -10,6 +10,29 @@ Content-Type: application/json
     "ad_yn": true
 }
 
+### 회원 가입 (실패: 이메일 형식이 아님)
+POST http://localhost:8080/api/v1/account
+Content-Type: application/json
+
+{
+  "email": "22rkdmin",
+  "password": "abcd1234!",
+  "confirmPassword": "abcd1234!",
+  "nickname": "나는 강민",
+  "ad_yn": true
+}
+
+### 회원 가입 (실패: 광고 수신 여부가 없음)
+POST http://localhost:8080/api/v1/account
+Content-Type: application/json
+
+{
+  "email": "22rkdmin@naver.com",
+  "password": "abcd1234!",
+  "confirmPassword": "abcd1234!",
+  "nickname": "나는 강민"
+}
+
 ### 이메일 중복 확인 (중복)
 GET http://localhost:8080/api/v1/account/check-email/22rkdmin@naver.com
 ### 이메일 중복 확인 (중복 x)
