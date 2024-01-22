@@ -1,7 +1,7 @@
-package animores.serverapi.to_do;
+package animores.serverapi.to_do.entity;
 
-import animores.serverapi.config.BaseEntity;
-import animores.serverapi.user.Profile;
+import animores.serverapi.common.BaseEntity;
+import animores.serverapi.user.entity.Profile;
 import jakarta.persistence.*;
 import lombok.Getter;
 

@@ -1,15 +1,12 @@
-package animores.serverapi.pet;
+package animores.serverapi.user.entity;
 
-import animores.serverapi.config.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.NoArgsConstructor;
 
 @Entity
-@NoArgsConstructor
-public class Pet extends BaseEntity {
+public class Profile {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

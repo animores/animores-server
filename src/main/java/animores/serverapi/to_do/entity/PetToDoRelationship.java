@@ -1,6 +1,6 @@
-package animores.serverapi.to_do;
+package animores.serverapi.to_do.entity;
 
-import animores.serverapi.pet.Pet;
+import animores.serverapi.pet.entity.Pet;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

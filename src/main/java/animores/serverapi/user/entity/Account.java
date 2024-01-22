@@ -1,4 +1,4 @@
-package animores.serverapi.user;
+package animores.serverapi.user.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

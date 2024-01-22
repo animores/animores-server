@@ -1,4 +1,4 @@
-package animores.serverapi.config;
+package animores.serverapi.common;
 
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
