@@ -16,29 +16,29 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 public class ToDo extends BaseEntity {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private String id;
-	@ManyToOne(fetch = FetchType.LAZY)
-	private Account account;
-	@OneToMany
-	private List<PetToDoRelationship> pets;
-	@OneToOne(fetch = FetchType.LAZY)
-	@Column(name="create_profile_id")
-	private Profile createProfile;
-	private Tag tag;
-	private String title;
-	private LocalDate date;
-	private LocalTime time;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private String id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Account account;
+    @OneToMany
+    private List<PetToDoRelationship> pets;
+    @OneToOne(fetch = FetchType.LAZY)
+    @Column(name = "create_profile_id")
+    private Profile createProfile;
+    private Tag tag;
+    private String title;
+    private LocalDate date;
+    private LocalTime time;
 
-	//반복에 대한 내용 추가
+    //반복에 대한 내용 추가
 
-	public static ToDo fromRequest(ToDoCreateRequest request, Account account) {
-		ToDo toDo = new ToDo();
-		toDo.title = request.title();
-		toDo.account = account;
-		toDo.date = request.date();
-		toDo.time = request.time();
-		return toDo;
-	}
+    public static ToDo fromRequest(ToDoCreateRequest request, Account account) {
+        ToDo toDo = new ToDo();
+        toDo.title = request.title();
+        toDo.account = account;
+        toDo.date = request.date();
+        toDo.time = request.time();
+        return toDo;
+    }
 }

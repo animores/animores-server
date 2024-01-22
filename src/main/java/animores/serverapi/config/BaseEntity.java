@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 @Getter
 @MappedSuperclass
 public class BaseEntity {
-	@CreatedDate
-	private LocalDateTime createdAt;
-	@LastModifiedDate
-	private LocalDateTime updatedAt;
+    @CreatedDate
+    private LocalDateTime createdAt;
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
 }

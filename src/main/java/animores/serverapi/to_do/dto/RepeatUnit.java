@@ -8,19 +8,19 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public enum RepeatUnit {
-	DAY,
-	WEEK,
-	MONTH,
-	YEAR;
+    DAY,
+    WEEK,
+    MONTH,
+    YEAR;
 
-	private static final Map<String, RepeatUnit> namesMap =
-			Stream.of(RepeatUnit.values())
-			.collect(Collectors.toMap(RepeatUnit::name, Function.identity()));
+    private static final Map<String, RepeatUnit> namesMap =
+            Stream.of(RepeatUnit.values())
+                    .collect(Collectors.toMap(RepeatUnit::name, Function.identity()));
 
-	@JsonCreator
-	public static RepeatUnit fromString(String value) {
-		return namesMap.get(value.toUpperCase());
-	}
+    @JsonCreator
+    public static RepeatUnit fromString(String value) {
+        return namesMap.get(value.toUpperCase());
+    }
 
 
 }

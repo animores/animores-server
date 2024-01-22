@@ -11,18 +11,18 @@ import lombok.NoArgsConstructor;
 @Getter
 public class PetToDoRelationship {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@ManyToOne
-	private Pet pet;
+    @ManyToOne
+    private Pet pet;
 
-	@ManyToOne
-	private ToDo toDo;
+    @ManyToOne
+    private ToDo toDo;
 
-	public PetToDoRelationship(Pet pet, ToDo toDo) {
-		this.pet = pet;
-		this.toDo = toDo;
-	}
+    public PetToDoRelationship(Pet pet, ToDo toDo) {
+        this.pet = pet;
+        this.toDo = toDo;
+    }
 }
