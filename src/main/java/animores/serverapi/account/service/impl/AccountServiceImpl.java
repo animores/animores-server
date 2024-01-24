@@ -39,11 +39,13 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean isDuplicatedEmail(String email) {
         return accountRepository.existsByEmail(email);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean isDuplicatedNickname(String nickname) {
         return accountRepository.existsByNickname(nickname);
     }
