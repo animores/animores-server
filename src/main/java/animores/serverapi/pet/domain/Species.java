@@ -20,7 +20,7 @@ public class Species {
 
     private String name;
 
-    public Species(Long id, String name) {
+    protected Species(Long id, String name) {
         this.id = id;
         this.name = name;
     }

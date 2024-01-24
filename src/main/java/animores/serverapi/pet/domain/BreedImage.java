@@ -31,7 +31,7 @@ public class BreedImage {
     @Enumerated(value = EnumType.STRING)
     private Tag tag;
 
-    public BreedImage(Long id, Breed breed, String image_url, Tag tag) {
+    protected BreedImage(Long id, Breed breed, String image_url, Tag tag) {
         this.id = id;
         this.breed = breed;
         this.image_url = image_url;

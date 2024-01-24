@@ -31,7 +31,7 @@ public class Account {
 
     // 등록, 수정, 탈퇴일 생략
 
-    public Account(Long id, String email, String password, String nickname, String phone, boolean ad_yn) {
+    protected Account(Long id, String email, String password, String nickname, String phone, boolean ad_yn) {
         this.id = id;
         this.email = email;
         this.password = password;

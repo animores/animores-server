@@ -27,7 +27,7 @@ public class Breed {
 
     private String defaultImageUrl;
 
-    public Breed(Long id, Species species, String name, String defaultImageUrl) {
+    protected Breed(Long id, Species species, String name, String defaultImageUrl) {
         this.id = id;
         this.species = species;
         this.name = name;

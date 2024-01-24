@@ -33,7 +33,7 @@ public class Pet {
 
     // 커스텀 요소 보류
 
-    public Pet(Long id, Account account, String name, LocalDate birthday, int gender) {
+    protected Pet(Long id, Account account, String name, LocalDate birthday, int gender) {
         this.id = id;
         this.account = account;
         this.name = name;

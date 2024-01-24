@@ -21,7 +21,7 @@ public class Profile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    public Profile(Long id) {
+    protected Profile(Long id) {
         this.id = id;
     }
 
