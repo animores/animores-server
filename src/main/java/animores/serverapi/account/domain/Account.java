@@ -27,17 +27,17 @@ public class Account {
 
     private String phone;
 
-    private boolean ad_yn;
+    private boolean isAdPermission;
 
     // 등록, 수정, 탈퇴일 생략
 
-    protected Account(Long id, String email, String password, String nickname, String phone, boolean ad_yn) {
+    protected Account(Long id, String email, String password, String nickname, String phone, boolean isAdPermission) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.nickname = nickname;
         this.phone = phone;
-        this.ad_yn = ad_yn;
+        this.isAdPermission = isAdPermission;
     }
 
     public static Account toEntity(AccountCreateRequest request) {
@@ -46,7 +46,7 @@ public class Account {
                 .password(request.password())
                 .nickname(request.nickname())
                 // phone 생략
-                .ad_yn(request.ad_yn())
+                .isAdPermission(request.isAdPermission())
                 .build();
     }
 

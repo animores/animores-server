@@ -12,12 +12,12 @@ public record AccountCreateResponse(
 
         String nickname,
 
-        boolean ad_yn
+        boolean isAdPermission
 
 ) {
 
         public static AccountCreateResponse toResponse(Account entity) {
-                return new AccountCreateResponse(entity.getId(), entity.getEmail(), entity.getPassword(), entity.getNickname(), entity.isAd_yn());
+                return new AccountCreateResponse(entity.getId(), entity.getEmail(), entity.getPassword(), entity.getNickname(), entity.isAdPermission());
         }
 
 }

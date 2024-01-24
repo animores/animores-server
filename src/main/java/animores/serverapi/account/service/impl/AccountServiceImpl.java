@@ -18,7 +18,7 @@ public class AccountServiceImpl implements AccountService {
 
     public AccountCreateResponse createAccount(AccountCreateRequest request) {
         // 검증
-        if (!request.ad_yn()) {
+        if (!request.isAdPermission()) {
             return null;
         }
         if (isDuplicatedEmail(request.email())) {

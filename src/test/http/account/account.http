@@ -7,7 +7,7 @@ Content-Type: application/json
     "password": "abcd1234!",
     "confirmPassword": "abcd1234!",
     "nickname": "나는 강민",
-    "ad_yn": true
+    "isAdPermission": true
 }
 
 ### 회원 가입 (실패: 이메일 형식이 아님)
@@ -19,7 +19,7 @@ Content-Type: application/json
   "password": "abcd1234!",
   "confirmPassword": "abcd1234!",
   "nickname": "나는 강민",
-  "ad_yn": true
+  "isAdPermission": true
 }
 
 ### 회원 가입 (실패: 광고 수신 여부가 없음)

@@ -21,7 +21,7 @@ public record AccountCreateRequest (
         String nickname,
 
         @NotNull(message = "광고 수신 여부를 입력 하세요.")
-        Boolean ad_yn
+        Boolean isAdPermission
 
 ) {
 }
