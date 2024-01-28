@@ -1,11 +1,11 @@
-package animores.serverapi.to_do.exception;
+package animores.serverapi.common.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum ToDoExceptionCode {
+public enum ExceptionCode {
 
     EXAMPLE(400, "Example");
     private final int statusCode;
