@@ -1,6 +1,5 @@
 package animores.serverapi.common.exception;
 
-import animores.serverapi.to_do.exception.ToDoException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -13,8 +12,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.internalServerError().body(e.getMessage());
     }
 
-    @ExceptionHandler(ToDoException.class)
-    public ResponseEntity<String> handleToDoException(ToDoException e) {
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<String> handleCustomException(CustomException e) {
         return ResponseEntity.status(e.getCode().getStatusCode()).body(e.getCode().getMessage());
     }
 }
