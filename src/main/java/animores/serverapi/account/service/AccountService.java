@@ -1,6 +1,7 @@
 package animores.serverapi.account.service;
 
 import animores.serverapi.account.request.AccountCreateRequest;
+import animores.serverapi.account.request.SignInRequest;
 import animores.serverapi.account.response.AccountCreateResponse;
 
 public interface AccountService {
@@ -24,4 +25,10 @@ public interface AccountService {
      */
     boolean isDuplicatedNickname(String nickname);
 
+    /**
+     * sign-in
+     * @param request
+     * @return
+     */
+    Long signIn(SignInRequest request) throws Exception;
 }

@@ -33,6 +33,16 @@ Content-Type: application/json
   "nickname": "나는 강민"
 }
 
+### 로그인
+POST http://localhost:8080/api/v1/account/sign-in
+Content-Type: application/json
+
+{
+  "email": "22rkdmin@naver.com",
+  "password": "abcd1234!",
+  "isAutoSignIn": false
+}
+
 ### 이메일 중복 확인 (중복)
 GET http://localhost:8080/api/v1/account/check-email/22rkdmin@naver.com
 ### 이메일 중복 확인 (중복 x)

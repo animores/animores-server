@@ -3,6 +3,7 @@ package animores.serverapi.account.service.impl;
 import animores.serverapi.account.domain.Account;
 import animores.serverapi.account.repository.AccountRepository;
 import animores.serverapi.account.request.AccountCreateRequest;
+import animores.serverapi.account.request.SignInRequest;
 import animores.serverapi.account.response.AccountCreateResponse;
 import animores.serverapi.account.service.AccountService;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +49,18 @@ public class AccountServiceImpl implements AccountService {
     @Transactional(readOnly = true)
     public boolean isDuplicatedNickname(String nickname) {
         return accountRepository.existsByNickname(nickname);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Long signIn(SignInRequest request) throws Exception {
+        // TODO: 패스워드 복호화 테스트할 때 귀찮으니 나~중에 해도댐
+
+        Account account = accountRepository.findByEmailAndPassword(request.email(), request.password()).orElseThrow(
+                () -> new Exception()
+        );
+
+        return account.getId();
     }
 
 }
