@@ -20,4 +20,4 @@ spring:
         dialect: org.hibernate.dialect.H2Dialect
         format_sql: true
 
-server-url: https://60k8v8szkl.execute-api.ap-northeast-2.amazonaws.com/Stage
+server-url: https://xnwp1fbxrf.execute-api.ap-northeast-2.amazonaws.com/Stage

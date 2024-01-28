@@ -2,14 +2,6 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: Animore appliaction server api
 
-Globals:
-  Api:
-    Cors:
-      AllowMethods: "'GET,POST,OPTIONS'"
-      AllowHeaders: "'content-type'"
-      AllowOrigin: "'*'"
-    EndpointConfiguration: REGIONAL
-
 Resources:
   MyLambdaExecutionRole:
     Type: AWS::IAM::Role
@@ -61,7 +53,7 @@ Resources:
       MemorySize: 1024
       SnapStart:
         ApplyOn: "PublishedVersions"
-      AutoPublishAlias: "prod"
+      AutoPublishAlias: "stage"
       Policies: AWSLambdaBasicExecutionRole
       Timeout: 60
       Role: !GetAtt MyLambdaExecutionRole.Arn
@@ -71,6 +63,7 @@ Resources:
           Properties:
             Path: /{proxy+}
             Method: ANY
+
 
 
 #Outputs:
