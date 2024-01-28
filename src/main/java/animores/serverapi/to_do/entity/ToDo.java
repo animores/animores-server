@@ -1,10 +1,10 @@
 package animores.serverapi.to_do.entity;
 
+import animores.serverapi.account.domain.Account;
 import animores.serverapi.common.BaseEntity;
+import animores.serverapi.profile.domain.Profile;
 import animores.serverapi.to_do.Tag;
 import animores.serverapi.to_do.dto.request.ToDoCreateRequest;
-import animores.serverapi.user.entity.Account;
-import animores.serverapi.user.entity.Profile;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
