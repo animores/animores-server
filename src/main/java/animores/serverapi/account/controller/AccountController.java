@@ -18,7 +18,7 @@ public class AccountController {
 
     private final AccountService accountService;
 
-    @PostMapping
+    @PostMapping("/sign-up")
     public ResponseEntity<AccountCreateResponse> createAccount(@Valid @RequestBody AccountCreateRequest request) throws Exception {
         AccountCreateResponse response = accountService.createAccount(request);
 
