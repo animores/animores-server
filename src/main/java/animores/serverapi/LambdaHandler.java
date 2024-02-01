@@ -12,18 +12,19 @@ import java.io.OutputStream;
 
 public class LambdaHandler implements RequestStreamHandler {
 
-	private static SpringBootLambdaContainerHandler<AwsProxyRequest, AwsProxyResponse> handler;
-	static {
-		try {
-			handler = SpringBootLambdaContainerHandler.getAwsProxyHandler(AnimoresServerApiApplication.class);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException("Could not initialize Spring Boot application", e);
-		}
-	}
+    private static final SpringBootLambdaContainerHandler<AwsProxyRequest, AwsProxyResponse> handler;
 
-	@Override
-	public void handleRequest(InputStream inputStream, OutputStream outputStream, Context context) throws IOException {
-		handler.proxyStream(inputStream, outputStream, context);
-	}
+    static {
+        try {
+            handler = SpringBootLambdaContainerHandler.getAwsProxyHandler(AnimoresServerApiApplication.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Could not initialize Spring Boot application", e);
+        }
+    }
+
+    @Override
+    public void handleRequest(InputStream inputStream, OutputStream outputStream, Context context) throws IOException {
+        handler.proxyStream(inputStream, outputStream, context);
+    }
 }
