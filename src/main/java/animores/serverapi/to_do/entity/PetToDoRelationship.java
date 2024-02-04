@@ -15,10 +15,10 @@ public class PetToDoRelationship {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Pet pet;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private ToDo toDo;
 
     public PetToDoRelationship(Pet pet, ToDo toDo) {

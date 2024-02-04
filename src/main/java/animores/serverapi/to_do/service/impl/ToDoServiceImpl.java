@@ -15,7 +15,9 @@ import animores.serverapi.to_do.dto.response.ToDoDetailResponse;
 import animores.serverapi.to_do.dto.response.ToDoResponse;
 import animores.serverapi.to_do.entity.PetToDoRelationship;
 import animores.serverapi.to_do.entity.ToDo;
+import animores.serverapi.to_do.entity.ToDoInstance;
 import animores.serverapi.to_do.repository.PetToDoRelationshipRepository;
+import animores.serverapi.to_do.repository.ToDoInstanceCustomRepository;
 import animores.serverapi.to_do.repository.ToDoRepository;
 import animores.serverapi.to_do.service.ToDoService;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +25,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -37,6 +39,7 @@ public class ToDoServiceImpl implements ToDoService {
     private final ToDoRepository toDoRepository;
     private final PetRepository petRepository;
     private final PetToDoRelationshipRepository petToDoRelationshipRepository;
+    private final ToDoInstanceCustomRepository toDoInstanceCustomRepository;
 
     @Override
     @Transactional
@@ -69,56 +72,86 @@ public class ToDoServiceImpl implements ToDoService {
     @Transactional(readOnly = true)
     public List<ToDoResponse> getTodayToDo(Boolean done, List<Long> pets) {
 
+        Set<Long> petIds = Set.of(1L, 2L);
+        if (pets == null || pets.isEmpty()) {
+            pets = new ArrayList<>(petIds);
+        }
+
+        if(!petIds.containsAll(pets)) {
+            throw new CustomException(ExceptionCode.ILLEGAL_PET_IDS);
+        }
+
+        List<Pet> petList = petRepository.findAllById(pets);
+        var petNameMap = petList.stream().collect(Collectors.toMap(Pet::getId, Pet::getName));
+        List<PetToDoRelationship> relationships = petToDoRelationshipRepository.findAllByPetIdIn(pets);
+
         if (done != null && !done) {
-            if (pets == null || pets.isEmpty()) {
-                return List.of(
-                        new ToDoResponse(1L, "산책", List.of(new PetResponse(1L, "두부")), false, LocalDate.now(), LocalTime.of(11, 0), true, null, "red", null, null),
-                        new ToDoResponse(2L, "약", List.of(new PetResponse(2L, "호동이")), false, LocalDate.now(), LocalTime.of(13, 0), true, null, "yellow", null, null),
-                        new ToDoResponse(3L, "유치원 가는 날", List.of(new PetResponse(3L, "삼바")), true, LocalDate.now(), null, false, null, "blue", null, null)
-                );
-            } else {
-                return List.of(
-                        new ToDoResponse(1L, "산책", List.of(new PetResponse(1L, "두부")), false, LocalDate.now(), LocalTime.of(11, 0), true, null, "red", null, null)
-                );
-            }
+
+            List<ToDoInstance> toDOInstances = toDoInstanceCustomRepository.findAllByCompleteFalseAndTodayToDoIdIn(
+                    relationships.stream()
+                            .map(PetToDoRelationship::getToDo)
+                            .map(ToDo::getId)
+                            .toList()
+            );
+
+            return toDOInstances.stream()
+                    .map(toDoInstance -> ToDoResponse.fromToDoInstance(toDoInstance, petNameMap))
+                    .toList();
+
         } else {
-            if (pets == null || pets.isEmpty()) {
-                return List.of(
-                        new ToDoResponse(1L, "산책", List.of(new PetResponse(1L, "두부")), false, LocalDate.now(), LocalTime.of(11, 0), true, null, "red", "아빠 사진1", LocalDateTime.of(2024, 1, 7, 11, 1, 1))
-                );
-            } else {
-                return List.of(
-                        new ToDoResponse(1L, "산책", List.of(new PetResponse(1L, "두부")), false, LocalDate.now(), LocalTime.of(11, 0), true, null, "red", "아빠 사진1", LocalDateTime.of(2024, 1, 7, 11, 1, 1))
-                );
-            }
+            List<ToDoInstance> toDOInstances = toDoInstanceCustomRepository.findAllByCompleteAndTodayToDoIdIn(
+                    relationships.stream()
+                            .map(PetToDoRelationship::getToDo)
+                            .map(ToDo::getId)
+                            .toList()
+            );
+
+            return toDOInstances.stream()
+                    .map(toDoInstance -> ToDoResponse.fromToDoInstance(toDoInstance, petNameMap))
+                    .toList();
         }
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<ToDoResponse> getAllToDo(Boolean done, List<Long> pets) {
+        Set<Long> petIds = Set.of(1L, 2L);
+        if (pets == null || pets.isEmpty()) {
+            pets = new ArrayList<>(petIds);
+        }
+
+        if(!petIds.containsAll(pets)) {
+            throw new CustomException(ExceptionCode.ILLEGAL_PET_IDS);
+        }
+
+        List<Pet> petList = petRepository.findAllById(pets);
+        var petNameMap = petList.stream().collect(Collectors.toMap(Pet::getId, Pet::getName));
+        List<PetToDoRelationship> relationships = petToDoRelationshipRepository.findAllByPetIdIn(pets);
+
         if (done != null && !done) {
-            if (pets == null || pets.isEmpty()) {
-                return List.of(
-                        new ToDoResponse(1L, "산책", List.of(new PetResponse(1L, "두부")), false, LocalDate.now(), LocalTime.of(11, 0), true, null, "red", null, null),
-                        new ToDoResponse(2L, "약", List.of(new PetResponse(2L, "호동이")), false, LocalDate.now(), LocalTime.of(13, 0), true, null, "yellow", null, null),
-                        new ToDoResponse(3L, "유치원 가는 날", List.of(new PetResponse(3L, "삼바")), true, LocalDate.now(), null, false, null, "blue", null, null)
-                );
-            } else {
-                return List.of(
-                        new ToDoResponse(1L, "산책", List.of(new PetResponse(1L, "두부")), false, LocalDate.now(), LocalTime.of(11, 0), true, null, "red", null, null)
-                );
-            }
+
+            List<ToDoInstance> toDOInstances = toDoInstanceCustomRepository.findAllByCompleteFalseAndToDoIdIn(
+                    relationships.stream()
+                            .map(PetToDoRelationship::getToDo)
+                            .map(ToDo::getId)
+                            .toList()
+            );
+
+            return toDOInstances.stream()
+                    .map(toDoInstance -> ToDoResponse.fromToDoInstance(toDoInstance, petNameMap))
+                    .toList();
+
         } else {
-            if (pets == null || pets.isEmpty()) {
-                return List.of(
-                        new ToDoResponse(1L, "산책", List.of(new PetResponse(1L, "두부")), false, LocalDate.now(), LocalTime.of(11, 0), true, null, "red", "아빠 사진1", LocalDateTime.of(2024, 1, 7, 11, 1, 1))
-                );
-            } else {
-                return List.of(
-                        new ToDoResponse(1L, "산책", List.of(new PetResponse(1L, "두부")), false, LocalDate.now(), LocalTime.of(11, 0), true, null, "red", "아빠 사진1", LocalDateTime.of(2024, 1, 7, 11, 1, 1))
-                );
-            }
+            List<ToDoInstance> toDOInstances = toDoInstanceCustomRepository.findAllByCompleteAndToDoIdIn(
+                    relationships.stream()
+                            .map(PetToDoRelationship::getToDo)
+                            .map(ToDo::getId)
+                            .toList()
+            );
+
+            return toDOInstances.stream()
+                    .map(toDoInstance -> ToDoResponse.fromToDoInstance(toDoInstance, petNameMap))
+                    .toList();
         }
     }
 

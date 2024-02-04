@@ -22,7 +22,7 @@ public class ToDo extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @OneToMany(mappedBy = "toDo", cascade = CascadeType.ALL)
-    private List<PetToDoRelationship> pets;
+    private List<PetToDoRelationship> petToDoRelationships;
     @ManyToOne(fetch = FetchType.LAZY)
     private Account account;
     @OneToOne(fetch = FetchType.LAZY)

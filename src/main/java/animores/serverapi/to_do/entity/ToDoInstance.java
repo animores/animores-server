@@ -15,7 +15,7 @@ public class ToDoInstance extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
-    private ToDo todo;
+    private ToDo toDo;
     private LocalDateTime time;
     @OneToOne(fetch = FetchType.LAZY)
     @PrimaryKeyJoinColumn(name = "complete_profile_id")
