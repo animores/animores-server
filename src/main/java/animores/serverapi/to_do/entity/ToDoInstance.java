@@ -18,7 +18,7 @@ public class ToDoInstance extends BaseEntity {
     private ToDo todo;
     private LocalDateTime time;
     @OneToOne(fetch = FetchType.LAZY)
-    @Column(name = "complete_profile_id")
+    @PrimaryKeyJoinColumn(name = "complete_profile_id")
     private Profile completeProfile;
     private LocalDateTime completeTime;
 

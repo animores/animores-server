@@ -25,7 +25,7 @@ public class ToDo extends BaseEntity {
     @OneToMany
     private List<PetToDoRelationship> pets;
     @OneToOne(fetch = FetchType.LAZY)
-    @Column(name = "create_profile_id")
+    @PrimaryKeyJoinColumn(name = "create_profile_id")
     private Profile createProfile;
     private Tag tag;
     private String title;

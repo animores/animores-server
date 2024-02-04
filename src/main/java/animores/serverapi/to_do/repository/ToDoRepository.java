@@ -1,12 +1,14 @@
 package animores.serverapi.to_do.repository;
 
+import java.util.List;
+import java.time.LocalDate;
 import animores.serverapi.to_do.entity.ToDo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ToDoRepository extends JpaRepository<ToDo, Long> {
-    Object findAllByDate(Object any);
+    List<ToDo> findAllByDate(LocalDate date);
 
-    Object findAllByAccountId();
+    List<ToDo> findAllByAccountId(Long accountId);
 }
