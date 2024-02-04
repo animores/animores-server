@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 
 @Getter
 @Entity
@@ -22,8 +21,6 @@ public class ToDo extends BaseEntity {
     private String id;
     @ManyToOne(fetch = FetchType.LAZY)
     private Account account;
-    @OneToMany
-    private List<PetToDoRelationship> pets;
     @OneToOne(fetch = FetchType.LAZY)
     @PrimaryKeyJoinColumn(name = "create_profile_id")
     private Profile createProfile;
@@ -35,10 +32,15 @@ public class ToDo extends BaseEntity {
 
     //반복에 대한 내용 추가
 
-    public static ToDo fromRequest(ToDoCreateRequest request, Account account) {
+    public static ToDo fromRequest(ToDoCreateRequest request, Account account, Profile createProfile) {
         ToDo toDo = new ToDo();
-        toDo.title = request.title();
+        if(request.tag() != null) {
+            toDo.tag = request.tag();
+        } else {
+            toDo.title = request.title();
+        }
         toDo.account = account;
+        toDo.createProfile = createProfile;
         toDo.date = request.date();
         toDo.time = request.time();
         return toDo;
