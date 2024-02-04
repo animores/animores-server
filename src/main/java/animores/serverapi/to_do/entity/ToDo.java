@@ -2,8 +2,8 @@ package animores.serverapi.to_do.entity;
 
 import animores.serverapi.account.domain.Account;
 import animores.serverapi.common.BaseEntity;
+import animores.serverapi.pet.type.Tag;
 import animores.serverapi.profile.domain.Profile;
-import animores.serverapi.to_do.Tag;
 import animores.serverapi.to_do.dto.request.ToDoCreateRequest;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -27,6 +27,7 @@ public class ToDo extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @PrimaryKeyJoinColumn(name = "create_profile_id")
     private Profile createProfile;
+    @Enumerated(value = EnumType.STRING)
     private Tag tag;
     private String title;
     private LocalDate date;
