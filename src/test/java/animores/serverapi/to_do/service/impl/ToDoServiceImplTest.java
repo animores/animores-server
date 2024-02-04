@@ -37,13 +37,13 @@ class ToDoServiceImplTest {
         given(toDoRepository.save(any())).willReturn(any());
         ToDoCreateRequest request = new ToDoCreateRequest(
                 null,
-                null,
                 "test",
                 null,
                 null,
                 null,
+                true,
                 null,
-                null,
+                false,
                 null
         );
         ArgumentCaptor<ToDo> toDoArgumentCaptor = ArgumentCaptor.forClass(ToDo.class);
@@ -237,8 +237,9 @@ class ToDoServiceImplTest {
                 "산책",
                 null,
                 null,
+                false,
                 null,
-                null,
+                false,
                 null
         );
         //when
