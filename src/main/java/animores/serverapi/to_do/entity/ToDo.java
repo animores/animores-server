@@ -7,8 +7,7 @@ import animores.serverapi.profile.domain.Profile;
 import animores.serverapi.to_do.dto.Repeat;
 import animores.serverapi.to_do.dto.request.ToDoCreateRequest;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -16,7 +15,8 @@ import java.util.List;
 
 @Getter
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class ToDo extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,5 +55,9 @@ public class ToDo extends BaseEntity {
         toDo.isUsingAlarm = request.isUsingAlarm();
         toDo.repeat = request.repeat();
         return toDo;
+    }
+
+    protected void setPetToDoRelationships(List<PetToDoRelationship> petToDoRelationships) {
+        this.petToDoRelationships = petToDoRelationships;
     }
 }

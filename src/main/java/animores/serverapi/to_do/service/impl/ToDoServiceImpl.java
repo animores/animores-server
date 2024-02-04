@@ -91,7 +91,8 @@ public class ToDoServiceImpl implements ToDoService {
                     relationships.stream()
                             .map(PetToDoRelationship::getToDo)
                             .map(ToDo::getId)
-                            .toList()
+                            .collect(Collectors.toSet())
+                            .stream().toList()
             );
 
             return toDOInstances.stream()
@@ -103,7 +104,8 @@ public class ToDoServiceImpl implements ToDoService {
                     relationships.stream()
                             .map(PetToDoRelationship::getToDo)
                             .map(ToDo::getId)
-                            .toList()
+                            .collect(Collectors.toSet())
+                            .stream().toList()
             );
 
             return toDOInstances.stream()
@@ -117,7 +119,7 @@ public class ToDoServiceImpl implements ToDoService {
     public List<ToDoResponse> getAllToDo(Boolean done, List<Long> pets) {
         Set<Long> petIds = Set.of(1L, 2L);
         if (pets == null || pets.isEmpty()) {
-            pets = new ArrayList<>(petIds);
+            pets = petIds.stream().sorted().toList();
         }
 
         if(!petIds.containsAll(pets)) {
@@ -134,7 +136,8 @@ public class ToDoServiceImpl implements ToDoService {
                     relationships.stream()
                             .map(PetToDoRelationship::getToDo)
                             .map(ToDo::getId)
-                            .toList()
+                            .collect(Collectors.toSet())
+                            .stream().toList()
             );
 
             return toDOInstances.stream()
@@ -146,7 +149,8 @@ public class ToDoServiceImpl implements ToDoService {
                     relationships.stream()
                             .map(PetToDoRelationship::getToDo)
                             .map(ToDo::getId)
-                            .toList()
+                            .collect(Collectors.toSet())
+                            .stream().toList()
             );
 
             return toDOInstances.stream()
