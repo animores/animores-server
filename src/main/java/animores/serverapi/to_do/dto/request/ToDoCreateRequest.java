@@ -13,7 +13,7 @@ public record ToDoCreateRequest(
 		@NotNull(message = "펫 아이디는 필수입니다.")
 		@NotEmpty(message = "펫 아이디는 비어있을 수 없습니다.")
         List<Long> petIds,
-        String title,
+        String content,
 		Tag tag,
 		@NotNull(message = "날짜는 필수입니다.")
         LocalDate date,
@@ -24,8 +24,8 @@ public record ToDoCreateRequest(
         Repeat repeat
 ) {
 	public ToDoCreateRequest {
-		if(tag == null && title.isBlank()) {
-			throw new IllegalArgumentException("태그와 제목 중 하나는 필수입니다.");
+		if(tag == null && content.isBlank()) {
+			throw new IllegalArgumentException("태그와 내용 중 하나는 필수입니다.");
 		}
 
 		if(isAllDay && time != null) {
