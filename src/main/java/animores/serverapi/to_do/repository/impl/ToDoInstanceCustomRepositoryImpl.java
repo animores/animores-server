@@ -7,7 +7,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import static animores.serverapi.to_do.entity.QToDoInstance.toDoInstance;
@@ -33,25 +33,8 @@ public class ToDoInstanceCustomRepositoryImpl implements ToDoInstanceCustomRepos
 				.having(toDoInstance.toDo.id.in(toDoIds))
 				.where(
 						toDoInstance.completeProfile.isNull().and(
-								toDoInstance.time.between(
-										LocalDateTime.of(
-												LocalDateTime.now().getYear(),
-												LocalDateTime.now().getMonth(),
-												LocalDateTime.now().getDayOfMonth(),
-												0,
-												0,
-												0
-										),
-										LocalDateTime.of(
-												LocalDateTime.now().getYear(),
-												LocalDateTime.now().getMonth(),
-												LocalDateTime.now().getDayOfMonth() + 1,
-												0,
-												0,
-												0
-										)
+								toDoInstance.date.eq(LocalDate.now())
 								))
-				)
 				.fetch();
 	}
 
@@ -72,25 +55,8 @@ public class ToDoInstanceCustomRepositoryImpl implements ToDoInstanceCustomRepos
 				.having(toDoInstance.toDo.id.in(toDoIds))
 				.where(
 						toDoInstance.completeProfile.isNotNull().and(
-								toDoInstance.time.between(
-										LocalDateTime.of(
-												LocalDateTime.now().getYear(),
-												LocalDateTime.now().getMonth(),
-												LocalDateTime.now().getDayOfMonth(),
-												0,
-												0,
-												0
-										),
-										LocalDateTime.of(
-												LocalDateTime.now().getYear(),
-												LocalDateTime.now().getMonth(),
-												LocalDateTime.now().getDayOfMonth() + 1,
-												0,
-												0,
-												0
-										)
+								toDoInstance.date.eq(LocalDate.now())
 								))
-				)
 				.fetch();
 	}
 
