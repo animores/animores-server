@@ -46,11 +46,7 @@ public class ToDo extends BaseEntity {
         toDo.date = request.date();
         toDo.time = request.time();
         toDo.isAllDay = request.isAllDay();
-        if(request.tag() != null) {
-            toDo.tag = request.tag();
-        } else {
-            toDo.content = request.content();
-        }
+        toDo.resolveTag(toDo, request);
         toDo.color = request.color();
         toDo.isUsingAlarm = request.isUsingAlarm();
         toDo.repeat = request.repeat();
@@ -59,5 +55,13 @@ public class ToDo extends BaseEntity {
 
     protected void setPetToDoRelationships(List<PetToDoRelationship> petToDoRelationships) {
         this.petToDoRelationships = petToDoRelationships;
+    }
+
+    private void resolveTag(ToDo toDo, ToDoCreateRequest request) {
+        if(request.tag() != null) {
+            toDo.tag = request.tag();
+        } else {
+            toDo.content = request.content();
+        }
     }
 }

@@ -30,7 +30,7 @@ public class ToDoController {
 		return ResponseEntity.ok().body(toDoService.getTodayToDo(done, pets));
 	}
 
-	@GetMapping("/all")
+	@GetMapping("")
 	public ResponseEntity<List<ToDoResponse>> getAllToDo(@RequestParam(required = false) Boolean done, @RequestParam(required = false) List<Long> pets) {
 		return ResponseEntity.ok().body(toDoService.getAllToDo(done, pets));
 	}
