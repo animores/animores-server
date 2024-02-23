@@ -7,6 +7,7 @@ import animores.serverapi.account.request.SignInRequest;
 import animores.serverapi.account.response.AccountCreateResponse;
 import animores.serverapi.account.service.AccountService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public AccountCreateResponse createAccount(AccountCreateRequest request) {
         // 검증
@@ -32,10 +34,8 @@ public class AccountServiceImpl implements AccountService {
             return null;
         }
 
-        // TODO: 패스워드 암호화 테스트할 때 귀찮으니 나~중에 해도댐
-
         return AccountCreateResponse.toResponse(
-                accountRepository.save(Account.toEntity(request))
+                accountRepository.save(Account.toEntity(request, passwordEncoder))
         );
     }
 
@@ -54,11 +54,9 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional(readOnly = true)
     public Long signIn(SignInRequest request) throws Exception {
-        // TODO: 패스워드 복호화 테스트할 때 귀찮으니 나~중에 해도댐
-
-        Account account = accountRepository.findByEmailAndPassword(request.email(), request.password()).orElseThrow(
-                () -> new Exception()
-        );
+        Account account = accountRepository.findByEmail(request.email())
+                .filter(ac -> passwordEncoder.matches(request.password(), ac.getPassword()))// 비밀번호 확인
+                .orElseThrow(() -> new Exception());
 
         return account.getId();
     }

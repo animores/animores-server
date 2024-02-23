@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
 @NoArgsConstructor
@@ -40,10 +41,10 @@ public class Account {
         this.isAdPermission = isAdPermission;
     }
 
-    public static Account toEntity(AccountCreateRequest request) {
+    public static Account toEntity(AccountCreateRequest request, PasswordEncoder encoder) {
         return Account.builder()
                 .email(request.email())
-                .password(request.password())
+                .password(encoder.encode(request.password()))// 암호화
                 .nickname(request.nickname())
                 // phone 생략
                 .isAdPermission(request.isAdPermission())

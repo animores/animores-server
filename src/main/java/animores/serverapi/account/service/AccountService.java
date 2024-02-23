@@ -3,6 +3,7 @@ package animores.serverapi.account.service;
 import animores.serverapi.account.request.AccountCreateRequest;
 import animores.serverapi.account.request.SignInRequest;
 import animores.serverapi.account.response.AccountCreateResponse;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 public interface AccountService {
 
