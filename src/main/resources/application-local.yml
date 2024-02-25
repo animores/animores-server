@@ -19,5 +19,9 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
         format_sql: true
+  jwt:
+    secret-key: NiOeyFbN1Gqo10bPgUyTFsRMkJpGLXSvGP04eFqj5B30r5TcrtlSXfQ7TndvYjNvfkEKLqILn0j1SmKODO1Yw3JpBBgI3nVPEahqxeY8qbPSFGyzyEVxnl4AQcrnVneI
+    expiration-hours: 3
+    issuer: kangmo
 
 server-url: https://60k8v8szkl.execute-api.ap-northeast-2.amazonaws.com/Stage
