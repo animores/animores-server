@@ -61,7 +61,7 @@ public class AccountServiceImpl implements AccountService {
                 .filter(ac -> passwordEncoder.matches(request.password(), ac.getPassword()))// 비밀번호 확인
                 .orElseThrow(() -> new Exception());
 
-        String token = tokenProvider.createToken(account.getId().toString());// TODO: 이후 권한(type)도 추가
+        String token = tokenProvider.createToken(String.format("%s:%s", account.getId(), account.getRole()));
 
         return new SignInResponse(account.getId(), account.getNickname(), token);
     }

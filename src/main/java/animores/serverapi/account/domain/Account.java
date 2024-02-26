@@ -1,6 +1,7 @@
 package animores.serverapi.account.domain;
 
 import animores.serverapi.account.request.SignUpRequest;
+import animores.serverapi.account.type.Role;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,6 +21,8 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private Role role;
+
     private String email;
 
     private String password;
@@ -32,8 +35,9 @@ public class Account {
 
     // 등록, 수정, 탈퇴일 생략
 
-    protected Account(Long id, String email, String password, String nickname, String phone, boolean isAdPermission) {
+    protected Account(Long id, Role role, String email, String password, String nickname, String phone, boolean isAdPermission) {
         this.id = id;
+        this.role = role;
         this.email = email;
         this.password = password;
         this.nickname = nickname;
@@ -44,6 +48,7 @@ public class Account {
     public static Account toEntity(SignUpRequest request, PasswordEncoder encoder) {
         return Account.builder()
                 .email(request.email())
+                .role(Role.USER)// 현재는 USER만 있음
                 .password(encoder.encode(request.password()))// 암호화
                 .nickname(request.nickname())
                 // phone 생략
