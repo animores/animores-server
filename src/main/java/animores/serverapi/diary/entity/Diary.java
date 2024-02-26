@@ -1,13 +1,20 @@
 package animores.serverapi.diary.entity;
 
+import animores.serverapi.account.domain.Account;
+import animores.serverapi.common.BaseEntity;
 import animores.serverapi.diary.dto.AddDiaryRequest;
+import animores.serverapi.diary.dto.EditDiaryRequest;
+import animores.serverapi.profile.domain.Profile;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -26,13 +33,19 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "diary")
-public class Diary {
+public class Diary extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Profile 연결 예정
+    @JsonIgnore // response 객체 만들면 삭제 예정
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Profile profile;
+
+    @JsonIgnore // response 객체 만들면 삭제 예정
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Account account;
 
     // List<DiaryImage> 연결 예정
 
@@ -43,19 +56,22 @@ public class Diary {
     private String content;
 
 
-    @Column(updatable = false)
-    @CreatedDate
-    private LocalDateTime createdDt;
-
-    @LastModifiedDate
-    private LocalDateTime updatedDt;
-
     private LocalDateTime deletedDt;
 
-    public static Diary create(AddDiaryRequest addDiaryRequest) {
+    public static Diary create(Account account, Profile profile, AddDiaryRequest request) {
         return Diary.builder()
-            .content(addDiaryRequest.content())
+            .account(account)
+            .profile(profile)
+            .content(request.content())
             .build();
+    }
+
+    public void update(EditDiaryRequest request) {
+        this.content = request.content();
+    }
+
+    public void delete() {
+        this.deletedDt = LocalDateTime.now();
     }
 
 }
