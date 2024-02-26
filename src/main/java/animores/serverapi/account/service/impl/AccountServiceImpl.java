@@ -2,9 +2,9 @@ package animores.serverapi.account.service.impl;
 
 import animores.serverapi.account.domain.Account;
 import animores.serverapi.account.repository.AccountRepository;
-import animores.serverapi.account.request.AccountCreateRequest;
+import animores.serverapi.account.request.SignUpRequest;
 import animores.serverapi.account.request.SignInRequest;
-import animores.serverapi.account.response.AccountCreateResponse;
+import animores.serverapi.account.response.SignUpResponse;
 import animores.serverapi.account.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,7 +19,7 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public AccountCreateResponse createAccount(AccountCreateRequest request) {
+    public SignUpResponse signUp(SignUpRequest request) {
         // 검증
         if (!request.isAdPermission()) {
             return null;
@@ -34,7 +34,7 @@ public class AccountServiceImpl implements AccountService {
             return null;
         }
 
-        return AccountCreateResponse.toResponse(
+        return SignUpResponse.toResponse(
                 accountRepository.save(Account.toEntity(request, passwordEncoder))
         );
     }

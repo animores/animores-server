@@ -1,9 +1,9 @@
 package animores.serverapi.account.controller;
 
 
-import animores.serverapi.account.request.AccountCreateRequest;
+import animores.serverapi.account.request.SignUpRequest;
 import animores.serverapi.account.request.SignInRequest;
-import animores.serverapi.account.response.AccountCreateResponse;
+import animores.serverapi.account.response.SignUpResponse;
 import animores.serverapi.account.service.AccountService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
@@ -20,8 +20,8 @@ public class AccountController {
     private final AccountService accountService;
 
     @PostMapping("/sign-up")
-    public ResponseEntity<AccountCreateResponse> createAccount(@Valid @RequestBody AccountCreateRequest request) throws Exception {
-        AccountCreateResponse response = accountService.createAccount(request);
+    public ResponseEntity<SignUpResponse> signUp(@Valid @RequestBody SignUpRequest request) throws Exception {
+        SignUpResponse response = accountService.signUp(request);
 
         if (response == null) {
             throw new Exception();

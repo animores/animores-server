@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
-public record AccountCreateRequest (
+public record SignUpRequest(
 
         @Email(message = "이메일 형식이 아닙니다.")
         String email,

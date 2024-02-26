@@ -1,6 +1,6 @@
 package animores.serverapi.account.domain;
 
-import animores.serverapi.account.request.AccountCreateRequest;
+import animores.serverapi.account.request.SignUpRequest;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -41,7 +41,7 @@ public class Account {
         this.isAdPermission = isAdPermission;
     }
 
-    public static Account toEntity(AccountCreateRequest request, PasswordEncoder encoder) {
+    public static Account toEntity(SignUpRequest request, PasswordEncoder encoder) {
         return Account.builder()
                 .email(request.email())
                 .password(encoder.encode(request.password()))// 암호화

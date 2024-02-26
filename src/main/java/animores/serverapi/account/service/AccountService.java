@@ -1,9 +1,8 @@
 package animores.serverapi.account.service;
 
-import animores.serverapi.account.request.AccountCreateRequest;
+import animores.serverapi.account.request.SignUpRequest;
 import animores.serverapi.account.request.SignInRequest;
-import animores.serverapi.account.response.AccountCreateResponse;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import animores.serverapi.account.response.SignUpResponse;
 
 public interface AccountService {
 
@@ -12,7 +11,7 @@ public interface AccountService {
      * @param request
      * @return
      */
-    AccountCreateResponse createAccount(AccountCreateRequest request);
+    SignUpResponse signUp(SignUpRequest request);
 
     /**
      * 이메일 중복 체크
