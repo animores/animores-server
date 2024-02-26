@@ -2,6 +2,7 @@ package animores.serverapi.account.service;
 
 import animores.serverapi.account.request.SignUpRequest;
 import animores.serverapi.account.request.SignInRequest;
+import animores.serverapi.account.response.SignInResponse;
 import animores.serverapi.account.response.SignUpResponse;
 
 public interface AccountService {
@@ -30,5 +31,5 @@ public interface AccountService {
      * @param request
      * @return
      */
-    Long signIn(SignInRequest request) throws Exception;
+    SignInResponse signIn(SignInRequest request) throws Exception;
 }

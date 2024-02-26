@@ -4,8 +4,10 @@ import animores.serverapi.account.domain.Account;
 import animores.serverapi.account.repository.AccountRepository;
 import animores.serverapi.account.request.SignUpRequest;
 import animores.serverapi.account.request.SignInRequest;
+import animores.serverapi.account.response.SignInResponse;
 import animores.serverapi.account.response.SignUpResponse;
 import animores.serverapi.account.service.AccountService;
+import animores.serverapi.config.security.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TokenProvider tokenProvider;
 
     public SignUpResponse signUp(SignUpRequest request) {
         // 검증
@@ -53,12 +56,14 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional(readOnly = true)
-    public Long signIn(SignInRequest request) throws Exception {
+    public SignInResponse signIn(SignInRequest request) throws Exception {
         Account account = accountRepository.findByEmail(request.email())
                 .filter(ac -> passwordEncoder.matches(request.password(), ac.getPassword()))// 비밀번호 확인
                 .orElseThrow(() -> new Exception());
 
-        return account.getId();
+        String token = tokenProvider.createToken(account.getId().toString());// TODO: 이후 권한(type)도 추가
+
+        return new SignInResponse(account.getId(), account.getNickname(), token);
     }
 
 }

@@ -3,6 +3,7 @@ package animores.serverapi.account.controller;
 
 import animores.serverapi.account.request.SignUpRequest;
 import animores.serverapi.account.request.SignInRequest;
+import animores.serverapi.account.response.SignInResponse;
 import animores.serverapi.account.response.SignUpResponse;
 import animores.serverapi.account.service.AccountService;
 import jakarta.validation.Valid;
@@ -31,8 +32,8 @@ public class AccountController {
     }
 
     @PostMapping("/sign-in")
-    public ResponseEntity<Long> signIn(@Valid @RequestBody SignInRequest request) throws Exception {
-        Long response = accountService.signIn(request);
+    public ResponseEntity<SignInResponse> signIn(@Valid @RequestBody SignInRequest request) throws Exception {
+        SignInResponse response = accountService.signIn(request);
 
         if (response == null) {
             throw new Exception();
