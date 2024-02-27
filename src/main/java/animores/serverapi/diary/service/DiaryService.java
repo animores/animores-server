@@ -15,6 +15,7 @@ public interface DiaryService {
     ResponseEntity<Void> addDiary(AddDiaryRequest request);
 
     ResponseEntity<Void> editDiary(Long diaryId, EditDiaryRequest request);
+
     ResponseEntity<Void> removeDiary(Long removeDiary);
 
 }

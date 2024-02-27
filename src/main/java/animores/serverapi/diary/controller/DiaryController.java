@@ -25,13 +25,14 @@ public class DiaryController {
     private final DiaryService diaryService;
 
     // 일지 전체 목록 조회
-    @GetMapping("/{accountId}")
+    @GetMapping("/accounts/{accountId}")
     public List<Diary> getAllDiary(@PathVariable Long accountId) {
         return diaryService.getAllDiary(accountId);
     }
 
     // 일지 요약 목록 조회
     @GetMapping("/{userId}/{date}")
+    // @GetMapping("/accounts/{accountId}/{date}") querydsl 적용하면서 이거로 수정 예정
     public void getCalendarDiary(@PathVariable Long userId, @PathVariable String date) {
         diaryService.getCalendarDiary(userId, date);
     }
