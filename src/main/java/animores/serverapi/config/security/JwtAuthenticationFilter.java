@@ -38,7 +38,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    //
     private String parseBearerToken(HttpServletRequest request) {
         return Optional.ofNullable(request.getHeader(HttpHeaders.AUTHORIZATION))
                 .filter(token -> token.substring(0, 7).equalsIgnoreCase("Bearer "))
@@ -55,4 +54,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         return new User(split[0], "", List.of(new SimpleGrantedAuthority(split[1])));
     }
+
 }

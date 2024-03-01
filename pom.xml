@@ -79,6 +79,7 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
+
         <!-- JJWT (JSON Web Token) -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
@@ -96,6 +97,13 @@
             <artifactId>jjwt-jackson</artifactId>
             <version>0.11.5</version>
             <scope>runtime</scope>
+        </dependency>
+
+        <!-- redis -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+            <version>3.2.1</version>
         </dependency>
     </dependencies>
 
