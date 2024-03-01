@@ -24,7 +24,7 @@ public record ToDoCreateRequest(
         Repeat repeat
 ) {
 	public ToDoCreateRequest {
-		if(tag == null && content.isBlank()) {
+		if(tag == null && (content == null || content.isBlank())) {
 			throw new IllegalArgumentException("태그와 내용 중 하나는 필수입니다.");
 		}
 

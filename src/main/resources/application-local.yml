@@ -20,4 +20,8 @@ spring:
         dialect: org.hibernate.dialect.H2Dialect
         format_sql: true
 
+  redis:
+    host: localhost
+    port: 6379
+
 server-url: https://xnwp1fbxrf.execute-api.ap-northeast-2.amazonaws.com/Stage
