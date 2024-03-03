@@ -1,17 +1,17 @@
 package animores.serverapi.account.controller;
 
 
-import animores.serverapi.account.request.SignUpRequest;
 import animores.serverapi.account.request.SignInRequest;
+import animores.serverapi.account.request.SignUpRequest;
 import animores.serverapi.account.response.SignInResponse;
 import animores.serverapi.account.response.SignUpResponse;
 import animores.serverapi.account.service.AccountService;
+import animores.serverapi.config.security.RefreshRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,6 +20,17 @@ import org.springframework.web.bind.annotation.*;
 public class AccountController {
 
     private final AccountService accountService;
+
+    @PostMapping("/refresh")
+    public ResponseEntity<SignInResponse> refresh(@Valid @RequestBody RefreshRequest request) throws Exception {
+        SignInResponse response = accountService.refresh(request);
+
+        if (response == null) {
+            throw new Exception();
+        }
+
+        return ResponseEntity.ok().body(response);
+    }
 
     @PostMapping("/sign-up")
     public ResponseEntity<SignUpResponse> signUp(@Valid @RequestBody SignUpRequest request) throws Exception {

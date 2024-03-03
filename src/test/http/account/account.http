@@ -1,3 +1,12 @@
+### AccressToken 재발급
+POST http://localhost:8080/api/v1/account/refresh
+Content-Type: application/json
+
+{
+  "userId": "1",
+  "refreshToken": "4a117e59-a426-40da-99c3-bb0ac7935a51"
+}
+
 ### 회원 가입
 POST http://localhost:8080/api/v1/account/sign-up
 Content-Type: application/json

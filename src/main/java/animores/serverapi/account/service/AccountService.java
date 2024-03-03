@@ -4,8 +4,16 @@ import animores.serverapi.account.request.SignUpRequest;
 import animores.serverapi.account.request.SignInRequest;
 import animores.serverapi.account.response.SignInResponse;
 import animores.serverapi.account.response.SignUpResponse;
+import animores.serverapi.config.security.RefreshRequest;
 
 public interface AccountService {
+
+    /**
+     * accessToken 재발급
+     * @param request
+     * @return
+     */
+    SignInResponse refresh(RefreshRequest request) throws Exception;
 
     /**
      * 계정 생성
@@ -27,9 +35,10 @@ public interface AccountService {
     boolean isDuplicatedNickname(String nickname);
 
     /**
-     * sign-in
+     * 로그인
      * @param request
      * @return
      */
     SignInResponse signIn(SignInRequest request) throws Exception;
+
 }

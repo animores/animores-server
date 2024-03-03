@@ -2,11 +2,12 @@ package animores.serverapi.account.service.impl;
 
 import animores.serverapi.account.domain.Account;
 import animores.serverapi.account.repository.AccountRepository;
-import animores.serverapi.account.request.SignUpRequest;
 import animores.serverapi.account.request.SignInRequest;
+import animores.serverapi.account.request.SignUpRequest;
 import animores.serverapi.account.response.SignInResponse;
 import animores.serverapi.account.response.SignUpResponse;
 import animores.serverapi.account.service.AccountService;
+import animores.serverapi.config.security.RefreshRequest;
 import animores.serverapi.config.security.RefreshToken;
 import animores.serverapi.config.security.RefreshTokenRepository;
 import animores.serverapi.config.security.TokenProvider;
@@ -28,6 +29,19 @@ public class AccountServiceImpl implements AccountService {
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
 
+    @Override
+    public SignInResponse refresh(RefreshRequest request) throws Exception {
+        RefreshToken refreshToken = refreshTokenRepository.findById(request.refreshToken())
+                .orElseThrow(() -> new Exception());
+        Account account = accountRepository.findById(request.userId())
+                .orElseThrow(() -> new Exception());
+
+        String accessToken = tokenProvider.createToken(String.format("%s:%s", account.getId(), account.getRole()));
+
+        return new SignInResponse(account.getId(), accessToken, LocalDateTime.now().plusHours(tokenProvider.getExpirationHours()), refreshToken.getRefreshToken());
+    }
+
+    @Override
     public SignUpResponse signUp(SignUpRequest request) {
         // 검증
         if (!request.isAdPermission()) {
@@ -61,7 +75,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public SignInResponse signIn(SignInRequest request) throws Exception {
         Account account = accountRepository.findByEmail(request.email())
                 .filter(ac -> passwordEncoder.matches(request.password(), ac.getPassword()))// 비밀번호 확인
