@@ -2,11 +2,11 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: Animore appliaction server api
 
-parameters:
-  DB_USERNAME:
+Parameters:
+  DBUSERNAME:
     Type: String
     Description: Username for the database
-  DB_PASSWORD:
+  DBPASSWORD:
     Type: String
     Description: Password for the database
 
@@ -23,6 +23,13 @@ Resources:
               Service: lambda.amazonaws.com
             Action: sts:AssumeRole
       Policies:
+        - PolicyName: MySecretsManagerPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: secretsmanager:GetSecretValue
+                Resource: "arn:aws:secretsmanager:ap-northeast-2:142111257198:secret:rds-db-credentials/animoresdbinstatnce1/admin/1702189030443-4YKkVI"
         - PolicyName: AWSLambdaBasicExecutionRole
           PolicyDocument:
             Version: '2012-10-17'
@@ -53,11 +60,32 @@ Resources:
                 Resource:
                   Ref: DBSecret
 
+
+  SpringOnLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: animores.serverapi.LambdaHandler::handleRequest
+      Runtime: java17
+      CodeUri: .
+      MemorySize: 1024
+      SnapStart:
+        ApplyOn: "PublishedVersions"
+      AutoPublishAlias: "stage"
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 60
+      Role: !GetAtt MyLambdaExecutionRole.Arn
+      Events:
+        HttpApiEvent:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+
   RDSdb:
     Type: AWS::RDS::DBInstance
     Properties:
-      MasterUsername: !Ref DB_USERNAME
-      MasterUserPassword: !Ref DB_PASSWORD
+      MasterUsername: !Ref DBUSERNAME
+      MasterUserPassword: !Ref DBPASSWORD
       Engine: mysql
       DBInstanceClass: db.t3.small
       StorageType: gp2
@@ -85,34 +113,9 @@ Resources:
       EngineVersion: 7.1
       PreferredMaintenanceWindow: 'sun:05:00-sun:06:00'
       Port: 6379
-      CacheParameterGroupName: default.redis7.1
+      CacheParameterGroupName: default.redis7
       VpcSecurityGroupIds:
         - !GetAtt RedisSecurityGroup.GroupId
-
-  SpringOnLambdaFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      Handler: animores.serverapi.LambdaHandler::handleRequest
-      Runtime: java17
-      CodeUri: SpringOnLambdaFunction
-      MemorySize: 1024
-      SnapStart:
-        ApplyOn: PublishedVersions
-      AutoPublishAlias: stage
-      Policies: AWSLambdaBasicExecutionRole
-      Timeout: 60
-      Role:
-        Fn::GetAtt:
-          - MyLambdaExecutionRole
-          - Arn
-      Events:
-        HttpApiEvent:
-          Type: Api
-          Properties:
-            Path: /{proxy+}
-            Method: ANY
-    Metadata:
-      SamResourceId: SpringOnLambdaFunction
 
   DBSecret:
     Type: AWS::SecretsManager::Secret
@@ -127,7 +130,7 @@ Resources:
                 - RDSdb
                 - MasterUsername
             - '", "db_password": "'
-            - welcome2024
+            - !Ref DBPASSWORD
             - '", "db_host": "'
             - Fn::GetAtt:
                 - RDSdb

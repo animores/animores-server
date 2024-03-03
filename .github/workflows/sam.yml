@@ -21,4 +21,4 @@ jobs:
       # Run Unit tests- Specify unit tests here
 
       # sam deploy
-      - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --parameter-overrides DB_USERNAME=${{ secrets.DB_USERNAME }} DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+      - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --parameter-overrides ParameterKey=DB_USERNAME,ParameterValue=${{ secrets.DB_USERNAME }} ParameterKey=DB_PASSWORD,ParameterValue=${{ secrets.DB_PASSWORD }}
