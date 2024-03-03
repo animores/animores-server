@@ -20,12 +20,22 @@ public class Response<T> {
                 null : new ErrorResponse(exceptionCode.name(), exceptionCode.getMessage());
     }
 
+    private Response(boolean success, String message) {
+        this.success = success;
+        this.data = null;
+        this.error = new ErrorResponse(null, message);
+    }
+
     public static <T> Response<T> success(T data) {
         return new Response<>(true, data, null);
     }
 
-    public static Response<ExceptionCode> error(ExceptionCode exceptionCode) {
+    public static Response<Void> error(ExceptionCode exceptionCode) {
         return new Response<>(false, null, exceptionCode);
+    }
+
+    public static Response<Void> error(String message) {
+        return new Response<>(false, message);
     }
 
     private record ErrorResponse(String code, String message) {
