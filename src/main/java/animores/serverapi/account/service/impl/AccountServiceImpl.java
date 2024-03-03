@@ -7,11 +7,16 @@ import animores.serverapi.account.request.SignInRequest;
 import animores.serverapi.account.response.SignInResponse;
 import animores.serverapi.account.response.SignUpResponse;
 import animores.serverapi.account.service.AccountService;
+import animores.serverapi.config.security.RefreshToken;
+import animores.serverapi.config.security.RefreshTokenRepository;
 import animores.serverapi.config.security.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +26,7 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public SignUpResponse signUp(SignUpRequest request) {
         // 검증
@@ -61,9 +67,13 @@ public class AccountServiceImpl implements AccountService {
                 .filter(ac -> passwordEncoder.matches(request.password(), ac.getPassword()))// 비밀번호 확인
                 .orElseThrow(() -> new Exception());
 
-        String token = tokenProvider.createToken(String.format("%s:%s", account.getId(), account.getRole()));
+        // at, rt 생성
+        String accessToken = tokenProvider.createToken(String.format("%s:%s", account.getId(), account.getRole()));
+        String refreshToken = UUID.randomUUID().toString();
+        RefreshToken redisRefreshToken = new RefreshToken(refreshToken, account.getId());
+        refreshTokenRepository.save(redisRefreshToken);
 
-        return new SignInResponse(account.getId(), account.getNickname(), token);
+        return new SignInResponse(account.getId(), accessToken, LocalDateTime.now().plusHours(tokenProvider.getExpirationHours()), refreshToken);
     }
 
 }

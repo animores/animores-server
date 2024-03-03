@@ -1,12 +1,16 @@
 package animores.serverapi.account.response;
 
+import java.time.LocalDateTime;
+
 public record SignInResponse(
 
-        Long id,
+        Long userId,
 
-        String nickname,
+        String accessToken,
 
-        String token
+        LocalDateTime expirationHours,
+
+        String refreshToken
 
 ) {
 }

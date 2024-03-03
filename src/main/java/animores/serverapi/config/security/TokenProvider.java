@@ -2,8 +2,8 @@ package animores.serverapi.config.security;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -14,13 +14,14 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 @Service
+@Getter
 public class TokenProvider {
     private final String secretKey;
-    private final long expirationHours;
+    private final int expirationHours;
     private final String issuer;
 
     public TokenProvider(@Value("${spring.jwt.secret-key}") String secretKey,
-                         @Value("${spring.jwt.expiration-hours}") long expirationHours,
+                         @Value("${spring.jwt.expiration-hours}") int expirationHours,
                          @Value("${spring.jwt.issuer}") String issuer) {
         this.secretKey = secretKey;
         this.expirationHours = expirationHours;
@@ -55,4 +56,5 @@ public class TokenProvider {
                 .getBody()
                 .getSubject();
     }
+
 }

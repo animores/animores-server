@@ -10,10 +10,7 @@ public record SignInRequest (
         String email,
 
         @NotEmpty(message = "비밀번호를 입력 하세요.")
-        String password,
-
-        @NotNull(message = "자동 로그인 여부를 입력 하세요.")
-        Boolean isAutoSignIn
+        String password
 
 ) {
 }

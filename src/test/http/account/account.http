@@ -39,8 +39,7 @@ Content-Type: application/json
 
 {
   "email": "22rkdmin@naver.com",
-  "password": "abcd1234!",
-  "isAutoSignIn": false
+  "password": "abcd1234!"
 }
 
 ### 이메일 중복 확인 (중복)
