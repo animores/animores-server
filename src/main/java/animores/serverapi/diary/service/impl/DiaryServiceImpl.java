@@ -42,36 +42,30 @@ public class DiaryServiceImpl implements DiaryService {
 
     @Override
     @Transactional
-    public ResponseEntity<Void> addDiary(AddDiaryRequest request) {
+    public void addDiary(AddDiaryRequest request) {
         Account account = accountRepository.findById(request.accountId())
-            .orElseThrow(() -> new NoSuchElementException());
+            .orElseThrow(NoSuchElementException::new);
         Profile profile = profileRepository.findById(request.profileId())
-            .orElseThrow(() -> new NoSuchElementException());
+            .orElseThrow(NoSuchElementException::new);
 
         diaryRepository.save(Diary.create(account, profile, request));
-
-        return ResponseEntity.status(HttpStatus.SC_OK).build();
     }
 
     @Override
     @Transactional
-    public ResponseEntity<Void> editDiary(Long diaryId, EditDiaryRequest request) {
+    public void editDiary(Long diaryId, EditDiaryRequest request) {
         Diary diary = diaryRepository.findById(diaryId)
-            .orElseThrow(() -> new NoSuchElementException());
+            .orElseThrow(NoSuchElementException::new);
 
         diary.update(request);
-
-        return ResponseEntity.status(HttpStatus.SC_OK).build();
     }
 
     @Override
     @Transactional
-    public ResponseEntity<Void> removeDiary(Long diaryId) {
+    public void removeDiary(Long diaryId) {
         Diary diary = diaryRepository.findById(diaryId)
-            .orElseThrow(() -> new NoSuchElementException());
+            .orElseThrow(NoSuchElementException::new);
 
         diary.delete();
-
-        return ResponseEntity.status(HttpStatus.SC_OK).build();
     }
 }
