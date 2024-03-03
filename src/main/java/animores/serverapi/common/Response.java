@@ -24,7 +24,7 @@ public class Response<T> {
         return new Response<>(true, data, null);
     }
 
-    public static Response<Void> error(ExceptionCode exceptionCode) {
+    public static Response<ExceptionCode> error(ExceptionCode exceptionCode) {
         return new Response<>(false, null, exceptionCode);
     }
 
