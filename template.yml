@@ -2,6 +2,14 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: Animore appliaction server api
 
+parameters:
+  DB_USERNAME:
+    Type: String
+    Description: Username for the database
+  DB_PASSWORD:
+    Type: String
+    Description: Password for the database
+
 Resources:
   MyLambdaExecutionRole:
     Type: AWS::IAM::Role
@@ -15,13 +23,6 @@ Resources:
               Service: lambda.amazonaws.com
             Action: sts:AssumeRole
       Policies:
-        - PolicyName: MySecretsManagerPolicy
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action: secretsmanager:GetSecretValue
-                Resource: "arn:aws:secretsmanager:ap-northeast-2:142111257198:secret:rds-db-credentials/animoresdbinstatnce1/admin/1702189030443-4YKkVI"
         - PolicyName: AWSLambdaBasicExecutionRole
           PolicyDocument:
             Version: '2012-10-17'
@@ -42,33 +43,93 @@ Resources:
                   - ec2:DescribeNetworkInterfaces
                   - ec2:DeleteNetworkInterface
                 Resource: '*'
+        - PolicyName: SecretsManagerPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                Resource:
+                  Ref: DBSecret
 
+  RDSdb:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      MasterUsername: !Ref DB_USERNAME
+      MasterUserPassword: !Ref DB_PASSWORD
+      Engine: mysql
+      DBInstanceClass: db.t3.small
+      StorageType: gp2
+      AllocatedStorage: 20
+
+  RedisSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for ElastiCache Redis
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 6379
+          ToPort: 6379
+          CidrIp: 0.0.0.0/0
+
+  RedisCacheCluster:
+    Type: AWS::ElastiCache::CacheCluster
+    Properties:
+      CacheNodeType: cache.t3.micro
+      Engine: redis
+      NumCacheNodes: 1
+      AutoMinorVersionUpgrade: true
+      AZMode: single-az
+      CacheSubnetGroupName: default
+      EngineVersion: 7.1
+      PreferredMaintenanceWindow: 'sun:05:00-sun:06:00'
+      Port: 6379
+      CacheParameterGroupName: default.redis7.1
+      VpcSecurityGroupIds:
+        - !GetAtt RedisSecurityGroup.GroupId
 
   SpringOnLambdaFunction:
     Type: AWS::Serverless::Function
     Properties:
       Handler: animores.serverapi.LambdaHandler::handleRequest
       Runtime: java17
-      CodeUri: .
+      CodeUri: SpringOnLambdaFunction
       MemorySize: 1024
       SnapStart:
-        ApplyOn: "PublishedVersions"
-      AutoPublishAlias: "stage"
+        ApplyOn: PublishedVersions
+      AutoPublishAlias: stage
       Policies: AWSLambdaBasicExecutionRole
       Timeout: 60
-      Role: !GetAtt MyLambdaExecutionRole.Arn
+      Role:
+        Fn::GetAtt:
+          - MyLambdaExecutionRole
+          - Arn
       Events:
         HttpApiEvent:
           Type: Api
           Properties:
             Path: /{proxy+}
             Method: ANY
+    Metadata:
+      SamResourceId: SpringOnLambdaFunction
 
-
-
-#Outputs:
-#  AnimoresServerApi:
-#    Description: URL for application
-#    Value: !Sub 'https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/animores'
-#    Export:
-#      Name: AnimoresServerApi
+  DBSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-DBSecret
+      SecretString:
+        Fn::Join:
+          - ''
+          - - '{"db_username": "'
+            - Fn::GetAtt:
+                - RDSdb
+                - MasterUsername
+            - '", "db_password": "'
+            - welcome2024
+            - '", "db_host": "'
+            - Fn::GetAtt:
+                - RDSdb
+                - Endpoint.Address
+            - '"}'
