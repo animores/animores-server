@@ -2,13 +2,13 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: Animore appliaction server api
 
-Globals:
-  Api:
-    Cors:
-      AllowMethods: "'GET,POST,OPTIONS'"
-      AllowHeaders: "'content-type'"
-      AllowOrigin: "'*'"
-    EndpointConfiguration: REGIONAL
+Parameters:
+  DBUSERNAME:
+    Type: String
+    Description: Username for the database
+  DBPASSWORD:
+    Type: String
+    Description: Password for the database
 
 Resources:
   MyLambdaExecutionRole:
@@ -50,6 +50,15 @@ Resources:
                   - ec2:DescribeNetworkInterfaces
                   - ec2:DeleteNetworkInterface
                 Resource: '*'
+        - PolicyName: SecretsManagerPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                Resource:
+                  Ref: DBSecret
 
 
   SpringOnLambdaFunction:
@@ -61,7 +70,7 @@ Resources:
       MemorySize: 1024
       SnapStart:
         ApplyOn: "PublishedVersions"
-      AutoPublishAlias: "prod"
+      AutoPublishAlias: "stage"
       Policies: AWSLambdaBasicExecutionRole
       Timeout: 60
       Role: !GetAtt MyLambdaExecutionRole.Arn
@@ -72,10 +81,58 @@ Resources:
             Path: /{proxy+}
             Method: ANY
 
+  RDSdb:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      MasterUsername: !Ref DBUSERNAME
+      MasterUserPassword: !Ref DBPASSWORD
+      Engine: mysql
+      DBInstanceClass: db.t3.small
+      StorageType: gp2
+      AllocatedStorage: 20
 
-#Outputs:
-#  AnimoresServerApi:
-#    Description: URL for application
-#    Value: !Sub 'https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/animores'
-#    Export:
-#      Name: AnimoresServerApi
+  RedisSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for ElastiCache Redis
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 6379
+          ToPort: 6379
+          CidrIp: 0.0.0.0/0
+
+  RedisCacheCluster:
+    Type: AWS::ElastiCache::CacheCluster
+    Properties:
+      CacheNodeType: cache.t3.micro
+      Engine: redis
+      NumCacheNodes: 1
+      AutoMinorVersionUpgrade: true
+      AZMode: single-az
+      CacheSubnetGroupName: default
+      EngineVersion: 7.1
+      PreferredMaintenanceWindow: 'sun:05:00-sun:06:00'
+      Port: 6379
+      CacheParameterGroupName: default.redis7
+      VpcSecurityGroupIds:
+        - !GetAtt RedisSecurityGroup.GroupId
+
+  DBSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-DBSecret
+      SecretString:
+        Fn::Join:
+          - ''
+          - - '{"db_username": "'
+            - Fn::GetAtt:
+                - RDSdb
+                - MasterUsername
+            - '", "db_password": "'
+            - !Ref DBPASSWORD
+            - '", "db_host": "'
+            - Fn::GetAtt:
+                - RDSdb
+                - Endpoint.Address
+            - '"}'

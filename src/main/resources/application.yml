@@ -1,0 +1,21 @@
+spring:
+  config:
+    import: aws-secretsmanager:animores-server-DBSecret
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+  datasource:
+    url: jdbc:mysql://${db_host}:3306/animores
+    username: ${db_username}
+    password: ${db_password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+
+  redis:
+    host: ani-re-suuggqr1q1cr.sr20hx.0001.apn2.cache.amazonaws.com:6379
+    port: 6379
