@@ -54,11 +54,11 @@ Content-Type: application/json
 ### 로그아웃
 POST http://localhost:8080/api/v1/account/sign-out
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxOlVTRVIiLCJpc3MiOiJrYW5nbW8iLCJpYXQiOjE3MTAwMDY5OTUsImV4cCI6MTcxMDA5MzM5NX0.UA-wtTCmBUa4JZUS-O69lw5bEsROTG_6evcj6ThShuHiABvDGfd4ukuB6dgCuv5Ih2PDyrZGW69F1uZUV3RINg
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxOlVTRVIiLCJpc3MiOiJrYW5nbW8iLCJpYXQiOjE3MTAwMDgyNzksImV4cCI6MTcxMDA5NDY3OX0.o1GBtxbUpIdnr_2gseVEWx9VUZmFC8XRSQYy9PzB_YCtW6KjWC0pO6tyA_8qQOPZ5b_Lhl8AnBABuoJVQO7H-Q
 
 {
-  "accessToken": "22rkdmin@naver.com",
-  "refreshToken": "abcd1234!"
+  "accessToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxOlVTRVIiLCJpc3MiOiJrYW5nbW8iLCJpYXQiOjE3MTAwMDgyNzksImV4cCI6MTcxMDA5NDY3OX0.o1GBtxbUpIdnr_2gseVEWx9VUZmFC8XRSQYy9PzB_YCtW6KjWC0pO6tyA_8qQOPZ5b_Lhl8AnBABuoJVQO7H-Q",
+  "refreshToken": "6a1a47ec-57ba-4d2b-8123-fed5d32fe412"
 }
 
 ### 이메일 중복 확인 (중복)

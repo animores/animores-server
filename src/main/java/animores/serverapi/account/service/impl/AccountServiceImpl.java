@@ -91,6 +91,14 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void signOut(SignOutRequest request, User user) {
+        String accessToken = request.accessToken();
+        String refreshToken = request.refreshToken();
+        Long userId = Long.parseLong(user.getUsername());
+
+        // at 블랙리스트에 넣기
+        blacklistTokenRepository.save(new BlacklistToken(accessToken, userId));
+        // rt 제거
+        refreshTokenRepository.deleteById(refreshToken);
     }
 
 }

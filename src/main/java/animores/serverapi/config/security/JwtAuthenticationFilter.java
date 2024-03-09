@@ -20,16 +20,22 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-@Order(0)// 의존성 주입 우선순위
+@Order(0)// 의존성 주입 우선 순위
 @RequiredArgsConstructor
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
     private final TokenProvider tokenProvider;
+    private final BlacklistTokenRepository blacklistTokenRepository;
 
     // 토큰 해석 및 사용자 인증
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String token = parseBearerToken(request);// Bearer 형식 검사
+        String token = parseBearerToken(request);// token 추출
+        if (blacklistTokenRepository.existsById(token)) {// blacklist에 토큰이 있는지 검사
+            token = null;
+        }
+
         User user = parseUserSpecification(token);// 사용자 정보 추출
         AbstractAuthenticationToken authenticated = UsernamePasswordAuthenticationToken.authenticated(user, token, user.getAuthorities());
         authenticated.setDetails(new WebAuthenticationDetails(request));// 토큰 객체 생성
