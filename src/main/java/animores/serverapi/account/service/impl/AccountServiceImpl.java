@@ -3,15 +3,14 @@ package animores.serverapi.account.service.impl;
 import animores.serverapi.account.domain.Account;
 import animores.serverapi.account.repository.AccountRepository;
 import animores.serverapi.account.request.SignInRequest;
+import animores.serverapi.account.request.SignOutRequest;
 import animores.serverapi.account.request.SignUpRequest;
 import animores.serverapi.account.response.SignInResponse;
 import animores.serverapi.account.response.SignUpResponse;
 import animores.serverapi.account.service.AccountService;
-import animores.serverapi.config.security.RefreshRequest;
-import animores.serverapi.config.security.RefreshToken;
-import animores.serverapi.config.security.RefreshTokenRepository;
-import animores.serverapi.config.security.TokenProvider;
+import animores.serverapi.config.security.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +27,7 @@ public class AccountServiceImpl implements AccountService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final BlacklistTokenRepository blacklistTokenRepository;
 
     @Override
     public SignInResponse refresh(RefreshRequest request) throws Exception {
@@ -87,6 +87,10 @@ public class AccountServiceImpl implements AccountService {
         refreshTokenRepository.save(redisRefreshToken);
 
         return new SignInResponse(account.getId(), accessToken, LocalDateTime.now().plusHours(tokenProvider.getExpirationHours()), refreshToken);
+    }
+
+    @Override
+    public void signOut(SignOutRequest request, User user) {
     }
 
 }

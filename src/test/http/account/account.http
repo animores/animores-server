@@ -51,10 +51,20 @@ Content-Type: application/json
   "password": "abcd1234!"
 }
 
+### 로그아웃
+POST http://localhost:8080/api/v1/account/sign-out
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxOlVTRVIiLCJpc3MiOiJrYW5nbW8iLCJpYXQiOjE3MTAwMDY5OTUsImV4cCI6MTcxMDA5MzM5NX0.UA-wtTCmBUa4JZUS-O69lw5bEsROTG_6evcj6ThShuHiABvDGfd4ukuB6dgCuv5Ih2PDyrZGW69F1uZUV3RINg
+
+{
+  "accessToken": "22rkdmin@naver.com",
+  "refreshToken": "abcd1234!"
+}
+
 ### 이메일 중복 확인 (중복)
 GET http://localhost:8080/api/v1/account/check-email/22rkdmin@naver.com
 ### 이메일 중복 확인 (중복 x)
-GET http://localhost:8080/api/v1/account/check-email/22rkdmin@naver.com
+GET http://localhost:8080/api/v1/account/check-email/22rkdmin@naver.com2
 ### 이메일 중복 확인 (실패: 이메일 형식이 아님)
 GET http://localhost:8080/api/v1/account/check-email/2
 

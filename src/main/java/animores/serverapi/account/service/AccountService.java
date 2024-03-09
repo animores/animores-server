@@ -1,10 +1,12 @@
 package animores.serverapi.account.service;
 
-import animores.serverapi.account.request.SignUpRequest;
 import animores.serverapi.account.request.SignInRequest;
+import animores.serverapi.account.request.SignOutRequest;
+import animores.serverapi.account.request.SignUpRequest;
 import animores.serverapi.account.response.SignInResponse;
 import animores.serverapi.account.response.SignUpResponse;
 import animores.serverapi.config.security.RefreshRequest;
+import org.springframework.security.core.userdetails.User;
 
 public interface AccountService {
 
@@ -40,5 +42,11 @@ public interface AccountService {
      * @return
      */
     SignInResponse signIn(SignInRequest request) throws Exception;
+
+    /**
+     * 로그아웃
+     * @param request
+     */
+    void signOut(SignOutRequest request, User user);
 
 }

@@ -2,6 +2,7 @@ package animores.serverapi.account.controller;
 
 
 import animores.serverapi.account.request.SignInRequest;
+import animores.serverapi.account.request.SignOutRequest;
 import animores.serverapi.account.request.SignUpRequest;
 import animores.serverapi.account.response.SignInResponse;
 import animores.serverapi.account.response.SignUpResponse;
@@ -12,7 +13,12 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
+
+import java.nio.file.attribute.UserPrincipal;
 
 @RestController
 @RequiredArgsConstructor
@@ -53,6 +59,13 @@ public class AccountController {
 
         return ResponseEntity.ok().body(response);
     }
+
+    @PostMapping("/sign-out")
+    @PreAuthorize("hasAuthority('USER')")
+    public void signOut(@Valid @RequestBody SignOutRequest request, @AuthenticationPrincipal User user) {
+        accountService.signOut(request, user);
+    }
+
 
     @GetMapping("/check-email/{email}")
     public ResponseEntity<Boolean> isDuplicatedEmail(@PathVariable @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,6}$") String email) {
