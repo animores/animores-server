@@ -32,7 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = parseBearerToken(request);// token 추출
-        if (blacklistTokenRepository.existsById(token)) {// blacklist에 토큰이 있는지 검사
+        if (token != null && blacklistTokenRepository.existsById(token)) {// blacklist에 토큰이 있는지 검사
             token = null;
         }
 
