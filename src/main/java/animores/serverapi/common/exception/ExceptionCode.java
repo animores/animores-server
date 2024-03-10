@@ -7,11 +7,9 @@ import lombok.Getter;
 @Getter
 public enum ExceptionCode {
     // TO DO related error
-    ILLEGAL_PET_IDS(400, "error_code","잘못된 펫이 입력되었습니다."),
+    ILLEGAL_PET_IDS( "error_code","잘못된 펫이 입력되었습니다."),
+    UNHANDLED_EXCEPTION("error_code","알 수 없는 에러가 발생했습니다.");
 
-
-    EXAMPLE(400, "error_code","Example");
-    private final int httpsCode;
     private final String errorCode;
     private final String message;
 }

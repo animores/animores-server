@@ -1,6 +1,7 @@
 package animores.serverapi;
 
-import org.springframework.http.ResponseEntity;
+
+import animores.serverapi.common.Response;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -8,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class HealthCheckController {
 
     @GetMapping("/health")
-    public ResponseEntity<String> healthCheck() {
-        return ResponseEntity.ok("OK");
+    public Response<String> healthCheck() {
+        return Response.success("OK");
     }
 }
