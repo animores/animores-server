@@ -1,19 +1,29 @@
 package animores.serverapi.common.exception;
 
-import org.springframework.http.ResponseEntity;
+import animores.serverapi.common.Response;
+import jakarta.validation.ValidationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<String> handleRuntimeException(RuntimeException e) {
-        return ResponseEntity.internalServerError().body(e.getMessage());
+    @ExceptionHandler(ValidationException.class)
+    public Response<Void> handleValidationException(ValidationException e) {
+        log.error("validation exception", e);
+        return Response.error(e.getMessage());
     }
 
     @ExceptionHandler(CustomException.class)
-    public ResponseEntity<String> handleCustomException(CustomException e) {
-        return ResponseEntity.status(e.getCode().getHttpsCode()).body(e.getCode().getMessage());
+    public Response<Void> handleCustomException(CustomException e) {
+        return Response.error(e.getCode());
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public Response<Void> handleRuntimeException(RuntimeException e) {
+        log.error("unhandled exception", e);
+        return Response.error(ExceptionCode.UNHANDLED_EXCEPTION);
     }
 }
