@@ -3,7 +3,7 @@ package animores.serverapi.diary.controller;
 import animores.serverapi.common.Response;
 import animores.serverapi.diary.dto.AddDiaryRequest;
 import animores.serverapi.diary.dto.EditDiaryRequest;
-import animores.serverapi.diary.dto.GetAllDiary;
+import animores.serverapi.diary.entity.Diary;
 import animores.serverapi.diary.service.DiaryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +19,7 @@ public class DiaryController {
 
     // 일지 전체 목록 조회
     @GetMapping("/accounts/{accountId}")
-    public Response<List<GetAllDiary>> getAllDiary(@PathVariable Long accountId) {
+    public Response<List<Diary>> getAllDiary(@PathVariable Long accountId) {
         return Response.success(diaryService.getAllDiary(accountId));
     }
 
@@ -40,8 +40,7 @@ public class DiaryController {
 
     // 일지 수정
     @PatchMapping("/{diaryId}")
-    public Response<Void> editDiary(@PathVariable Long diaryId,
-        @RequestBody EditDiaryRequest request) {
+    public Response<Void> editDiary(@PathVariable Long diaryId, @RequestBody EditDiaryRequest request) {
         diaryService.editDiary(diaryId, request);
         return Response.success(null);
     }
