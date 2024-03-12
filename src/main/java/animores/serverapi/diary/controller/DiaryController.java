@@ -5,6 +5,7 @@ import animores.serverapi.diary.dto.AddDiaryRequest;
 import animores.serverapi.diary.dto.EditDiaryRequest;
 import animores.serverapi.diary.dto.GetAllDiary;
 import animores.serverapi.diary.service.DiaryService;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,9 +18,10 @@ public class DiaryController {
 
     private final DiaryService diaryService;
 
-    // 일지 전체 목록 조회
-    @GetMapping("/accounts/{accountId}")
-    public Response<List<GetAllDiary>> getAllDiary(@PathVariable Long accountId) {
+    // 일지 목록 조회
+    @GetMapping("")
+    public Response<List<GetAllDiary>> getAllDiary() {
+        Long accountId = 1L;    // 나중에 인증 정보에서 가져오기 param으로 받지x
         return Response.success(diaryService.getAllDiary(accountId));
     }
 

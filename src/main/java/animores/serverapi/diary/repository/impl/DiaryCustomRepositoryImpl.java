@@ -30,6 +30,7 @@ public class DiaryCustomRepositoryImpl implements DiaryCustomRepository {
             )
             .from(diary)
             .where(diary.account.id.eq(accountId))
+            .orderBy(diary.id.desc())
             .fetch();
     }
 
