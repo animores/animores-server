@@ -3,13 +3,20 @@ package animores.serverapi.diary.controller;
 import animores.serverapi.common.Response;
 import animores.serverapi.diary.dto.AddDiaryRequest;
 import animores.serverapi.diary.dto.EditDiaryRequest;
-import animores.serverapi.diary.dto.GetAllDiary;
+import animores.serverapi.diary.dto.GetAllDiaryResponse;
+import animores.serverapi.diary.dto.GetCalendarDiaryResponse;
 import animores.serverapi.diary.service.DiaryService;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,17 +27,17 @@ public class DiaryController {
 
     // 일지 목록 조회
     @GetMapping("")
-    public Response<List<GetAllDiary>> getAllDiary() {
+    public Response<GetAllDiaryResponse> getAllDiary() {
         Long accountId = 1L;    // 나중에 인증 정보에서 가져오기 param으로 받지x
         return Response.success(diaryService.getAllDiary(accountId));
     }
 
     // 일지 요약 목록 조회
-    @GetMapping("/{userId}/{date}")
-    // @GetMapping("/accounts/{accountId}/{date}") querydsl 적용하면서 이거로 수정 예정
-    public Response<Void> getCalendarDiary(@PathVariable Long userId, @PathVariable String date) {
-        diaryService.getCalendarDiary(userId, date);
-        return Response.success(null);
+    @GetMapping("/calendar")
+    public Response<GetCalendarDiaryResponse> getCalendarDiary(
+        @RequestParam("date") LocalDate date) {
+        Long accountId = 1L;
+        return Response.success(diaryService.getCalendarDiary(accountId, date));
     }
 
     // 일지 등록

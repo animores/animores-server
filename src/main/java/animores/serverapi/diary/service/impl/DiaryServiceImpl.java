@@ -4,14 +4,18 @@ import animores.serverapi.account.domain.Account;
 import animores.serverapi.account.repository.AccountRepository;
 import animores.serverapi.diary.dto.AddDiaryRequest;
 import animores.serverapi.diary.dto.EditDiaryRequest;
-import animores.serverapi.diary.dto.GetAllDiary;
+import animores.serverapi.diary.dao.GetAllDiary;
+import animores.serverapi.diary.dto.GetAllDiaryResponse;
+import animores.serverapi.diary.dao.GetCalendarDiary;
+import animores.serverapi.diary.dto.GetCalendarDiaryResponse;
 import animores.serverapi.diary.entity.Diary;
 import animores.serverapi.diary.repository.DiaryCustomRepository;
 import animores.serverapi.diary.repository.DiaryRepository;
 import animores.serverapi.diary.service.DiaryService;
 import animores.serverapi.profile.domain.Profile;
 import animores.serverapi.profile.repository.ProfileRepository;
-import java.util.List;
+import com.querydsl.core.QueryResults;
+import java.time.LocalDate;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,15 +32,18 @@ public class DiaryServiceImpl implements DiaryService {
 
 
     @Override
-    public List<GetAllDiary> getAllDiary(Long accountId) {
-        List<GetAllDiary> diaries = diaryCustomRepository.getAllDiary(accountId);
+    public GetAllDiaryResponse getAllDiary(Long accountId) {
+        QueryResults<GetAllDiary> diaries = diaryCustomRepository.getAllDiary(accountId);
 
-        return diaries;
+        return new GetAllDiaryResponse(diaries.getTotal(), diaries.getResults());
     }
 
     @Override
-    public void getCalendarDiary(Long userId, String date) {
-        // querydsl 사용해야될듯
+    public GetCalendarDiaryResponse getCalendarDiary(Long accountId, LocalDate date) {
+        QueryResults<GetCalendarDiary> diaries = diaryCustomRepository.getCalendarDiary(accountId,
+            date);
+
+        return new GetCalendarDiaryResponse(diaries.getTotal(), diaries.getResults());
     }
 
     @Override

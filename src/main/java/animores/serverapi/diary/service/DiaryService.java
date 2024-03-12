@@ -2,14 +2,15 @@ package animores.serverapi.diary.service;
 
 import animores.serverapi.diary.dto.AddDiaryRequest;
 import animores.serverapi.diary.dto.EditDiaryRequest;
-import animores.serverapi.diary.dto.GetAllDiary;
-import java.util.List;
+import animores.serverapi.diary.dto.GetAllDiaryResponse;
+import animores.serverapi.diary.dto.GetCalendarDiaryResponse;
+import java.time.LocalDate;
 
 public interface DiaryService {
 
-    List<GetAllDiary> getAllDiary(Long accountId);
+    GetAllDiaryResponse getAllDiary(Long accountId);
 
-    void getCalendarDiary(Long userId, String date);
+    GetCalendarDiaryResponse getCalendarDiary(Long accountId, LocalDate date);
 
     void addDiary(AddDiaryRequest request);
 
