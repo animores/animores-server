@@ -11,6 +11,7 @@ public class Response<T> {
     private final boolean success;
     @JsonInclude(Include.NON_NULL)
     private final T data;
+    @JsonInclude(Include.NON_NULL)
     private final ErrorResponse error;
 
     private Response(boolean success, T data, ExceptionCode exceptionCode) {
