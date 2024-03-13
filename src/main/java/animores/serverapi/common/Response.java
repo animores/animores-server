@@ -39,6 +39,6 @@ public class Response<T> {
         return new Response<>(false, message);
     }
 
-    private record ErrorResponse(String code, String message) {
+    private record ErrorResponse(@JsonInclude(Include.NON_NULL) String code, String message) {
     }
 }

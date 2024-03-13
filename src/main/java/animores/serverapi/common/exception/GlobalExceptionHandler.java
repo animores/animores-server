@@ -3,6 +3,7 @@ package animores.serverapi.common.exception;
 import animores.serverapi.common.Response;
 import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -10,10 +11,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ValidationException.class)
-    public Response<Void> handleValidationException(ValidationException e) {
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Response<Void> handleValidationException(MethodArgumentNotValidException e) {
         log.error("validation exception", e);
-        return Response.error(e.getMessage());
+        return Response.error(e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
     }
 
     @ExceptionHandler(CustomException.class)
