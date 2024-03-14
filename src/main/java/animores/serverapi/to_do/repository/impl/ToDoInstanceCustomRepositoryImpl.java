@@ -1,7 +1,9 @@
 package animores.serverapi.to_do.repository.impl;
 
-import animores.serverapi.to_do.entity.ToDoInstance;
+import animores.serverapi.to_do.entity.vo.ToDoInstanceVo;
+import animores.serverapi.to_do.entity.vo.ToDoVo;
 import animores.serverapi.to_do.repository.ToDoInstanceCustomRepository;
+import animores.serverapi.profile.domain.vo.ProfileVo;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -19,83 +21,142 @@ public class ToDoInstanceCustomRepositoryImpl implements ToDoInstanceCustomRepos
 
 
 	@Override
-	public List<ToDoInstance> findAllByCompleteFalseAndTodayToDoIdIn(List<Long> toDoIds) {
+	public List<ToDoInstanceVo> findAllByCompleteFalseAndTodayToDoIdIn(List<Long> toDoIds) {
 		return jpaQueryFactory.select(
-						Projections.fields(
-								ToDoInstance.class,
+						Projections.constructor(
+								ToDoInstanceVo.class,
 								toDoInstance.id,
-								toDoInstance.toDo,
-								toDoInstance.time.min().as("time")
-						)
-				)
-				.from(toDoInstance)
-				.groupBy(toDoInstance.toDo)
-				.having(toDoInstance.toDo.id.in(toDoIds))
-				.where(
-						toDoInstance.completeProfile.isNull().and(
-								toDoInstance.date.eq(LocalDate.now())
-								))
-				.fetch();
-	}
-
-	@Override
-	public List<ToDoInstance> findAllByCompleteAndTodayToDoIdIn(List<Long> toDoIds) {
-		return jpaQueryFactory.select(
-						Projections.fields(
-								ToDoInstance.class,
-								toDoInstance.id,
-								toDoInstance.toDo,
-								toDoInstance.time.max().as("time"),
-								toDoInstance.completeProfile,
+								Projections.constructor(
+										ToDoVo.class,
+										toDoInstance.toDo.id,
+										toDoInstance.toDo.isAllDay,
+										toDoInstance.toDo.content,
+										toDoInstance.toDo.tag,
+										toDoInstance.toDo.color,
+										toDoInstance.toDo.isUsingAlarm,
+										toDoInstance.toDo.petToDoRelationships
+								),
+								toDoInstance.date.min().as("date"),
+								toDoInstance.time.min().as("time"),
+								Projections.constructor(
+										ProfileVo.class,
+										toDoInstance.completeProfile.name,
+										toDoInstance.completeProfile.imageUrl
+								),
 								toDoInstance.completeTime
 						)
 				)
 				.from(toDoInstance)
 				.groupBy(toDoInstance.toDo)
-				.having(toDoInstance.toDo.id.in(toDoIds))
-				.where(
-						toDoInstance.completeProfile.isNotNull().and(
-								toDoInstance.date.eq(LocalDate.now())
-								))
-				.fetch();
-	}
-
-	@Override
-	public List<ToDoInstance> findAllByCompleteFalseAndToDoIdIn(List<Long> toDoIds) {
-		return jpaQueryFactory.select(
-						Projections.fields(
-								ToDoInstance.class,
-								toDoInstance.id,
-								toDoInstance.toDo,
-								toDoInstance.time.min().as("time")
-						)
-				)
-				.from(toDoInstance)
-				.groupBy(toDoInstance.toDo)
-				.having(toDoInstance.toDo.id.in(toDoIds))
 				.where(
 						toDoInstance.completeProfile.isNull()
+						.and(toDoInstance.date.eq(LocalDate.now()))
+						.and(toDoInstance.toDo.id.in(toDoIds)))
+				.fetch();
+	}
+
+	@Override
+	public List<ToDoInstanceVo> findAllByCompleteAndTodayToDoIdIn(List<Long> toDoIds) {
+		return jpaQueryFactory.select(
+						Projections.constructor(
+								ToDoInstanceVo.class,
+								toDoInstance.id,
+								Projections.constructor(
+										ToDoVo.class,
+										toDoInstance.toDo.id,
+										toDoInstance.toDo.isAllDay,
+										toDoInstance.toDo.content,
+										toDoInstance.toDo.tag,
+										toDoInstance.toDo.color,
+										toDoInstance.toDo.isUsingAlarm,
+										toDoInstance.toDo.petToDoRelationships
+								),
+								toDoInstance.date.min().as("date"),
+								toDoInstance.time.min().as("time"),
+								Projections.constructor(
+										ProfileVo.class,
+										toDoInstance.completeProfile.name,
+										toDoInstance.completeProfile.imageUrl
+								),
+								toDoInstance.completeTime
+						)
+				)
+				.from(toDoInstance)
+				.groupBy(toDoInstance.toDo.id)
+				.where(
+						toDoInstance.completeProfile.isNotNull()
+						.and(toDoInstance.date.eq(LocalDate.now()))
+						.and(toDoInstance.toDo.id.in(toDoIds))
 				)
 				.fetch();
 	}
 
 	@Override
-	public List<ToDoInstance> findAllByCompleteAndToDoIdIn(List<Long> toDoIds) {
+	public List<ToDoInstanceVo> findAllByCompleteFalseAndToDoIdIn(List<Long> toDoIds) {
 		return jpaQueryFactory.select(
-						Projections.fields(
-								ToDoInstance.class,
+						Projections.constructor(
+								ToDoInstanceVo.class,
 								toDoInstance.id,
-								toDoInstance.toDo,
-								toDoInstance.time.max().as("time"),
-								toDoInstance.completeProfile,
+								Projections.constructor(
+										ToDoVo.class,
+										toDoInstance.toDo.id,
+										toDoInstance.toDo.isAllDay,
+										toDoInstance.toDo.content,
+										toDoInstance.toDo.tag,
+										toDoInstance.toDo.color,
+										toDoInstance.toDo.isUsingAlarm,
+										toDoInstance.toDo.petToDoRelationships
+								),
+								toDoInstance.date.min().as("date"),
+								toDoInstance.time.min().as("time"),
+								Projections.constructor(
+										ProfileVo.class,
+										toDoInstance.completeProfile.name,
+										toDoInstance.completeProfile.imageUrl
+								),
 								toDoInstance.completeTime
 						)
 				)
 				.from(toDoInstance)
 				.groupBy(toDoInstance.toDo)
-				.having(toDoInstance.toDo.id.in(toDoIds))
 				.where(
-						toDoInstance.completeProfile.isNotNull()
+					toDoInstance.completeProfile.isNull()
+					.and(toDoInstance.toDo.id.in(toDoIds))
+				)
+				.fetch();
+	}
+
+	@Override
+	public List<ToDoInstanceVo> findAllByCompleteAndToDoIdIn(List<Long> toDoIds) {
+		return jpaQueryFactory.select(
+						Projections.constructor(
+								ToDoInstanceVo.class,
+								toDoInstance.id,
+								Projections.constructor(
+										ToDoVo.class,
+										toDoInstance.toDo.id,
+										toDoInstance.toDo.isAllDay,
+										toDoInstance.toDo.content,
+										toDoInstance.toDo.tag,
+										toDoInstance.toDo.color,
+										toDoInstance.toDo.isUsingAlarm,
+										toDoInstance.toDo.petToDoRelationships
+								),
+								toDoInstance.date.min().as("date"),
+								toDoInstance.time.min().as("time"),
+								Projections.constructor(
+										ProfileVo.class,
+										toDoInstance.completeProfile.name,
+										toDoInstance.completeProfile.imageUrl
+								),
+								toDoInstance.completeTime
+						)
+				)
+				.from(toDoInstance)
+				.groupBy(toDoInstance.toDo)
+				.where(
+					toDoInstance.completeProfile.isNotNull()
+					.and(toDoInstance.toDo.id.in(toDoIds))
 				)
 				.fetch();
 	}

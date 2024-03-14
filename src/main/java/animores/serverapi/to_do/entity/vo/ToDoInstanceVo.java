@@ -1,6 +1,6 @@
 package animores.serverapi.to_do.entity.vo;
 
-import animores.serverapi.profile.domain.Profile;
+import animores.serverapi.profile.domain.vo.ProfileVo;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,7 +11,7 @@ public record ToDoInstanceVo(
         ToDoVo toDo,
         LocalDate date,
         LocalTime time,
-        Profile completeProfile,
+        ProfileVo completeProfile,
         LocalDateTime completeTime
 ) {
 }

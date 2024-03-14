@@ -15,7 +15,7 @@ import animores.serverapi.to_do.dto.response.ToDoDetailResponse;
 import animores.serverapi.to_do.dto.response.ToDoResponse;
 import animores.serverapi.to_do.entity.PetToDoRelationship;
 import animores.serverapi.to_do.entity.ToDo;
-import animores.serverapi.to_do.entity.ToDoInstance;
+import animores.serverapi.to_do.entity.vo.ToDoInstanceVo;
 import animores.serverapi.to_do.repository.PetToDoRelationshipRepository;
 import animores.serverapi.to_do.repository.ToDoInstanceCustomRepository;
 import animores.serverapi.to_do.repository.ToDoRepository;
@@ -87,7 +87,7 @@ public class ToDoServiceImpl implements ToDoService {
 
         if (done != null && !done) {
 
-            List<ToDoInstance> toDOInstances = toDoInstanceCustomRepository.findAllByCompleteFalseAndTodayToDoIdIn(
+            List<ToDoInstanceVo> toDoInstances = toDoInstanceCustomRepository.findAllByCompleteFalseAndTodayToDoIdIn(
                     relationships.stream()
                             .map(PetToDoRelationship::getToDo)
                             .map(ToDo::getId)
@@ -95,12 +95,12 @@ public class ToDoServiceImpl implements ToDoService {
                             .stream().toList()
             );
 
-            return toDOInstances.stream()
-                    .map(toDoInstance -> ToDoResponse.fromToDoInstance(toDoInstance, petNameMap))
+            return toDoInstances.stream()
+                    .map(toDoInstanceVo -> ToDoResponse.fromToDoInstanceVo(toDoInstanceVo, petNameMap))
                     .toList();
 
         } else {
-            List<ToDoInstance> toDOInstances = toDoInstanceCustomRepository.findAllByCompleteAndTodayToDoIdIn(
+            List<ToDoInstanceVo> toDOInstances = toDoInstanceCustomRepository.findAllByCompleteAndTodayToDoIdIn(
                     relationships.stream()
                             .map(PetToDoRelationship::getToDo)
                             .map(ToDo::getId)
@@ -109,7 +109,7 @@ public class ToDoServiceImpl implements ToDoService {
             );
 
             return toDOInstances.stream()
-                    .map(toDoInstance -> ToDoResponse.fromToDoInstance(toDoInstance, petNameMap))
+                    .map(toDoInstanceVo -> ToDoResponse.fromToDoInstanceVo(toDoInstanceVo, petNameMap))
                     .toList();
         }
     }
@@ -132,7 +132,7 @@ public class ToDoServiceImpl implements ToDoService {
 
         if (done != null && !done) {
 
-            List<ToDoInstance> toDOInstances = toDoInstanceCustomRepository.findAllByCompleteFalseAndToDoIdIn(
+            List<ToDoInstanceVo> toDOInstances = toDoInstanceCustomRepository.findAllByCompleteFalseAndToDoIdIn(
                     relationships.stream()
                             .map(PetToDoRelationship::getToDo)
                             .map(ToDo::getId)
@@ -141,11 +141,11 @@ public class ToDoServiceImpl implements ToDoService {
             );
 
             return toDOInstances.stream()
-                    .map(toDoInstance -> ToDoResponse.fromToDoInstance(toDoInstance, petNameMap))
+                    .map(toDoInstanceVo -> ToDoResponse.fromToDoInstanceVo(toDoInstanceVo, petNameMap))
                     .toList();
 
         } else {
-            List<ToDoInstance> toDOInstances = toDoInstanceCustomRepository.findAllByCompleteAndToDoIdIn(
+            List<ToDoInstanceVo> toDoInstances = toDoInstanceCustomRepository.findAllByCompleteAndToDoIdIn(
                     relationships.stream()
                             .map(PetToDoRelationship::getToDo)
                             .map(ToDo::getId)
@@ -153,8 +153,8 @@ public class ToDoServiceImpl implements ToDoService {
                             .stream().toList()
             );
 
-            return toDOInstances.stream()
-                    .map(toDoInstance -> ToDoResponse.fromToDoInstance(toDoInstance, petNameMap))
+            return toDoInstances.stream()
+                    .map(toDoInstanceVo -> ToDoResponse.fromToDoInstanceVo(toDoInstanceVo, petNameMap))
                     .toList();
         }
     }
