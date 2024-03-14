@@ -4,7 +4,8 @@ import animores.serverapi.account.domain.Account;
 import animores.serverapi.common.BaseEntity;
 import animores.serverapi.pet.type.Tag;
 import animores.serverapi.profile.domain.Profile;
-import animores.serverapi.to_do.dto.Repeat;
+import animores.serverapi.to_do.dto.RepeatUnit;
+import animores.serverapi.to_do.dto.WeekDay;
 import animores.serverapi.to_do.dto.request.ToDoCreateRequest;
 import jakarta.persistence.*;
 import lombok.*;
@@ -36,8 +37,14 @@ public class ToDo extends BaseEntity {
     private Tag tag;
     private String color;
     private boolean isUsingAlarm;
-    //반복에 대한 내용 추가
-    private Repeat repeat;
+    @Enumerated(EnumType.STRING)
+    RepeatUnit unit;
+    Integer interval;
+    @ElementCollection(targetClass = WeekDay.class)
+    @CollectionTable(name = "to_do_week_day", joinColumns = @JoinColumn(name = "to_do_id"))
+    @Column(name = "week_day")
+    @Enumerated(EnumType.STRING)
+    List<WeekDay> weekDays;
 
     public static ToDo fromRequest(ToDoCreateRequest request, Account account, Profile createProfile) {
         ToDo toDo = new ToDo();
@@ -49,7 +56,9 @@ public class ToDo extends BaseEntity {
         toDo.resolveTag(toDo, request);
         toDo.color = request.color();
         toDo.isUsingAlarm = request.isUsingAlarm();
-        toDo.repeat = request.repeat();
+        toDo.unit = request.repeat().unit();
+        toDo.interval = request.repeat().interval();
+        toDo.weekDays = request.repeat().weekDays();
         return toDo;
     }
 

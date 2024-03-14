@@ -341,8 +341,7 @@ class ToDoServiceImplTest {
                 null,
                 false,
                 null,
-                false,
-                null);
+                false);
         // when
         var result = serviceUnderTest.updateToDoById(1L, request);
 
@@ -393,6 +392,7 @@ class ToDoServiceImplTest {
                         String color,
                         boolean isUsingAlarm,
                         Repeat repeat) {
+
             super(id,
                     relationships,
                     null,
@@ -404,7 +404,9 @@ class ToDoServiceImplTest {
                     null,
                     color,
                     isUsingAlarm,
-                    repeat);
+                    repeat == null ? null : repeat.unit(),
+                    repeat == null ? null : repeat.interval(),
+                    repeat == null ? null : repeat.weekDays());
         }
 
         public void setPetToDoRelationships(List<PetToDoRelationship> petToDoRelationships) {
