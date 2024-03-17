@@ -4,16 +4,14 @@ import animores.serverapi.common.BaseEntity;
 import animores.serverapi.profile.domain.Profile;
 import animores.serverapi.to_do.dto.Repeat;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
+@Builder
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -33,8 +31,11 @@ public class ToDoInstance extends BaseEntity {
     private LocalDateTime completeTime;
 
 
-    public static List<ToDoInstance> fromToDo(ToDo toDo, LocalDate date, LocalTime time, Repeat repeat) {
-        //TODO: Implement this method
-        return null;
+    public static ToDoInstance fromToDo(ToDo toDo) {
+        return ToDoInstance.builder()
+                .toDo(toDo)
+                .date(toDo.getDate())
+                .time(toDo.getTime())
+                .build();
     }
 }
