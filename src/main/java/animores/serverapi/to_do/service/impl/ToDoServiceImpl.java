@@ -162,7 +162,8 @@ public class ToDoServiceImpl implements ToDoService {
     @Override
     @Transactional(readOnly = true)
     public ToDoDetailResponse getToDoById(Long id) {
-        return new ToDoDetailResponse(1L, "산책", List.of(new PetResponse(1L, "두부")), false, LocalDate.now(), LocalTime.of(11, 0), true, null, "red", null, null);
+        ToDo todo = toDoRepository.findByIdAndAccount_Id(id,1L).orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_TO_DO));
+        return ToDoDetailResponse.fromToDo(todo);
     }
 
     @Override
