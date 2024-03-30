@@ -10,7 +10,6 @@ import animores.serverapi.profile.domain.Profile;
 import animores.serverapi.profile.repository.ProfileRepository;
 import animores.serverapi.to_do.dto.request.ToDoCreateRequest;
 import animores.serverapi.to_do.dto.request.ToDoPatchRequest;
-import animores.serverapi.to_do.dto.response.PetResponse;
 import animores.serverapi.to_do.dto.response.ToDoDetailResponse;
 import animores.serverapi.to_do.dto.response.ToDoResponse;
 import animores.serverapi.to_do.entity.PetToDoRelationship;
@@ -25,8 +24,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -50,9 +47,9 @@ public class ToDoServiceImpl implements ToDoService {
         //TODO: createProfile should be replaced with the actual profile
         Profile createProfile = profileRepository.getReferenceById(2L);
         //TODO: List.of(1L, 2L) should be replaced with the actual pet ids
-        Set<Long> petIds = Set.of(1L, 2L);
+        Set<Long> accountPetIds = Set.of(1L, 2L);
 
-        if(!petIds.containsAll(request.petIds())) {
+        if(!accountPetIds.containsAll(request.petIds())) {
             throw new CustomException(ExceptionCode.ILLEGAL_PET_IDS);
         }
 
@@ -83,7 +80,7 @@ public class ToDoServiceImpl implements ToDoService {
 
         List<Pet> petList = petRepository.findAllById(pets);
         var petNameMap = petList.stream().collect(Collectors.toMap(Pet::getId, Pet::getName));
-        List<PetToDoRelationship> relationships = petToDoRelationshipRepository.findAllByPetIdIn(pets);
+        List<PetToDoRelationship> relationships = petToDoRelationshipRepository.findAllByPet_IdIn(pets);
 
         if (done != null && !done) {
 
@@ -128,7 +125,7 @@ public class ToDoServiceImpl implements ToDoService {
 
         List<Pet> petList = petRepository.findAllById(pets);
         var petNameMap = petList.stream().collect(Collectors.toMap(Pet::getId, Pet::getName));
-        List<PetToDoRelationship> relationships = petToDoRelationshipRepository.findAllByPetIdIn(pets);
+        List<PetToDoRelationship> relationships = petToDoRelationshipRepository.findAllByPet_IdIn(pets);
 
         if (done != null && !done) {
 
@@ -162,14 +159,43 @@ public class ToDoServiceImpl implements ToDoService {
     @Override
     @Transactional(readOnly = true)
     public ToDoDetailResponse getToDoById(Long id) {
-        ToDo todo = toDoRepository.findByIdAndAccount_Id(id,1L).orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_TO_DO));
-        return ToDoDetailResponse.fromToDo(todo);
+        ToDo toDo = toDoRepository.findByIdAndAccount_Id(id,1L).orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_TO_DO));
+        return ToDoDetailResponse.fromToDo(toDo);
     }
 
     @Override
     @Transactional
     public ToDoDetailResponse updateToDoById(Long id, ToDoPatchRequest request) {
-        return new ToDoDetailResponse(1L, "산책", List.of(new PetResponse(1L, "두부")), false, LocalDate.now(), LocalTime.of(11, 0), true, null, "red", null, null);
+        //TODO: 1L should be replaced with the actual account id
+        ToDo toDo = toDoRepository.findByIdAndAccount_Id(id,1L).orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_TO_DO));
+
+        //TODO: 실제 현재 로그인한 사용자의 프로필 아이디로 변경
+        if(toDo.getCreateProfile().getId() != 2L) {
+            throw new CustomException(ExceptionCode.INAPPROPRIATE_PROFILE_ACCESS);
+        }
+
+        //TODO: List.of(1L, 2L) should be replaced with the actual pet ids
+        Set<Long> accountPetIds = Set.of(1L, 2L);
+        if (!accountPetIds.containsAll(request.petIds())) {
+            throw new CustomException(ExceptionCode.ILLEGAL_PET_IDS);
+        }
+
+        if(!request.petIds().isEmpty()) {
+            Set<Long> petIds = toDo.getPetToDoRelationships().stream().map(PetToDoRelationship::getPet).map(Pet::getId).collect(Collectors.toSet());
+            if(petIds.size() != request.petIds().size() || !petIds.containsAll(request.petIds())) {
+                petToDoRelationshipRepository.deleteAllByToDo_Id(toDo.getId());
+                List<PetToDoRelationship> petToDoRelationships = new ArrayList<>();
+                for (Long petId : request.petIds()) {
+                    Pet pet = petRepository.getReferenceById(petId);
+                    petToDoRelationships.add(new PetToDoRelationship(pet, toDo));
+                }
+                toDo.setPetToDoRelationships(petToDoRelationships);
+                petToDoRelationshipRepository.saveAll(petToDoRelationships);
+            }
+        }
+
+        toDo.update(request);
+        return ToDoDetailResponse.fromToDo(toDo);
     }
 
     @Override

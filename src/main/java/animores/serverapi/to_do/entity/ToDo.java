@@ -7,6 +7,7 @@ import animores.serverapi.profile.domain.Profile;
 import animores.serverapi.to_do.dto.RepeatUnit;
 import animores.serverapi.to_do.dto.WeekDay;
 import animores.serverapi.to_do.dto.request.ToDoCreateRequest;
+import animores.serverapi.to_do.dto.request.ToDoPatchRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,6 +23,7 @@ public class ToDo extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @OneToMany(mappedBy = "toDo", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<PetToDoRelationship> petToDoRelationships;
     @ManyToOne(fetch = FetchType.LAZY)
@@ -64,11 +66,28 @@ public class ToDo extends BaseEntity {
         return toDo;
     }
 
-    protected void setPetToDoRelationships(List<PetToDoRelationship> petToDoRelationships) {
+    public void setPetToDoRelationships(List<PetToDoRelationship> petToDoRelationships) {
         this.petToDoRelationships = petToDoRelationships;
     }
 
+    public void update(ToDoPatchRequest request) {
+        resolveTag(this, request);
+        this.date = request.date();
+        this.time = request.time();
+        this.isAllDay = request.isAllDay();
+        this.color = request.color();
+        this.isUsingAlarm = request.isUsingAlarm();
+    }
+
     private void resolveTag(ToDo toDo, ToDoCreateRequest request) {
+        if(request.tag() != null) {
+            toDo.tag = request.tag();
+        } else {
+            toDo.content = request.content();
+        }
+    }
+
+    private void resolveTag(ToDo toDo, ToDoPatchRequest request) {
         if(request.tag() != null) {
             toDo.tag = request.tag();
         } else {
