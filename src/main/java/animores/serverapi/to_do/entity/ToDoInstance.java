@@ -2,14 +2,12 @@ package animores.serverapi.to_do.entity;
 
 import animores.serverapi.common.BaseEntity;
 import animores.serverapi.profile.domain.Profile;
-import animores.serverapi.to_do.dto.Repeat;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
 
 @Builder
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
@@ -37,5 +35,10 @@ public class ToDoInstance extends BaseEntity {
                 .date(toDo.getDate())
                 .time(toDo.getTime())
                 .build();
+    }
+
+    public void setComplete(Profile profile) {
+        this.completeProfile = profile;
+        this.completeTime = LocalDateTime.now();
     }
 }

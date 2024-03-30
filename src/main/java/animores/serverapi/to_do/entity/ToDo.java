@@ -12,6 +12,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -79,6 +80,18 @@ public class ToDo extends BaseEntity {
         this.isUsingAlarm = request.isUsingAlarm();
     }
 
+    public ToDoInstance getNextToDoInstance() {
+        if (getNextTime() == null) {
+            return null;
+        }
+
+        return ToDoInstance.builder()
+                .toDo(this)
+                .date(getNextTime().toLocalDate())
+                .time(getNextTime().toLocalTime())
+                .build();
+    }
+
     private void resolveTag(ToDo toDo, ToDoCreateRequest request) {
         if(request.tag() != null) {
             toDo.tag = request.tag();
@@ -93,5 +106,36 @@ public class ToDo extends BaseEntity {
         } else {
             toDo.content = request.content();
         }
+    }
+
+    public LocalDateTime getNextTime() {
+        LocalDateTime targetDateTime = LocalDateTime.of(date, time);
+        while (targetDateTime.isBefore(LocalDateTime.now())) {
+            switch (unit) {
+                case DAY:
+                    targetDateTime = targetDateTime.plusDays(intervalNum);
+                    break;
+                case WEEK:
+                    LocalDateTime lastDayOfLastWeek = targetDateTime.minusDays(targetDateTime.getDayOfWeek().getValue());
+                    for (WeekDay weekDay : WeekDay.values()) {
+                        if(this.weekDays.contains(weekDay) && lastDayOfLastWeek.plusDays(weekDay.getValue()).isAfter(LocalDateTime.now())) {
+                            return lastDayOfLastWeek.plusDays(weekDay.getValue());
+                        }
+                    }
+
+                    targetDateTime = targetDateTime.plusWeeks(intervalNum);
+                    break;
+                case MONTH:
+                    targetDateTime = targetDateTime.plusMonths(intervalNum);
+                    break;
+                case YEAR:
+                    targetDateTime = targetDateTime.plusYears(intervalNum);
+                    break;
+                default:
+                    return null;
+            }
+        }
+
+        return targetDateTime;
     }
 }

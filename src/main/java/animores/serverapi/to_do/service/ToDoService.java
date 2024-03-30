@@ -19,4 +19,6 @@ public interface ToDoService {
     ToDoDetailResponse updateToDoById(Long id, ToDoPatchRequest request);
 
     void deleteToDoById(Long id);
+
+    void checkToDo(Long toDoId);
 }

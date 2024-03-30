@@ -186,4 +186,20 @@ public class ToDoServiceImpl implements ToDoService {
     public void deleteToDoById(Long id) {
         toDoRepository.deleteById(id);
     }
+
+    @Override
+    @Transactional
+    public void checkToDo(Long toDoId) {
+        ToDoInstance toDoInstance = toDoInstanceRepository.findByToDo_IdAndCompleteProfileIsNull(toDoId)
+                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_TO_DO));
+
+        Profile completeProfile = profileRepository.getReferenceById(2L);
+        toDoInstance.setComplete(completeProfile);
+
+        ToDoInstance nextToDoInstance = toDoInstance.getToDo().getNextToDoInstance();
+        if(nextToDoInstance == null) {
+            return;
+        }
+        toDoInstanceRepository.save(nextToDoInstance);
+    }
 }
