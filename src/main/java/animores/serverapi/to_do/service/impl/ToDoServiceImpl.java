@@ -81,34 +81,25 @@ public class ToDoServiceImpl implements ToDoService {
         List<Pet> petList = petRepository.findAllById(pets);
         var petNameMap = petList.stream().collect(Collectors.toMap(Pet::getId, Pet::getName));
         List<PetToDoRelationship> relationships = petToDoRelationshipRepository.findAllByPet_IdIn(pets);
+        List<Long> todoIdList = relationships.stream()
+                .map(PetToDoRelationship::getToDo)
+                .map(ToDo::getId)
+                .collect(Collectors.toSet())
+                .stream().toList();
 
-        if (done != null && !done) {
+        List<ToDoInstanceVo> toDoInstances;
 
-            List<ToDoInstanceVo> toDoInstances = toDoInstanceRepository.findAllByCompleteFalseAndTodayToDoIdIn(
-                    relationships.stream()
-                            .map(PetToDoRelationship::getToDo)
-                            .map(ToDo::getId)
-                            .collect(Collectors.toSet())
-                            .stream().toList()
-            );
+            if(done.equals(Boolean.TRUE)) {
+                toDoInstances = toDoInstanceRepository.findAllByCompleteFalseAndTodayToDoIdIn(todoIdList);
+            } else if (done.equals(Boolean.FALSE)) {
+                toDoInstances = toDoInstanceRepository.findAllByCompleteAndTodayToDoIdIn(todoIdList);
+            } else {
+                toDoInstances = toDoInstanceRepository.findAllByTodayToDoIdIn(todoIdList);
+            }
 
-            return toDoInstances.stream()
-                    .map(toDoInstanceVo -> ToDoResponse.fromToDoInstanceVo(toDoInstanceVo, petNameMap))
-                    .toList();
-
-        } else {
-            List<ToDoInstanceVo> toDOInstances = toDoInstanceRepository.findAllByCompleteAndTodayToDoIdIn(
-                    relationships.stream()
-                            .map(PetToDoRelationship::getToDo)
-                            .map(ToDo::getId)
-                            .collect(Collectors.toSet())
-                            .stream().toList()
-            );
-
-            return toDOInstances.stream()
-                    .map(toDoInstanceVo -> ToDoResponse.fromToDoInstanceVo(toDoInstanceVo, petNameMap))
-                    .toList();
-        }
+        return toDoInstances.stream()
+                .map(toDoInstanceVo -> ToDoResponse.fromToDoInstanceVo(toDoInstanceVo, petNameMap))
+                .toList();
     }
 
     @Override
@@ -126,34 +117,26 @@ public class ToDoServiceImpl implements ToDoService {
         List<Pet> petList = petRepository.findAllById(pets);
         var petNameMap = petList.stream().collect(Collectors.toMap(Pet::getId, Pet::getName));
         List<PetToDoRelationship> relationships = petToDoRelationshipRepository.findAllByPet_IdIn(pets);
+        List<Long> todoIdList = relationships.stream()
+                .map(PetToDoRelationship::getToDo)
+                .map(ToDo::getId)
+                .collect(Collectors.toSet())
+                .stream().toList();
 
-        if (done != null && !done) {
+        List<ToDoInstanceVo> toDoInstances;
 
-            List<ToDoInstanceVo> toDOInstances = toDoInstanceRepository.findAllByCompleteFalseAndToDoIdIn(
-                    relationships.stream()
-                            .map(PetToDoRelationship::getToDo)
-                            .map(ToDo::getId)
-                            .collect(Collectors.toSet())
-                            .stream().toList()
-            );
-
-            return toDOInstances.stream()
-                    .map(toDoInstanceVo -> ToDoResponse.fromToDoInstanceVo(toDoInstanceVo, petNameMap))
-                    .toList();
-
+        if(done.equals(Boolean.TRUE)) {
+            toDoInstances = toDoInstanceRepository.findAllByCompleteFalseAndToDoIdIn(todoIdList);
+        } else if (done.equals(Boolean.FALSE)) {
+            toDoInstances = toDoInstanceRepository.findAllByCompleteAndToDoIdIn(todoIdList);
         } else {
-            List<ToDoInstanceVo> toDoInstances = toDoInstanceRepository.findAllByCompleteAndToDoIdIn(
-                    relationships.stream()
-                            .map(PetToDoRelationship::getToDo)
-                            .map(ToDo::getId)
-                            .collect(Collectors.toSet())
-                            .stream().toList()
-            );
-
-            return toDoInstances.stream()
-                    .map(toDoInstanceVo -> ToDoResponse.fromToDoInstanceVo(toDoInstanceVo, petNameMap))
-                    .toList();
+            toDoInstances = toDoInstanceRepository.findAllByToDoIdIn(todoIdList);
         }
+
+        return toDoInstances.stream()
+                .map(toDoInstanceVo -> ToDoResponse.fromToDoInstanceVo(toDoInstanceVo, petNameMap))
+                .toList();
+
     }
 
     @Override
