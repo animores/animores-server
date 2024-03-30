@@ -90,9 +90,9 @@ public class ToDoServiceImpl implements ToDoService {
         List<ToDoInstanceVo> toDoInstances;
 
             if(done.equals(Boolean.TRUE)) {
-                toDoInstances = toDoInstanceRepository.findAllByCompleteFalseAndTodayToDoIdIn(todoIdList);
-            } else if (done.equals(Boolean.FALSE)) {
                 toDoInstances = toDoInstanceRepository.findAllByCompleteAndTodayToDoIdIn(todoIdList);
+            } else if (done.equals(Boolean.FALSE)) {
+                toDoInstances = toDoInstanceRepository.findAllByCompleteFalseAndTodayToDoIdIn(todoIdList);
             } else {
                 toDoInstances = toDoInstanceRepository.findAllByTodayToDoIdIn(todoIdList);
             }
@@ -126,9 +126,9 @@ public class ToDoServiceImpl implements ToDoService {
         List<ToDoInstanceVo> toDoInstances;
 
         if(done.equals(Boolean.TRUE)) {
-            toDoInstances = toDoInstanceRepository.findAllByCompleteFalseAndToDoIdIn(todoIdList);
-        } else if (done.equals(Boolean.FALSE)) {
             toDoInstances = toDoInstanceRepository.findAllByCompleteAndToDoIdIn(todoIdList);
+        } else if (done.equals(Boolean.FALSE)) {
+            toDoInstances = toDoInstanceRepository.findAllByCompleteFalseAndToDoIdIn(todoIdList);
         } else {
             toDoInstances = toDoInstanceRepository.findAllByToDoIdIn(todoIdList);
         }

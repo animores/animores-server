@@ -73,11 +73,11 @@ public class ToDo extends BaseEntity {
 
     public void update(ToDoPatchRequest request) {
         resolveTag(this, request);
-        this.date = request.date();
-        this.time = request.time();
-        this.isAllDay = request.isAllDay();
-        this.color = request.color();
-        this.isUsingAlarm = request.isUsingAlarm();
+        this.date = request.date() == null ? this.date : request.date();
+        this.time = request.time() == null ? this.time : request.time();
+        this.isAllDay = request.isAllDay() == null ? this.isAllDay : request.isAllDay();
+        this.color = request.color() == null ? this.color : request.color();
+        this.isUsingAlarm = request.isUsingAlarm() == null ? this.isUsingAlarm : request.isUsingAlarm();
     }
 
     public ToDoInstance getNextToDoInstance() {
