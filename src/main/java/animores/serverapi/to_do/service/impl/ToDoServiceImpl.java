@@ -156,12 +156,6 @@ public class ToDoServiceImpl implements ToDoService {
             throw new CustomException(ExceptionCode.INAPPROPRIATE_PROFILE_ACCESS);
         }
 
-        //TODO: List.of(1L, 2L) should be replaced with the actual pet ids
-        Set<Long> accountPetIds = Set.of(1L, 2L);
-        if (!accountPetIds.containsAll(request.petIds())) {
-            throw new CustomException(ExceptionCode.ILLEGAL_PET_IDS);
-        }
-
         if (!request.petIds().isEmpty()) {
             Set<Long> petIds = toDo.getPetToDoRelationships().stream().map(PetToDoRelationship::getPet).map(Pet::getId).collect(Collectors.toSet());
             if (petIds.size() != request.petIds().size() || !petIds.containsAll(request.petIds())) {
