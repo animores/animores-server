@@ -56,7 +56,7 @@ public class ToDo extends BaseEntity {
         toDo.date = request.date();
         toDo.time = request.time();
         toDo.isAllDay = request.isAllDay();
-        toDo.resolveTag(toDo, request);
+        toDo.resolveTag(request);
         toDo.color = request.color();
         toDo.isUsingAlarm = request.isUsingAlarm();
         if(request.repeat() != null) {
@@ -92,11 +92,11 @@ public class ToDo extends BaseEntity {
                 .build();
     }
 
-    private void resolveTag(ToDo toDo, ToDoCreateRequest request) {
+    private void resolveTag(ToDoCreateRequest request) {
         if(request.tag() != null) {
-            toDo.tag = request.tag();
+            this.tag = request.tag();
         } else {
-            toDo.content = request.content();
+            this.content = request.content();
         }
     }
 
