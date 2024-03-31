@@ -10,6 +10,7 @@ import animores.serverapi.profile.domain.Profile;
 import animores.serverapi.profile.repository.ProfileRepository;
 import animores.serverapi.to_do.dto.request.ToDoCreateRequest;
 import animores.serverapi.to_do.dto.request.ToDoPatchRequest;
+import animores.serverapi.to_do.dto.response.PetResponse;
 import animores.serverapi.to_do.dto.response.ToDoDetailResponse;
 import animores.serverapi.to_do.dto.response.ToDoResponse;
 import animores.serverapi.to_do.entity.PetToDoRelationship;
@@ -26,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -49,7 +51,7 @@ public class ToDoServiceImpl implements ToDoService {
         //TODO: List.of(1L, 2L) should be replaced with the actual pet ids
         Set<Long> accountPetIds = Set.of(1L, 2L);
 
-        if(!accountPetIds.containsAll(request.petIds())) {
+        if (!accountPetIds.containsAll(request.petIds())) {
             throw new CustomException(ExceptionCode.ILLEGAL_PET_IDS);
         }
 
@@ -74,31 +76,30 @@ public class ToDoServiceImpl implements ToDoService {
             pets = new ArrayList<>(petIds);
         }
 
-        if(!petIds.containsAll(pets)) {
+        if (!petIds.containsAll(pets)) {
             throw new CustomException(ExceptionCode.ILLEGAL_PET_IDS);
         }
 
-        List<Pet> petList = petRepository.findAllById(pets);
-        var petNameMap = petList.stream().collect(Collectors.toMap(Pet::getId, Pet::getName));
+        petRepository.findAllById(pets); //pets 초기화 용
         List<PetToDoRelationship> relationships = petToDoRelationshipRepository.findAllByPet_IdIn(pets);
-        List<Long> todoIdList = relationships.stream()
-                .map(PetToDoRelationship::getToDo)
-                .map(ToDo::getId)
-                .collect(Collectors.toSet())
-                .stream().toList();
+        //to do id를 key로 하고, 그 to do 에 해당하는 petResonseList를 value로 하는 map
+        Map<Long, List<PetResponse>> toDoIdPetResponseMap = relationships.stream()
+                .collect(Collectors.groupingBy(petToDoRelationship -> petToDoRelationship.getToDo().getId(),
+                        Collectors.mapping(petToDoRelationship -> new PetResponse(petToDoRelationship.getPet().getId(),
+                                petToDoRelationship.getPet().getName()), Collectors.toList())));
 
         List<ToDoInstanceVo> toDoInstances;
 
-            if(done.equals(Boolean.TRUE)) {
-                toDoInstances = toDoInstanceRepository.findAllByCompleteAndTodayToDoIdIn(todoIdList);
-            } else if (done.equals(Boolean.FALSE)) {
-                toDoInstances = toDoInstanceRepository.findAllByCompleteFalseAndTodayToDoIdIn(todoIdList);
-            } else {
-                toDoInstances = toDoInstanceRepository.findAllByTodayToDoIdIn(todoIdList);
-            }
+        if (done == null) {
+            toDoInstances = toDoInstanceRepository.findAllByTodayToDoIdIn(toDoIdPetResponseMap.keySet().stream().toList());
+        } else if (done.equals(Boolean.TRUE)) {
+            toDoInstances = toDoInstanceRepository.findAllByCompleteAndTodayToDoIdIn(toDoIdPetResponseMap.keySet().stream().toList());
+        } else {
+            toDoInstances = toDoInstanceRepository.findAllByCompleteFalseAndTodayToDoIdIn(toDoIdPetResponseMap.keySet().stream().toList());
+        }
 
         return toDoInstances.stream()
-                .map(toDoInstanceVo -> ToDoResponse.fromToDoInstanceVo(toDoInstanceVo, petNameMap))
+                .map(toDoInstanceVo -> ToDoResponse.fromToDoInstanceVo(toDoInstanceVo, toDoIdPetResponseMap.get(toDoInstanceVo.toDo().id())))
                 .toList();
     }
 
@@ -110,31 +111,29 @@ public class ToDoServiceImpl implements ToDoService {
             pets = petIds.stream().sorted().toList();
         }
 
-        if(!petIds.containsAll(pets)) {
+        if (!petIds.containsAll(pets)) {
             throw new CustomException(ExceptionCode.ILLEGAL_PET_IDS);
         }
 
-        List<Pet> petList = petRepository.findAllById(pets);
-        var petNameMap = petList.stream().collect(Collectors.toMap(Pet::getId, Pet::getName));
+        petRepository.findAllById(pets); //pets 초기화 용
         List<PetToDoRelationship> relationships = petToDoRelationshipRepository.findAllByPet_IdIn(pets);
-        List<Long> todoIdList = relationships.stream()
-                .map(PetToDoRelationship::getToDo)
-                .map(ToDo::getId)
-                .collect(Collectors.toSet())
-                .stream().toList();
+        //to do id를 key로 하고, 그 to do 에 해당하는 petResonseList를 value로 하는 map
+        Map<Long, List<PetResponse>> toDoIdPetResponseMap = relationships.stream()
+                .collect(Collectors.groupingBy(petToDoRelationship -> petToDoRelationship.getToDo().getId(),
+                        Collectors.mapping(petToDoRelationship -> new PetResponse(petToDoRelationship.getPet().getId(),
+                                petToDoRelationship.getPet().getName()), Collectors.toList())));
 
         List<ToDoInstanceVo> toDoInstances;
-
-        if(done.equals(Boolean.TRUE)) {
-            toDoInstances = toDoInstanceRepository.findAllByCompleteAndToDoIdIn(todoIdList);
-        } else if (done.equals(Boolean.FALSE)) {
-            toDoInstances = toDoInstanceRepository.findAllByCompleteFalseAndToDoIdIn(todoIdList);
+        if (done == null) {
+            toDoInstances = toDoInstanceRepository.findAllByToDoIdIn(toDoIdPetResponseMap.keySet().stream().toList());
+        } else if (done.equals(Boolean.TRUE)) {
+            toDoInstances = toDoInstanceRepository.findAllByCompleteAndToDoIdIn(toDoIdPetResponseMap.keySet().stream().toList());
         } else {
-            toDoInstances = toDoInstanceRepository.findAllByToDoIdIn(todoIdList);
+            toDoInstances = toDoInstanceRepository.findAllByCompleteFalseAndToDoIdIn(toDoIdPetResponseMap.keySet().stream().toList());
         }
 
         return toDoInstances.stream()
-                .map(toDoInstanceVo -> ToDoResponse.fromToDoInstanceVo(toDoInstanceVo, petNameMap))
+                .map(toDoInstanceVo -> ToDoResponse.fromToDoInstanceVo(toDoInstanceVo, toDoIdPetResponseMap.get(toDoInstanceVo.toDo().id())))
                 .toList();
 
     }
@@ -142,7 +141,7 @@ public class ToDoServiceImpl implements ToDoService {
     @Override
     @Transactional(readOnly = true)
     public ToDoDetailResponse getToDoById(Long id) {
-        ToDo toDo = toDoRepository.findByIdAndAccount_Id(id,1L).orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_TO_DO));
+        ToDo toDo = toDoRepository.findByIdAndAccount_Id(id, 1L).orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_TO_DO));
         return ToDoDetailResponse.fromToDo(toDo);
     }
 
@@ -150,10 +149,10 @@ public class ToDoServiceImpl implements ToDoService {
     @Transactional
     public ToDoDetailResponse updateToDoById(Long id, ToDoPatchRequest request) {
         //TODO: 1L should be replaced with the actual account id
-        ToDo toDo = toDoRepository.findByIdAndAccount_Id(id,1L).orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_TO_DO));
+        ToDo toDo = toDoRepository.findByIdAndAccount_Id(id, 1L).orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_TO_DO));
 
         //TODO: 실제 현재 로그인한 사용자의 프로필 아이디로 변경
-        if(toDo.getCreateProfile().getId() != 2L) {
+        if (toDo.getCreateProfile().getId() != 2L) {
             throw new CustomException(ExceptionCode.INAPPROPRIATE_PROFILE_ACCESS);
         }
 
@@ -163,9 +162,9 @@ public class ToDoServiceImpl implements ToDoService {
             throw new CustomException(ExceptionCode.ILLEGAL_PET_IDS);
         }
 
-        if(!request.petIds().isEmpty()) {
+        if (!request.petIds().isEmpty()) {
             Set<Long> petIds = toDo.getPetToDoRelationships().stream().map(PetToDoRelationship::getPet).map(Pet::getId).collect(Collectors.toSet());
-            if(petIds.size() != request.petIds().size() || !petIds.containsAll(request.petIds())) {
+            if (petIds.size() != request.petIds().size() || !petIds.containsAll(request.petIds())) {
                 petToDoRelationshipRepository.deleteAllByToDo_Id(toDo.getId());
                 List<PetToDoRelationship> petToDoRelationships = new ArrayList<>();
                 for (Long petId : request.petIds()) {
@@ -197,7 +196,7 @@ public class ToDoServiceImpl implements ToDoService {
         toDoInstance.setComplete(completeProfile);
 
         ToDoInstance nextToDoInstance = toDoInstance.getToDo().getNextToDoInstance();
-        if(nextToDoInstance == null) {
+        if (nextToDoInstance == null) {
             return;
         }
         toDoInstanceRepository.save(nextToDoInstance);

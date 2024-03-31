@@ -1,9 +1,9 @@
 package animores.serverapi.to_do.repository.impl;
 
+import animores.serverapi.profile.domain.vo.ProfileVo;
 import animores.serverapi.to_do.entity.vo.ToDoInstanceVo;
 import animores.serverapi.to_do.entity.vo.ToDoVo;
 import animores.serverapi.to_do.repository.ToDoInstanceCustomRepository;
-import animores.serverapi.profile.domain.vo.ProfileVo;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +12,8 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 
+import static animores.serverapi.profile.domain.QProfile.profile;
+import static animores.serverapi.to_do.entity.QToDo.toDo;
 import static animores.serverapi.to_do.entity.QToDoInstance.toDoInstance;
 
 @Repository
@@ -28,30 +30,29 @@ public class ToDoInstanceCustomRepositoryImpl implements ToDoInstanceCustomRepos
 								toDoInstance.id,
 								Projections.constructor(
 										ToDoVo.class,
-										toDoInstance.toDo.id,
-										toDoInstance.toDo.isAllDay,
-										toDoInstance.toDo.content,
-										toDoInstance.toDo.tag,
-										toDoInstance.toDo.color,
-										toDoInstance.toDo.isUsingAlarm,
-										toDoInstance.toDo.petToDoRelationships
+										toDo.id,
+										toDo.isAllDay,
+										toDo.content,
+										toDo.tag,
+										toDo.color,
+										toDo.isUsingAlarm
 								),
 								toDoInstance.date.min().as("date"),
 								toDoInstance.time.min().as("time"),
 								Projections.constructor(
 										ProfileVo.class,
-										toDoInstance.completeProfile.name,
-										toDoInstance.completeProfile.imageUrl
-								),
+										profile.name,
+										profile.imageUrl),
 								toDoInstance.completeTime
 						)
 				)
 				.from(toDoInstance)
-				.groupBy(toDoInstance.toDo)
-				.where(
-						toDoInstance.completeProfile.isNull()
+				.join(toDoInstance.toDo, toDo)
+				.leftJoin(toDoInstance.completeProfile, profile)
+				.groupBy(toDo)
+				.where(toDo.id.in(toDoIds)
 						.and(toDoInstance.date.eq(LocalDate.now()))
-						.and(toDoInstance.toDo.id.in(toDoIds)))
+						.and(profile.isNull()))
 				.fetch();
 	}
 
@@ -63,30 +64,29 @@ public class ToDoInstanceCustomRepositoryImpl implements ToDoInstanceCustomRepos
 								toDoInstance.id,
 								Projections.constructor(
 										ToDoVo.class,
-										toDoInstance.toDo.id,
-										toDoInstance.toDo.isAllDay,
-										toDoInstance.toDo.content,
-										toDoInstance.toDo.tag,
-										toDoInstance.toDo.color,
-										toDoInstance.toDo.isUsingAlarm,
-										toDoInstance.toDo.petToDoRelationships
+										toDo.id,
+										toDo.isAllDay,
+										toDo.content,
+										toDo.tag,
+										toDo.color,
+										toDo.isUsingAlarm
 								),
 								toDoInstance.date.min().as("date"),
 								toDoInstance.time.min().as("time"),
 								Projections.constructor(
 										ProfileVo.class,
-										toDoInstance.completeProfile.name,
-										toDoInstance.completeProfile.imageUrl
-								),
+										profile.name,
+										profile.imageUrl),
 								toDoInstance.completeTime
 						)
 				)
 				.from(toDoInstance)
-				.groupBy(toDoInstance.toDo.id)
-				.where(
-						toDoInstance.completeProfile.isNotNull()
+				.join(toDoInstance.toDo, toDo)
+				.leftJoin(toDoInstance.completeProfile, profile)
+				.groupBy(toDo)
+				.where(toDo.id.in(toDoIds)
 						.and(toDoInstance.date.eq(LocalDate.now()))
-						.and(toDoInstance.toDo.id.in(toDoIds))
+						.and(profile.isNotNull())
 				)
 				.fetch();
 	}
@@ -99,30 +99,28 @@ public class ToDoInstanceCustomRepositoryImpl implements ToDoInstanceCustomRepos
 								toDoInstance.id,
 								Projections.constructor(
 										ToDoVo.class,
-										toDoInstance.toDo.id,
-										toDoInstance.toDo.isAllDay,
-										toDoInstance.toDo.content,
-										toDoInstance.toDo.tag,
-										toDoInstance.toDo.color,
-										toDoInstance.toDo.isUsingAlarm,
-										toDoInstance.toDo.petToDoRelationships
+										toDo.id,
+										toDo.isAllDay,
+										toDo.content,
+										toDo.tag,
+										toDo.color,
+										toDo.isUsingAlarm
 								),
 								toDoInstance.date.min().as("date"),
 								toDoInstance.time.min().as("time"),
 								Projections.constructor(
 										ProfileVo.class,
-										toDoInstance.completeProfile.name,
-										toDoInstance.completeProfile.imageUrl
-								),
+										profile.name,
+										profile.imageUrl),
 								toDoInstance.completeTime
 						)
 				)
 				.from(toDoInstance)
-				.groupBy(toDoInstance.toDo.id)
-				.where(
-								toDoInstance.date.eq(LocalDate.now())
-								.and(toDoInstance.toDo.id.in(toDoIds))
-				)
+				.join(toDoInstance.toDo, toDo)
+				.leftJoin(toDoInstance.completeProfile, profile)
+				.groupBy(toDo)
+				.where(toDo.id.in(toDoIds)
+						.and(toDoInstance.date.eq(LocalDate.now())))
 				.fetch();
 	}
 
@@ -134,30 +132,28 @@ public class ToDoInstanceCustomRepositoryImpl implements ToDoInstanceCustomRepos
 								toDoInstance.id,
 								Projections.constructor(
 										ToDoVo.class,
-										toDoInstance.toDo.id,
-										toDoInstance.toDo.isAllDay,
-										toDoInstance.toDo.content,
-										toDoInstance.toDo.tag,
-										toDoInstance.toDo.color,
-										toDoInstance.toDo.isUsingAlarm,
-										toDoInstance.toDo.petToDoRelationships
+										toDo.id,
+										toDo.isAllDay,
+										toDo.content,
+										toDo.tag,
+										toDo.color,
+										toDo.isUsingAlarm
 								),
 								toDoInstance.date.min().as("date"),
 								toDoInstance.time.min().as("time"),
 								Projections.constructor(
 										ProfileVo.class,
-										toDoInstance.completeProfile.name,
-										toDoInstance.completeProfile.imageUrl
-								),
+										profile.name,
+										profile.imageUrl),
 								toDoInstance.completeTime
 						)
 				)
 				.from(toDoInstance)
-				.groupBy(toDoInstance.toDo)
-				.where(
-					toDoInstance.completeProfile.isNull()
-					.and(toDoInstance.toDo.id.in(toDoIds))
-				)
+				.join(toDoInstance.toDo, toDo)
+				.leftJoin(toDoInstance.completeProfile, profile)
+				.groupBy(toDo)
+				.where(toDo.id.in(toDoIds)
+						.and(profile.isNull()))
 				.fetch();
 	}
 
@@ -169,30 +165,28 @@ public class ToDoInstanceCustomRepositoryImpl implements ToDoInstanceCustomRepos
 								toDoInstance.id,
 								Projections.constructor(
 										ToDoVo.class,
-										toDoInstance.toDo.id,
-										toDoInstance.toDo.isAllDay,
-										toDoInstance.toDo.content,
-										toDoInstance.toDo.tag,
-										toDoInstance.toDo.color,
-										toDoInstance.toDo.isUsingAlarm,
-										toDoInstance.toDo.petToDoRelationships
+										toDo.id,
+										toDo.isAllDay,
+										toDo.content,
+										toDo.tag,
+										toDo.color,
+										toDo.isUsingAlarm
 								),
 								toDoInstance.date.min().as("date"),
 								toDoInstance.time.min().as("time"),
 								Projections.constructor(
 										ProfileVo.class,
-										toDoInstance.completeProfile.name,
-										toDoInstance.completeProfile.imageUrl
-								),
+										profile.name,
+										profile.imageUrl),
 								toDoInstance.completeTime
 						)
 				)
 				.from(toDoInstance)
-				.groupBy(toDoInstance.toDo)
-				.where(
-					toDoInstance.completeProfile.isNotNull()
-					.and(toDoInstance.toDo.id.in(toDoIds))
-				)
+				.join(toDoInstance.toDo, toDo)
+				.leftJoin(toDoInstance.completeProfile, profile)
+				.groupBy(toDo)
+				.where(toDo.id.in(toDoIds)
+						.and(profile.isNotNull()))
 				.fetch();
 	}
 
@@ -204,27 +198,27 @@ public class ToDoInstanceCustomRepositoryImpl implements ToDoInstanceCustomRepos
 								toDoInstance.id,
 								Projections.constructor(
 										ToDoVo.class,
-										toDoInstance.toDo.id,
-										toDoInstance.toDo.isAllDay,
-										toDoInstance.toDo.content,
-										toDoInstance.toDo.tag,
-										toDoInstance.toDo.color,
-										toDoInstance.toDo.isUsingAlarm,
-										toDoInstance.toDo.petToDoRelationships
+										toDo.id,
+										toDo.isAllDay,
+										toDo.content,
+										toDo.tag,
+										toDo.color,
+										toDo.isUsingAlarm
 								),
 								toDoInstance.date.min().as("date"),
 								toDoInstance.time.min().as("time"),
 								Projections.constructor(
 										ProfileVo.class,
-										toDoInstance.completeProfile.name,
-										toDoInstance.completeProfile.imageUrl
-								),
+										profile.name,
+										profile.imageUrl),
 								toDoInstance.completeTime
 						)
 				)
 				.from(toDoInstance)
-				.groupBy(toDoInstance.toDo)
-				.where(toDoInstance.toDo.id.in(toDoIds))
+				.join(toDoInstance.toDo, toDo)
+				.leftJoin(toDoInstance.completeProfile, profile)
+				.groupBy(toDo)
+				.where(toDo.id.in(toDoIds))
 				.fetch();
 	}
 }
