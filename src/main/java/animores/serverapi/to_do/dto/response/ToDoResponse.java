@@ -1,14 +1,11 @@
 package animores.serverapi.to_do.dto.response;
 
-import animores.serverapi.pet.domain.Pet;
-import animores.serverapi.to_do.entity.PetToDoRelationship;
-import animores.serverapi.to_do.entity.ToDoInstance;
+import animores.serverapi.to_do.entity.vo.ToDoInstanceVo;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Map;
 
 public record ToDoResponse(
 		Long id,
@@ -24,24 +21,19 @@ public record ToDoResponse(
 
 ) {
 
-	public static ToDoResponse fromToDoInstance(ToDoInstance toDoInstance, Map<Long, String> petNameMap) {
-
-		List<Long> petIds = toDoInstance.getToDo().getPetToDoRelationships().stream()
-				.map(PetToDoRelationship::getPet)
-				.map(Pet::getId)
-				.toList();
+	public static ToDoResponse fromToDoInstanceVo(ToDoInstanceVo toDoInstanceVo, List<PetResponse> pets) {
 
 		return new ToDoResponse(
-				toDoInstance.getId(),
-				toDoInstance.getToDo().getContent(),
-				petIds.stream().map(id -> new PetResponse(id, petNameMap.get(id))).toList(),
-				toDoInstance.getToDo().isAllDay(),
-				toDoInstance.getDate(),
-				toDoInstance.getTime(),
-				toDoInstance.getToDo().isUsingAlarm(),
-				toDoInstance.getToDo().getColor(),
-				toDoInstance.getCompleteProfile() == null ? null : toDoInstance.getCompleteProfile().getImageUrl(),
-				toDoInstance.getCompleteTime()
+				toDoInstanceVo.toDo().id(),
+				toDoInstanceVo.toDo().tag() == null ?  toDoInstanceVo.toDo().content() : toDoInstanceVo.toDo().tag().name(),
+				pets,
+				toDoInstanceVo.toDo().isAllDay(),
+				toDoInstanceVo.date(),
+				toDoInstanceVo.time(),
+				toDoInstanceVo.toDo().isUsingAlarm(),
+				toDoInstanceVo.toDo().color(),
+				toDoInstanceVo.completeProfile() == null ? null : toDoInstanceVo.completeProfile().imageUrl(),
+				toDoInstanceVo.completeTime()
 		);
 	}
 }
