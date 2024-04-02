@@ -2,7 +2,6 @@ package animores.serverapi.diary.entity;
 
 import animores.serverapi.account.domain.Account;
 import animores.serverapi.common.BaseEntity;
-import animores.serverapi.diary.dto.AddDiaryRequest;
 import animores.serverapi.diary.dto.EditDiaryRequest;
 import animores.serverapi.profile.domain.Profile;
 import jakarta.persistence.CascadeType;
@@ -58,11 +57,11 @@ public class Diary extends BaseEntity {
 
     private LocalDateTime deletedDt;
 
-    public static Diary create(Account account, Profile profile, AddDiaryRequest request) {
+    public static Diary create(Account account, Profile profile, String content) {
         return Diary.builder()
             .account(account)
             .profile(profile)
-            .content(request.content())
+            .content(content)
             .build();
     }
 

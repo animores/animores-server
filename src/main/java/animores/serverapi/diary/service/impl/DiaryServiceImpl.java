@@ -1,15 +1,21 @@
 package animores.serverapi.diary.service.impl;
 
+import static animores.serverapi.diary.entity.DiaryMediaType.I;
+import static animores.serverapi.diary.entity.DiaryMediaType.V;
+
 import animores.serverapi.account.domain.Account;
 import animores.serverapi.account.repository.AccountRepository;
+import animores.serverapi.diary.dao.GetAllDiary;
+import animores.serverapi.diary.dao.GetCalendarDiary;
 import animores.serverapi.diary.dto.AddDiaryRequest;
 import animores.serverapi.diary.dto.EditDiaryRequest;
-import animores.serverapi.diary.dao.GetAllDiary;
 import animores.serverapi.diary.dto.GetAllDiaryResponse;
-import animores.serverapi.diary.dao.GetCalendarDiary;
 import animores.serverapi.diary.dto.GetCalendarDiaryResponse;
 import animores.serverapi.diary.entity.Diary;
+import animores.serverapi.diary.entity.DiaryMedia;
+import animores.serverapi.diary.entity.DiaryMediaType;
 import animores.serverapi.diary.repository.DiaryCustomRepository;
+import animores.serverapi.diary.repository.DiaryMediaRepository;
 import animores.serverapi.diary.repository.DiaryRepository;
 import animores.serverapi.diary.service.DiaryService;
 import animores.serverapi.profile.domain.Profile;
@@ -31,6 +37,7 @@ public class DiaryServiceImpl implements DiaryService {
     private final ProfileRepository profileRepository;
     private final DiaryRepository diaryRepository;
     private final DiaryCustomRepository diaryCustomRepository;
+    private final DiaryMediaRepository diaryMediaRepository;
 
 
     @Override
@@ -51,12 +58,18 @@ public class DiaryServiceImpl implements DiaryService {
     @Override
     @Transactional
     public void addDiary(AddDiaryRequest request, List<MultipartFile> files) {
-        Account account = accountRepository.findById(1L)
-            .orElseThrow(NoSuchElementException::new);
-        Profile profile = profileRepository.findById(1L)
-            .orElseThrow(NoSuchElementException::new);
+        // 유저쪽 코드 병합되면 수정
+        Account account = findAccountById(1L);
+        Profile profile = findProfileById(1L);
+        //
 
-        diaryRepository.save(Diary.create(account, profile, request));
+        Diary diary = diaryRepository.save(Diary.create(account, profile, request.content()));
+
+        for (int i = 0; i < files.size(); i++) {
+            MultipartFile file = files.get(i);
+            diaryMediaRepository.save(DiaryMedia.create(diary, file.getOriginalFilename(), i,
+                checkType(file.getContentType())));
+        }
     }
 
     @Override
@@ -75,5 +88,28 @@ public class DiaryServiceImpl implements DiaryService {
             .orElseThrow(NoSuchElementException::new);
 
         diary.delete();
+    }
+
+    private Account findAccountById(Long id) {
+        return accountRepository.findById(id)
+            .orElseThrow(() -> new NoSuchElementException("Account not found with id: " + id));
+    }
+
+    private Profile findProfileById(Long id) {
+        return profileRepository.findById(id)
+            .orElseThrow(() -> new NoSuchElementException("Profile not found with id: " + id));
+    }
+
+    private Diary findDiaryById(Long id) {
+        return diaryRepository.findById(id)
+            .orElseThrow(() -> new NoSuchElementException("Diary not found with id: " + id));
+    }
+
+    public DiaryMediaType checkType(String type) {
+        return switch (type) {
+            case "image/png" -> I;
+            case "video/mp4" -> V;
+            default -> throw new IllegalArgumentException("Unsupported type: " + type);
+        };
     }
 }
