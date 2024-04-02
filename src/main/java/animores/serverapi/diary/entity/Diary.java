@@ -40,9 +40,11 @@ public class Diary extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore // response 객체 만들면 삭제 예정
     @ManyToOne(fetch = FetchType.LAZY)
     private Profile profile;
 
+    @JsonIgnore // response 객체 만들면 삭제 예정
     @ManyToOne(fetch = FetchType.LAZY)
     private Account account;
 
