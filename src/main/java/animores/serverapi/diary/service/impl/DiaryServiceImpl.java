@@ -16,10 +16,12 @@ import animores.serverapi.profile.domain.Profile;
 import animores.serverapi.profile.repository.ProfileRepository;
 import com.querydsl.core.QueryResults;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Service
@@ -48,10 +50,10 @@ public class DiaryServiceImpl implements DiaryService {
 
     @Override
     @Transactional
-    public void addDiary(AddDiaryRequest request) {
-        Account account = accountRepository.findById(request.accountId())
+    public void addDiary(AddDiaryRequest request, List<MultipartFile> files) {
+        Account account = accountRepository.findById(1L)
             .orElseThrow(NoSuchElementException::new);
-        Profile profile = profileRepository.findById(request.profileId())
+        Profile profile = profileRepository.findById(1L)
             .orElseThrow(NoSuchElementException::new);
 
         diaryRepository.save(Diary.create(account, profile, request));
