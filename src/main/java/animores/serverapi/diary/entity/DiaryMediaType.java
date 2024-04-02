@@ -1,5 +1,5 @@
 package animores.serverapi.diary.entity;
 
-public enum DiaryContentType {
+public enum DiaryMediaType {
     I, V
 }

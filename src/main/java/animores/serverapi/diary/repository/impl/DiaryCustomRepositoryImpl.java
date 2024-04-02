@@ -1,10 +1,10 @@
 package animores.serverapi.diary.repository.impl;
 
 import static animores.serverapi.diary.entity.QDiary.diary;
-import static animores.serverapi.diary.entity.QDiaryContent.diaryContent;
+import static animores.serverapi.diary.entity.QDiaryMedia.diaryMedia;
 
 import animores.serverapi.diary.dao.GetAllDiary;
-import animores.serverapi.diary.dao.GetAllDiaryContent;
+import animores.serverapi.diary.dao.GetAllDiaryMedia;
 import animores.serverapi.diary.dao.GetCalendarDiary;
 import animores.serverapi.diary.repository.DiaryCustomRepository;
 import com.querydsl.core.QueryResults;
@@ -36,27 +36,26 @@ public class DiaryCustomRepositoryImpl implements DiaryCustomRepository {
                 )
             )
             .from(diary)
-            .leftJoin(diary.diaryContents, diaryContent)
             .where(diary.account.id.eq(accountId))
+            .leftJoin(diary.media, diaryMedia)
+            .distinct()
             .orderBy(diary.id.desc())
             .fetchResults();
 
         diaries.getResults().forEach(diary -> {
-            System.out.println("diaryId");
-            System.out.println(diary.getDiaryId());
-            List<GetAllDiaryContent> contents = jpaQueryFactory
-                .select(Projections.fields(GetAllDiaryContent.class,
-                    diaryContent.id.as("contentId"),
-                    diaryContent.url.as("contentUrl"),
-                    diaryContent.contentOrder,
-                    diaryContent.type
+            List<GetAllDiaryMedia> media = jpaQueryFactory
+                .select(Projections.fields(GetAllDiaryMedia.class,
+                    diaryMedia.id,
+                    diaryMedia.url,
+                    diaryMedia.mediaOrder,
+                    diaryMedia.type
                 ))
-                .from(diaryContent)
-                .where(diaryContent.diary.id.eq(diary.getDiaryId()))
-                .orderBy(diaryContent.contentOrder.asc())
+                .from(diaryMedia)
+                .where(diaryMedia.diary.id.eq(diary.getDiaryId()))
+                .orderBy(diaryMedia.mediaOrder.asc())
                 .fetch();
 
-            diary.setDiaryContents(contents);
+            diary.setDiaryMedia(media);
         });
 
         return diaries;

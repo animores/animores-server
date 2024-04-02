@@ -47,7 +47,7 @@ public class Diary extends BaseEntity {
     private Account account;
 
     @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL)
-    private List<DiaryContent> diaryContents = new ArrayList<>();
+    private List<DiaryMedia> media = new ArrayList<>();
 
     // List<DiaryComment> 연결 예정
 

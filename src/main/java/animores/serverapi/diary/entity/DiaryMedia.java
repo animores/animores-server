@@ -25,7 +25,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "diary_content")
-public class DiaryContent extends BaseEntity {
+public class DiaryMedia extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,9 +36,11 @@ public class DiaryContent extends BaseEntity {
 
     private String url;
 
-    private int contentOrder;
+    private int mediaOrder;
 
     @Enumerated(EnumType.STRING)
-    private DiaryContentType type;
+    private DiaryMediaType type;
+
+
 
 }

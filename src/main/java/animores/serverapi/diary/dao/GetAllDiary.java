@@ -10,7 +10,7 @@ public class GetAllDiary {
 
     private Long diaryId;
     private String content;
-    private List<GetAllDiaryContent> diaryContents = new ArrayList<>();
+    private List<GetAllDiaryMedia> media = new ArrayList<>();
     private boolean wishYn = true; // 수정 예정
     private int commentCount = 10; // 수정 예정
     private LocalDateTime createdAt;
@@ -19,8 +19,8 @@ public class GetAllDiary {
     private String name;
     private String imageUrl;
 
-    public void setDiaryContents(List<GetAllDiaryContent> diaryContents) {
-        this.diaryContents = diaryContents;
+    public void setDiaryMedia(List<GetAllDiaryMedia> media) {
+        this.media = media;
     }
 
 }
