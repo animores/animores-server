@@ -24,7 +24,7 @@ public class DiaryCustomRepositoryImpl implements DiaryCustomRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public QueryResults<GetAllDiary> getAllDiary(Long accountId) {
+    public QueryResults<GetAllDiary> getAllDiary(Long accountId, int page, int size) {
         QueryResults<GetAllDiary> diaries = jpaQueryFactory.select(
                 Projections.fields(GetAllDiary.class,
                     diary.id.as("diaryId"),
@@ -40,6 +40,8 @@ public class DiaryCustomRepositoryImpl implements DiaryCustomRepository {
             .leftJoin(diary.media, diaryMedia)
             .distinct()
             .orderBy(diary.id.desc())
+            .offset(page - 1)
+            .limit(size)
             .fetchResults();
 
         diaries.getResults().forEach(diary -> {

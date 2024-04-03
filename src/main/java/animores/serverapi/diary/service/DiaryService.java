@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 public interface DiaryService {
 
-    GetAllDiaryResponse getAllDiary(Long accountId);
+    GetAllDiaryResponse getAllDiary(int page, int size);
 
     GetCalendarDiaryResponse getCalendarDiary(Long accountId, LocalDate date);
 

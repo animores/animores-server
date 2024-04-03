@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 public interface DiaryCustomRepository {
 
-    QueryResults<GetAllDiary> getAllDiary(Long accountId);
+    QueryResults<GetAllDiary> getAllDiary(Long accountId, int page, int size);
 
     QueryResults<GetCalendarDiary> getCalendarDiary(Long accountId, LocalDate date);
 }
