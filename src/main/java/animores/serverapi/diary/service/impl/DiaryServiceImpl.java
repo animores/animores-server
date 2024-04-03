@@ -24,6 +24,8 @@ import com.querydsl.core.QueryResults;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,11 +67,13 @@ public class DiaryServiceImpl implements DiaryService {
 
         Diary diary = diaryRepository.save(Diary.create(account, profile, request.content()));
 
-        for (int i = 0; i < files.size(); i++) {
-            MultipartFile file = files.get(i);
-            diaryMediaRepository.save(DiaryMedia.create(diary, file.getOriginalFilename(), i,
-                checkType(file.getContentType())));
-        }
+        List<DiaryMedia> diaryMedias = IntStream.range(0, files.size())
+            .mapToObj(i -> {
+                MultipartFile file = files.get(i);
+                return DiaryMedia.create(diary, file.getOriginalFilename(), i, checkType(file.getContentType()));
+            })
+            .collect(Collectors.toList());
+        diaryMediaRepository.saveAll(diaryMedias);
     }
 
     @Override
