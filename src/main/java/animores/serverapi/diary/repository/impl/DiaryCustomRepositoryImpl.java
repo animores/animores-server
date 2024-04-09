@@ -6,8 +6,9 @@ import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.group.GroupBy.list;
 
 import animores.serverapi.diary.dao.GetAllDiaryDao;
-import animores.serverapi.diary.dao.GetAllDiaryMediaDao;
 import animores.serverapi.diary.dao.GetCalendarDiaryDao;
+import animores.serverapi.diary.dao.QGetAllDiaryDao;
+import animores.serverapi.diary.dao.QGetAllDiaryMediaDao;
 import animores.serverapi.diary.repository.DiaryCustomRepository;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.Projections;
@@ -31,31 +32,36 @@ public class DiaryCustomRepositoryImpl implements DiaryCustomRepository {
             .from(diary)
             .leftJoin(diaryMedia)
             .on(diary.id.eq(diaryMedia.diary.id))
+            .where(diary.account.id.eq(accountId))
             .orderBy(diary.id.desc())
             .offset(page - 1)
             .limit(size)
             .transform(
                 groupBy(diary.id).list(
-                    Projections.fields(
-                        GetAllDiaryDao.class,
-                        diary.id.as("diaryId"),
+                    new QGetAllDiaryDao(
+                        diary.id,
                         diary.content,
-                        diary.createdAt,
-                        diary.profile.id.as("profileId"),
-                        diary.profile.name,
-                        diary.profile.imageUrl,
                         list(
-                            Projections.fields(
-                                GetAllDiaryMediaDao.class,
-                                diaryMedia.id, diaryMedia.url,
-                                diaryMedia.mediaOrder, diaryMedia.type
-                            )
-                        ).as("media")
+                            new QGetAllDiaryMediaDao(diaryMedia.id, diaryMedia.url,
+                                diaryMedia.mediaOrder, diaryMedia.type).skipNulls()
+                        ),
+                        diary.createdAt,
+                        diary.profile.id,
+                        diary.profile.name,
+                        diary.profile.imageUrl
                     )
                 )
             );
 
         return diaries;
+    }
+
+    public Long getAllDiaryCount(Long accountId) {
+        return jpaQueryFactory
+            .select(diary.count())
+            .from(diary)
+            .where(diary.account.id.eq(accountId))
+            .fetchOne();
     }
 
     @Override

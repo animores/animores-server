@@ -1,5 +1,6 @@
 package animores.serverapi.diary.dao;
 
+import com.querydsl.core.annotations.QueryProjection;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +20,15 @@ public class GetAllDiaryDao {
     private String name;
     private String imageUrl;
 
-    public void setDiaryMedia(List<GetAllDiaryMediaDao> media) {
+    @QueryProjection
+    public GetAllDiaryDao(Long diaryId, String content, List<GetAllDiaryMediaDao> media,
+        LocalDateTime createdAt, Long profileId, String name, String imageUrl) {
+        this.diaryId = diaryId;
+        this.content = content;
         this.media = media;
+        this.createdAt = createdAt;
+        this.profileId = profileId;
+        this.name = name;
+        this.imageUrl = imageUrl;
     }
-
 }

@@ -10,5 +10,7 @@ public interface DiaryCustomRepository {
 
     List<GetAllDiaryDao> getAllDiary(Long accountId, int page, int size);
 
+    Long getAllDiaryCount(Long accountId);
+
     QueryResults<GetCalendarDiaryDao> getCalendarDiary(Long accountId, LocalDate date);
 }
