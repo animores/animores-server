@@ -63,12 +63,14 @@ CREATE TABLE `diary_comment` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE `diary_image` (
+CREATE TABLE `diary_media` (
   `id` bigint NOT NULL,
   `diary_id` bigint NOT NULL,
-  `image_url` text NOT NULL,
-  `image_order` int NOT NULL,
+  `url` text NOT NULL,
+  `media_order` int NOT NULL,
+  `type` char(1) NOT NULL,
   `created_dt` datetime NOT NULL,
+  `updated_dt` datetime NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
