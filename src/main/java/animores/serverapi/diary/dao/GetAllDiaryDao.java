@@ -12,7 +12,7 @@ public class GetAllDiaryDao {
     private Long diaryId;
     private String content;
     private List<GetAllDiaryMediaDao> media = new ArrayList<>();
-    private boolean wishYn = true; // 수정 예정
+    private boolean wishYn;
     private int commentCount = 10; // 수정 예정
     private LocalDateTime createdAt;
 
@@ -22,10 +22,11 @@ public class GetAllDiaryDao {
 
     @QueryProjection
     public GetAllDiaryDao(Long diaryId, String content, List<GetAllDiaryMediaDao> media,
-        LocalDateTime createdAt, Long profileId, String name, String imageUrl) {
+        boolean wishYn, LocalDateTime createdAt, Long profileId, String name, String imageUrl) {
         this.diaryId = diaryId;
         this.content = content;
         this.media = media;
+        this.wishYn = wishYn;
         this.createdAt = createdAt;
         this.profileId = profileId;
         this.name = name;

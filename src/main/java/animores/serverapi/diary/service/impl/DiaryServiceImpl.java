@@ -35,8 +35,9 @@ public class DiaryServiceImpl implements DiaryService {
     @Override
     public GetAllDiaryResponse getAllDiary(int page, int size) {
         Long accountId = 1L;    // 나중에 인증 정보에서 가져오기 param으로 받지x
+        Long profileId = 1L;
 
-        List<GetAllDiaryDao> diaries = diaryCustomRepository.getAllDiary(accountId, page, size);
+        List<GetAllDiaryDao> diaries = diaryCustomRepository.getAllDiary(accountId, profileId, page, size);
         Long totalCount = diaryCustomRepository.getAllDiaryCount(accountId);
 
         return new GetAllDiaryResponse(totalCount, diaries);
