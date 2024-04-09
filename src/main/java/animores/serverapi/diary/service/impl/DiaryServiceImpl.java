@@ -4,9 +4,9 @@ import animores.serverapi.account.domain.Account;
 import animores.serverapi.account.repository.AccountRepository;
 import animores.serverapi.diary.dto.AddDiaryRequest;
 import animores.serverapi.diary.dto.EditDiaryRequest;
-import animores.serverapi.diary.dao.GetAllDiary;
+import animores.serverapi.diary.dao.GetAllDiaryDao;
 import animores.serverapi.diary.dto.GetAllDiaryResponse;
-import animores.serverapi.diary.dao.GetCalendarDiary;
+import animores.serverapi.diary.dao.GetCalendarDiaryDao;
 import animores.serverapi.diary.dto.GetCalendarDiaryResponse;
 import animores.serverapi.diary.entity.Diary;
 import animores.serverapi.diary.repository.DiaryCustomRepository;
@@ -16,6 +16,7 @@ import animores.serverapi.profile.domain.Profile;
 import animores.serverapi.profile.repository.ProfileRepository;
 import com.querydsl.core.QueryResults;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,14 +35,14 @@ public class DiaryServiceImpl implements DiaryService {
     @Override
     public GetAllDiaryResponse getAllDiary(int page, int size) {
         Long accountId = 1L;    // 나중에 인증 정보에서 가져오기 param으로 받지x
-        QueryResults<GetAllDiary> diaries = diaryCustomRepository.getAllDiary(accountId, page, size);
+        List<GetAllDiaryDao> diaries = diaryCustomRepository.getAllDiary(accountId, page, size);
 
-        return new GetAllDiaryResponse(diaries.getTotal(), diaries.getResults());
+        return new GetAllDiaryResponse(0, diaries);
     }
 
     @Override
     public GetCalendarDiaryResponse getCalendarDiary(Long accountId, LocalDate date) {
-        QueryResults<GetCalendarDiary> diaries = diaryCustomRepository.getCalendarDiary(accountId,
+        QueryResults<GetCalendarDiaryDao> diaries = diaryCustomRepository.getCalendarDiary(accountId,
             date);
 
         return new GetCalendarDiaryResponse(diaries.getTotal(), diaries.getResults());

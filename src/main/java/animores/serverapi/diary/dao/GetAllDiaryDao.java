@@ -6,11 +6,11 @@ import java.util.List;
 import lombok.Getter;
 
 @Getter
-public class GetAllDiary {
+public class GetAllDiaryDao {
 
     private Long diaryId;
     private String content;
-    private List<GetAllDiaryMedia> media = new ArrayList<>();
+    private List<GetAllDiaryMediaDao> media = new ArrayList<>();
     private boolean wishYn = true; // 수정 예정
     private int commentCount = 10; // 수정 예정
     private LocalDateTime createdAt;
@@ -19,7 +19,7 @@ public class GetAllDiary {
     private String name;
     private String imageUrl;
 
-    public void setDiaryMedia(List<GetAllDiaryMedia> media) {
+    public void setDiaryMedia(List<GetAllDiaryMediaDao> media) {
         this.media = media;
     }
 

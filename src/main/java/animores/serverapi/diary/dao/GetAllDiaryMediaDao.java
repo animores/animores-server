@@ -4,7 +4,7 @@ import animores.serverapi.diary.entity.DiaryMediaType;
 import lombok.Getter;
 
 @Getter
-public class GetAllDiaryMedia {
+public class GetAllDiaryMediaDao {
 
     private Long id;
     private String url;

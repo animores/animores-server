@@ -2,10 +2,12 @@ package animores.serverapi.diary.repository.impl;
 
 import static animores.serverapi.diary.entity.QDiary.diary;
 import static animores.serverapi.diary.entity.QDiaryMedia.diaryMedia;
+import static com.querydsl.core.group.GroupBy.groupBy;
+import static com.querydsl.core.group.GroupBy.list;
 
-import animores.serverapi.diary.dao.GetAllDiary;
-import animores.serverapi.diary.dao.GetAllDiaryMedia;
-import animores.serverapi.diary.dao.GetCalendarDiary;
+import animores.serverapi.diary.dao.GetAllDiaryDao;
+import animores.serverapi.diary.dao.GetAllDiaryMediaDao;
+import animores.serverapi.diary.dao.GetCalendarDiaryDao;
 import animores.serverapi.diary.repository.DiaryCustomRepository;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.Projections;
@@ -24,53 +26,46 @@ public class DiaryCustomRepositoryImpl implements DiaryCustomRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public QueryResults<GetAllDiary> getAllDiary(Long accountId, int page, int size) {
-        QueryResults<GetAllDiary> diaries = jpaQueryFactory.select(
-                Projections.fields(GetAllDiary.class,
-                    diary.id.as("diaryId"),
-                    diary.content,
-                    diary.createdAt,
-                    diary.profile.id.as("profileId"),
-                    diary.profile.name,
-                    diary.profile.imageUrl
-                )
-            )
+    public List<GetAllDiaryDao> getAllDiary(Long accountId, int page, int size) {
+        List<GetAllDiaryDao> diaries = jpaQueryFactory
             .from(diary)
-            .where(diary.account.id.eq(accountId))
-            .leftJoin(diary.media, diaryMedia)
-            .distinct()
+            .leftJoin(diaryMedia)
+            .on(diary.id.eq(diaryMedia.diary.id))
             .orderBy(diary.id.desc())
             .offset(page - 1)
             .limit(size)
-            .fetchResults();
-
-        diaries.getResults().forEach(diary -> {
-            List<GetAllDiaryMedia> media = jpaQueryFactory
-                .select(Projections.fields(GetAllDiaryMedia.class,
-                    diaryMedia.id,
-                    diaryMedia.url,
-                    diaryMedia.mediaOrder,
-                    diaryMedia.type
-                ))
-                .from(diaryMedia)
-                .where(diaryMedia.diary.id.eq(diary.getDiaryId()))
-                .orderBy(diaryMedia.mediaOrder.asc())
-                .fetch();
-
-            diary.setDiaryMedia(media);
-        });
+            .transform(
+                groupBy(diary.id).list(
+                    Projections.fields(
+                        GetAllDiaryDao.class,
+                        diary.id.as("diaryId"),
+                        diary.content,
+                        diary.createdAt,
+                        diary.profile.id.as("profileId"),
+                        diary.profile.name,
+                        diary.profile.imageUrl,
+                        list(
+                            Projections.fields(
+                                GetAllDiaryMediaDao.class,
+                                diaryMedia.id, diaryMedia.url,
+                                diaryMedia.mediaOrder, diaryMedia.type
+                            )
+                        ).as("media")
+                    )
+                )
+            );
 
         return diaries;
     }
 
     @Override
-    public QueryResults<GetCalendarDiary> getCalendarDiary(Long accountId, LocalDate date) {
+    public QueryResults<GetCalendarDiaryDao> getCalendarDiary(Long accountId, LocalDate date) {
 
         LocalDateTime startDateTime = date.atStartOfDay();
         LocalDateTime endDateTime = date.atTime(LocalTime.MAX);
 
         return jpaQueryFactory.select(
-                Projections.fields(GetCalendarDiary.class,
+                Projections.fields(GetCalendarDiaryDao.class,
                     diary.id.as("diaryId"),
                     diary.content,
                     diary.createdAt,
