@@ -84,7 +84,7 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref MyVPC
-      CidrBlock: 172.31.0.0/20
+      CidrBlock: 172.31.64.0/20
       MapPublicIpOnLaunch: true
 
   PublicSubnet2:
@@ -130,6 +130,17 @@ Resources:
     Properties:
       GroupDescription: "Security group for RDS"
       VpcId: !Ref MyVPC
+      SecurityGroupIngress:
+          - IpProtocol: tcp
+            FromPort: '3306'
+            ToPort: '3306'
+            CidrIp: 0.0.0.0/0
+
+      SecurityGroupEgress:
+          - IpProtocol: tcp
+            FromPort: '3306'
+            ToPort: '3306'
+            CidrIp: 0.0.0.0/0
 
   RDSdb:
     Type: AWS::RDS::DBInstance
@@ -137,7 +148,7 @@ Resources:
       MasterUsername: !Ref DBUSERNAME
       MasterUserPassword: !Ref DBPASSWORD
       Engine: mysql
-      DBInstanceClass: db.t2.micro
+      DBInstanceClass: db.t3.micro
       StorageType: gp2
       AllocatedStorage: 20
       DBSubnetGroupName: !Ref MyDBSubnetGroup

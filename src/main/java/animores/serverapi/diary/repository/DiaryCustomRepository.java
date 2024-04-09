@@ -1,13 +1,16 @@
 package animores.serverapi.diary.repository;
 
-import animores.serverapi.diary.dao.GetAllDiary;
-import animores.serverapi.diary.dao.GetCalendarDiary;
+import animores.serverapi.diary.dao.GetAllDiaryDao;
+import animores.serverapi.diary.dao.GetCalendarDiaryDao;
 import com.querydsl.core.QueryResults;
 import java.time.LocalDate;
+import java.util.List;
 
 public interface DiaryCustomRepository {
 
-    QueryResults<GetAllDiary> getAllDiary(Long accountId);
+    List<GetAllDiaryDao> getAllDiary(Long accountId, Long profileId, int page, int size);
 
-    QueryResults<GetCalendarDiary> getCalendarDiary(Long accountId, LocalDate date);
+    Long getAllDiaryCount(Long accountId);
+
+    QueryResults<GetCalendarDiaryDao> getCalendarDiary(Long accountId, LocalDate date);
 }
