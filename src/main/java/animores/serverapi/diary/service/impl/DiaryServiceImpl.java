@@ -33,6 +33,7 @@ public class DiaryServiceImpl implements DiaryService {
 
 
     @Override
+    @Transactional(readOnly = true)
     public GetAllDiaryResponse getAllDiary(int page, int size) {
         Long accountId = 1L;    // 나중에 인증 정보에서 가져오기 param으로 받지x
         Long profileId = 1L;
@@ -44,6 +45,7 @@ public class DiaryServiceImpl implements DiaryService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public GetCalendarDiaryResponse getCalendarDiary(Long accountId, LocalDate date) {
         QueryResults<GetCalendarDiaryDao> diaries = diaryCustomRepository.getCalendarDiary(accountId,
             date);

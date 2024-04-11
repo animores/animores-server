@@ -1,11 +1,5 @@
 package animores.serverapi.diary.repository.impl;
 
-import static animores.serverapi.diary.entity.QDiary.diary;
-import static animores.serverapi.diary.entity.QDiaryMedia.diaryMedia;
-import static animores.serverapi.diary.entity.QDiaryWish.diaryWish;
-import static com.querydsl.core.group.GroupBy.groupBy;
-import static com.querydsl.core.group.GroupBy.list;
-
 import animores.serverapi.diary.dao.GetAllDiaryDao;
 import animores.serverapi.diary.dao.GetCalendarDiaryDao;
 import animores.serverapi.diary.dao.QGetAllDiaryDao;
@@ -15,14 +9,22 @@ import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
-import com.querydsl.core.types.dsl.NumberExpression;
+import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
+
+import static animores.serverapi.diary.entity.QDiary.diary;
+import static animores.serverapi.diary.entity.QDiaryMedia.diaryMedia;
+import static animores.serverapi.diary.entity.QDiaryWish.diaryWish;
+import static com.querydsl.core.group.GroupBy.groupBy;
+import static com.querydsl.core.group.GroupBy.list;
+import static com.querydsl.jpa.JPAExpressions.select;
 
 @Repository
 @RequiredArgsConstructor
@@ -32,37 +34,34 @@ public class DiaryCustomRepositoryImpl implements DiaryCustomRepository {
 
     @Override
     public List<GetAllDiaryDao> getAllDiary(Long accountId, Long profileId, int page, int size) {
-        BooleanExpression wishYn = createWishYnExpression(profileId);
 
-        List<GetAllDiaryDao> diaries = jpaQueryFactory
-            .from(diary)
-            .leftJoin(diaryWish)
-            .on(diary.id.eq(diaryWish.diary.id))
-            .leftJoin(diaryMedia)
-            .on(diary.id.eq(diaryMedia.diary.id))
-            .where(diary.account.id.eq(accountId))
-            .orderBy(diary.id.desc())
-            .offset(page - 1)
-            .limit(size)
-            .transform(
-                groupBy(diary.id).list(
-                    new QGetAllDiaryDao(
-                        diary.id,
-                        diary.content,
-                        list(
-                            new QGetAllDiaryMediaDao(diaryMedia.id, diaryMedia.url,
-                                diaryMedia.mediaOrder, diaryMedia.type).skipNulls()
-                        ),
-                        wishYn,
-                        diary.createdAt,
-                        diary.profile.id,
-                        diary.profile.name,
-                        diary.profile.imageUrl
-                    )
-                )
-            );
-
-        return diaries;
+        return jpaQueryFactory
+                .from(diary)
+                .leftJoin(diaryWish)
+                .on(diary.id.eq(diaryWish.diary.id))
+                .leftJoin(diaryMedia)
+                .on(diary.id.eq(diaryMedia.diary.id))
+                .where(diary.account.id.eq(accountId))
+                .orderBy(diary.id.desc())
+                .offset((long) (page - 1) * size)
+                .limit(size)
+                .transform(
+                        groupBy(diary.id).list(
+                                new QGetAllDiaryDao(
+                                        diary.id,
+                                        diary.content,
+                                        list(
+                                                new QGetAllDiaryMediaDao(diaryMedia.id, diaryMedia.url,
+                                                        diaryMedia.mediaOrder, diaryMedia.type).skipNulls()
+                                        ),
+                                        createWishYnExpression(diary.id, profileId),
+                                        diary.createdAt,
+                                        diary.profile.id,
+                                        diary.profile.name,
+                                        diary.profile.imageUrl
+                                )
+                        )
+                );
     }
 
     public Long getAllDiaryCount(Long accountId) {
@@ -98,9 +97,12 @@ public class DiaryCustomRepositoryImpl implements DiaryCustomRepository {
             .fetchResults();
     }
 
-    private BooleanExpression createWishYnExpression(Long profileId) {
+    private BooleanExpression createWishYnExpression(NumberPath<Long> diaryId, Long profileId) {
+
         return new CaseBuilder()
-            .when(diaryWish.profile.id.eq(profileId))
+            .when(select(diaryWish.count()).from(diaryWish)
+                .where(diaryWish.diary.id.eq(diaryId)
+                    .and(diaryWish.profile.id.eq(profileId))).eq(1L))
             .then(true)
             .otherwise(false);
     }
