@@ -6,6 +6,7 @@ import animores.serverapi.diary.dto.EditDiaryRequest;
 import animores.serverapi.diary.dto.GetAllDiaryResponse;
 import animores.serverapi.diary.dto.GetCalendarDiaryResponse;
 import animores.serverapi.diary.service.DiaryService;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +47,7 @@ public class DiaryController {
     // 일지 등록
     @PostMapping("")
     public Response<Void> addDiary(@RequestPart(name = "request") AddDiaryRequest request,
-        @RequestPart(name="files", required = false) List<MultipartFile> files) {
+        @RequestPart(name="files", required = false) List<MultipartFile> files) throws IOException {
         diaryService.addDiary(request, files);
         return Response.success(null);
     }
