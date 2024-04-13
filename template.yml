@@ -59,7 +59,7 @@ Resources:
       Handler: animores.serverapi.LambdaHandler::handleRequest
       Runtime: java17
       CodeUri: .
-      MemorySize: 1024
+      MemorySize: 2048
       SnapStart:
         ApplyOn: "PublishedVersions"
       AutoPublishAlias: "stage"
@@ -154,6 +154,7 @@ Resources:
       DBSubnetGroupName: !Ref MyDBSubnetGroup
       VPCSecurityGroups:
         - !GetAtt MyDBSecurityGroup.GroupId
+      publiclyAccessible: true
 
   RedisSubnetGroup:
     Type: "AWS::ElastiCache::SubnetGroup"

@@ -38,11 +38,11 @@ public class AccountController {
             throw new Exception();
         }
 
-        return ResponseEntity.ok().body(response);
+        return Response.success(response);
     }
 
     @PostMapping("/sign-up")
-    public ResponseEntity<SignUpResponse> signUp(@Valid @RequestBody SignUpRequest request) throws Exception {
+    public Response<SignUpResponse> signUp(@Valid @RequestBody SignUpRequest request) throws Exception {
         SignUpResponse response = accountService.signUp(request);
 
         if (response == null) {
