@@ -53,9 +53,6 @@ public class AccountServiceImpl implements AccountService {
         if (isDuplicatedNickname(request.nickname())) {
             return null;
         }
-        if (!request.password().equals(request.confirmPassword())) {
-            return null;
-        }
 
         return SignUpResponse.toResponse(
                 accountRepository.save(Account.toEntity(request, passwordEncoder))
