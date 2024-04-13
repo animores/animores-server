@@ -2,6 +2,7 @@ on:
   push:
     branches:
       - main
+      - dev
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
@@ -20,4 +21,4 @@ jobs:
       # Run Unit tests- Specify unit tests here
 
       # sam deploy
-      - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset
+      - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --parameter-overrides ParameterKey=DBUSERNAME,ParameterValue=${{ secrets.DB_USERNAME }} ParameterKey=DBPASSWORD,ParameterValue=${{ secrets.DB_PASSWORD }}

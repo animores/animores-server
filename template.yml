@@ -2,13 +2,13 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: Animore appliaction server api
 
-Globals:
-  Api:
-    Cors:
-      AllowMethods: "'GET,POST,OPTIONS'"
-      AllowHeaders: "'content-type'"
-      AllowOrigin: "'*'"
-    EndpointConfiguration: REGIONAL
+Parameters:
+  DBUSERNAME:
+    Type: String
+    Description: Username for the database
+  DBPASSWORD:
+    Type: String
+    Description: Password for the database
 
 Resources:
   MyLambdaExecutionRole:
@@ -23,13 +23,6 @@ Resources:
               Service: lambda.amazonaws.com
             Action: sts:AssumeRole
       Policies:
-        - PolicyName: MySecretsManagerPolicy
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action: secretsmanager:GetSecretValue
-                Resource: "arn:aws:secretsmanager:ap-northeast-2:142111257198:secret:rds-db-credentials/animoresdbinstatnce1/admin/1702189030443-4YKkVI"
         - PolicyName: AWSLambdaBasicExecutionRole
           PolicyDocument:
             Version: '2012-10-17'
@@ -50,7 +43,15 @@ Resources:
                   - ec2:DescribeNetworkInterfaces
                   - ec2:DeleteNetworkInterface
                 Resource: '*'
-
+        - PolicyName: SecretsManagerPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                Resource:
+                  Ref: DBSecret
 
   SpringOnLambdaFunction:
     Type: AWS::Serverless::Function
@@ -61,7 +62,7 @@ Resources:
       MemorySize: 1024
       SnapStart:
         ApplyOn: "PublishedVersions"
-      AutoPublishAlias: "prod"
+      AutoPublishAlias: "stage"
       Policies: AWSLambdaBasicExecutionRole
       Timeout: 60
       Role: !GetAtt MyLambdaExecutionRole.Arn
@@ -72,10 +73,141 @@ Resources:
             Path: /{proxy+}
             Method: ANY
 
+  MyVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 172.31.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
 
-#Outputs:
-#  AnimoresServerApi:
-#    Description: URL for application
-#    Value: !Sub 'https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/animores'
-#    Export:
-#      Name: AnimoresServerApi
+  PublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: 172.31.64.0/20
+      MapPublicIpOnLaunch: true
+
+  PublicSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: 172.31.16.0/20
+      MapPublicIpOnLaunch: true
+
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: 172.31.32.0/20
+
+  PrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: 172.31.48.0/20
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref MyVPC
+      InternetGatewayId: !Ref InternetGateway
+
+  MyDBSubnetGroup:
+    Type: "AWS::RDS::DBSubnetGroup"
+    Properties:
+      DBSubnetGroupDescription: "Subnet group for RDS"
+      SubnetIds:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+        - !Ref PublicSubnet1
+        - !Ref PublicSubnet2
+
+  MyDBSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "Security group for RDS"
+      VpcId: !Ref MyVPC
+      SecurityGroupIngress:
+          - IpProtocol: tcp
+            FromPort: '3306'
+            ToPort: '3306'
+            CidrIp: 0.0.0.0/0
+
+      SecurityGroupEgress:
+          - IpProtocol: tcp
+            FromPort: '3306'
+            ToPort: '3306'
+            CidrIp: 0.0.0.0/0
+
+  RDSdb:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      MasterUsername: !Ref DBUSERNAME
+      MasterUserPassword: !Ref DBPASSWORD
+      Engine: mysql
+      DBInstanceClass: db.t3.micro
+      StorageType: gp2
+      AllocatedStorage: 20
+      DBSubnetGroupName: !Ref MyDBSubnetGroup
+      VPCSecurityGroups:
+        - !GetAtt MyDBSecurityGroup.GroupId
+
+  RedisSubnetGroup:
+    Type: "AWS::ElastiCache::SubnetGroup"
+    Properties:
+      Description: "Subnet group for ElastiCache"
+      SubnetIds:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+        - !Ref PublicSubnet1
+        - !Ref PublicSubnet2
+
+  RedisSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref MyVPC
+      GroupDescription: Security group for ElastiCache Redis
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 6379
+          ToPort: 6379
+          CidrIp: 0.0.0.0/0
+
+  RedisCacheCluster:
+    Type: AWS::ElastiCache::CacheCluster
+    Properties:
+      CacheNodeType: cache.t3.micro
+      Engine: redis
+      NumCacheNodes: 1
+      AutoMinorVersionUpgrade: true
+      AZMode: single-az
+      EngineVersion: 7.1
+      PreferredMaintenanceWindow: 'sun:05:00-sun:06:00'
+      Port: 6379
+      CacheParameterGroupName: default.redis7
+      CacheSubnetGroupName: !Ref RedisSubnetGroup
+      VpcSecurityGroupIds:
+        - !GetAtt RedisSecurityGroup.GroupId
+
+  DBSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-DBSecret
+      SecretString:
+        Fn::Join:
+          - ''
+          - - '{"db_username": "'
+            - Fn::GetAtt:
+                - RDSdb
+                - MasterUsername
+            - '", "db_password": "'
+            - !Ref DBPASSWORD
+            - '", "db_host": "'
+            - Fn::GetAtt:
+                - RDSdb
+                - Endpoint.Address
+            - '"}'

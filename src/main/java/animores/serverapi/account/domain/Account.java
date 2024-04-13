@@ -2,6 +2,7 @@ package animores.serverapi.account.domain;
 
 import animores.serverapi.account.request.SignUpRequest;
 import animores.serverapi.account.type.Role;
+import animores.serverapi.common.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,7 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @NoArgsConstructor
 @Getter
 @Builder
-public class Account {
+public class Account extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
