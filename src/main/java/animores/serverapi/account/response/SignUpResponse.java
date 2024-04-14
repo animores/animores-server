@@ -8,8 +8,6 @@ public record SignUpResponse(
 
         String email,
 
-        String password,
-
         String nickname,
 
         boolean isAdPermission
@@ -17,7 +15,7 @@ public record SignUpResponse(
 ) {
 
         public static SignUpResponse toResponse(Account entity) {
-                return new SignUpResponse(entity.getId(), entity.getEmail(), entity.getPassword(), entity.getNickname(), entity.isAdPermission());
+                return new SignUpResponse(entity.getId(), entity.getEmail(), entity.getPassword(), entity.isAdPermission());
         }
 
 }
