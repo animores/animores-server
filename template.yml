@@ -21,6 +21,12 @@ Parameters:
   BucketName:
     Type: String
     Description: Bucket name for S3
+  JWTSecretKey:
+    Type: String
+    Description: Secret key for JWT
+  RedisEndpoint:
+    Type: String
+    Description: Endpoint for Redis
 
 Resources:
   MyLambdaExecutionRole:
@@ -166,7 +172,6 @@ Resources:
       DBSubnetGroupName: !Ref MyDBSubnetGroup
       VPCSecurityGroups:
         - !GetAtt MyDBSecurityGroup.GroupId
-      publiclyAccessible: true
 
   RedisSubnetGroup:
     Type: "AWS::ElastiCache::SubnetGroup"
@@ -231,4 +236,8 @@ Resources:
             - Ref: S3Region
             - '", "bucket_name": "'
             - Ref: BucketName
+            - '", "jwt_secret_key": "'
+            - Ref: JWTSecretKey
+            - '", "redis_endpoint": "'
+            - Ref: RedisEndpoint
             - '"}'

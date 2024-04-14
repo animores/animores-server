@@ -24,4 +24,5 @@ jobs:
       # sam deploy
       - run: |
           sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --parameter-overrides \
-            ParameterKey=DBUSERNAME,ParameterValue=${{ secrets.DB_USERNAME }} ParameterKey=DBPASSWORD,ParameterValue=${{ secrets.DB_PASSWORD }} ParameterKey=S3AccessKey,ParameterValue=${{ secrets.AWS_ACCESS_KEY_ID }} ParameterKey=S3SecretKey,ParameterValue=${{ secrets.AWS_SECRET_ACCESS_KEY }} ParameterKey=S3Region,ParameterValue=${{ secrets.S3_REGION }} ParameterKey=BucketName,ParameterValue=${{ secrets.BUCKET_NAME }}
+          ParameterKey=DBUSERNAME,ParameterValue=${{ secrets.DB_USERNAME }} ParameterKey=DBPASSWORD,ParameterValue=${{ secrets.DB_PASSWORD }} ParameterKey=S3AccessKey,ParameterValue=${{ secrets.AWS_ACCESS_KEY_ID }} ParameterKey=S3SecretKey,ParameterValue=${{ secrets.AWS_SECRET_ACCESS_KEY }} ParameterKey=S3Region,ParameterValue=${{ secrets.S3_REGION }} ParameterKey=BucketName,ParameterValue=${{ secrets.BUCKET_NAME }} ParameterKey=JWTSecretKey,ParameterValue=${{ secrets.JWT_SECRET_KEY }} ParameterKey=RedisEndpoint,ParameterValue=${{secrets.REDIS_END_POINT}} \ 
+          --stack-name animores-server --s3-bucket animores-server-sam-deployments --capabilities CAPABILITY_IAM
