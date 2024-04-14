@@ -15,7 +15,7 @@ public interface AccountService {
      * @param request
      * @return
      */
-    SignInResponse refresh(RefreshRequest request) throws Exception;
+    SignInResponse refresh(RefreshRequest request);
 
     /**
      * 계정 생성
@@ -41,7 +41,7 @@ public interface AccountService {
      * @param request
      * @return
      */
-    SignInResponse signIn(SignInRequest request) throws Exception;
+    SignInResponse signIn(SignInRequest request);
 
     /**
      * 로그아웃

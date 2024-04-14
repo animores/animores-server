@@ -8,6 +8,8 @@ import animores.serverapi.account.request.SignUpRequest;
 import animores.serverapi.account.response.SignInResponse;
 import animores.serverapi.account.response.SignUpResponse;
 import animores.serverapi.account.service.AccountService;
+import animores.serverapi.common.exception.CustomException;
+import animores.serverapi.common.exception.ExceptionCode;
 import animores.serverapi.config.security.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
@@ -30,11 +32,11 @@ public class AccountServiceImpl implements AccountService {
     private final BlacklistTokenRepository blacklistTokenRepository;
 
     @Override
-    public SignInResponse refresh(RefreshRequest request) throws Exception {
+    public SignInResponse refresh(RefreshRequest request) {
         RefreshToken refreshToken = refreshTokenRepository.findById(request.refreshToken())
-                .orElseThrow(() -> new Exception());
+                .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_REFRESH_TOKEN));
         Account account = accountRepository.findById(request.userId())
-                .orElseThrow(() -> new Exception());
+                .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_USER));
 
         String accessToken = tokenProvider.createToken(String.format("%s:%s", account.getId(), account.getRole()));
 
@@ -43,17 +45,6 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public SignUpResponse signUp(SignUpRequest request) {
-        // 검증
-        if (!request.isAdPermission()) {
-            return null;
-        }
-        if (isDuplicatedEmail(request.email())) {
-            return null;
-        }
-        if (isDuplicatedNickname(request.nickname())) {
-            return null;
-        }
-
         return SignUpResponse.toResponse(
                 accountRepository.save(Account.toEntity(request, passwordEncoder))
         );
@@ -72,10 +63,10 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public SignInResponse signIn(SignInRequest request) throws Exception {
+    public SignInResponse signIn(SignInRequest request) {
         Account account = accountRepository.findByEmail(request.email())
                 .filter(ac -> passwordEncoder.matches(request.password(), ac.getPassword()))// 비밀번호 확인
-                .orElseThrow(() -> new Exception());
+                .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_USER));
 
         // at, rt 생성
         String accessToken = tokenProvider.createToken(String.format("%s:%s", account.getId(), account.getRole()));
@@ -93,7 +84,7 @@ public class AccountServiceImpl implements AccountService {
         Long userId = Long.parseLong(user.getUsername());
 
         // at 블랙리스트에 넣기
-        blacklistTokenRepository.save(new BlacklistToken(accessToken, userId));
+        blacklistTokenRepository.save(new BlackListToken(accessToken, userId));
         // rt 제거
         refreshTokenRepository.deleteById(refreshToken);
     }

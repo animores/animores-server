@@ -8,8 +8,6 @@ import animores.serverapi.account.response.SignInResponse;
 import animores.serverapi.account.response.SignUpResponse;
 import animores.serverapi.account.service.AccountService;
 import animores.serverapi.common.Response;
-import animores.serverapi.common.exception.CustomException;
-import animores.serverapi.common.exception.ExceptionCode;
 import animores.serverapi.config.security.RefreshRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
@@ -21,8 +19,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.attribute.UserPrincipal;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/account")
@@ -31,43 +27,25 @@ public class AccountController {
     private final AccountService accountService;
 
     @PostMapping("/refresh")
-    public Response<SignInResponse> refresh(@Valid @RequestBody RefreshRequest request) throws Exception {
-        SignInResponse response = accountService.refresh(request);
-
-        if (response == null) {
-            throw new Exception();
-        }
-
-        return Response.success(response);
+    public Response<SignInResponse> refresh(@Valid @RequestBody RefreshRequest request) {
+        return Response.success(accountService.refresh(request));
     }
 
     @PostMapping("/sign-up")
-    public Response<SignUpResponse> signUp(@Valid @RequestBody SignUpRequest request) throws Exception {
-        SignUpResponse response = accountService.signUp(request);
-
-        if (response == null) {
-            //TODO: 에러코드 추가
-            throw new CustomException(ExceptionCode.UNHANDLED_EXCEPTION);
-        }
-
-        return Response.success(response);
+    public Response<SignUpResponse> signUp(@Valid @RequestBody SignUpRequest request) {
+        return Response.success(accountService.signUp(request));
     }
 
     @PostMapping("/sign-in")
-    public ResponseEntity<SignInResponse> signIn(@Valid @RequestBody SignInRequest request) throws Exception {
-        SignInResponse response = accountService.signIn(request);
-
-        if (response == null) {
-            throw new Exception();
-        }
-
-        return ResponseEntity.ok().body(response);
+    public Response<SignInResponse> signIn(@Valid @RequestBody SignInRequest request) {
+        return Response.success(accountService.signIn(request));
     }
 
     @PostMapping("/sign-out")
     @PreAuthorize("hasAuthority('USER')")
-    public void signOut(@Valid @RequestBody SignOutRequest request, @AuthenticationPrincipal User user) {
+    public ResponseEntity<Void> signOut(@Valid @RequestBody SignOutRequest request, @AuthenticationPrincipal User user) {
         accountService.signOut(request, user);
+        return ResponseEntity.noContent().build();
     }
 
 
