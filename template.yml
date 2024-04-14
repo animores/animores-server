@@ -9,6 +9,18 @@ Parameters:
   DBPASSWORD:
     Type: String
     Description: Password for the database
+  S3AccessKey:
+    Type: String
+    Description: Access key for S3
+  S3SecretKey:
+    Type: String
+    Description: Secret key for S3
+  S3Region:
+    Type: String
+    Description: Region for S3
+  BucketName:
+    Type: String
+    Description: Bucket name for S3
 
 Resources:
   MyLambdaExecutionRole:
@@ -206,9 +218,17 @@ Resources:
                 - RDSdb
                 - MasterUsername
             - '", "db_password": "'
-            - !Ref DBPASSWORD
+            - Ref: DBPASSWORD
             - '", "db_host": "'
             - Fn::GetAtt:
                 - RDSdb
                 - Endpoint.Address
+            - '", "s3_access_key": "'
+            - Ref: S3AccessKey
+            - '", "s3_secret_key": "'
+            - Ref: S3SecretKey
+            - '", "s3_region": "'
+            - Ref: S3Region
+            - '", "bucket_name": "'
+            - Ref: BucketName
             - '"}'

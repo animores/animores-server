@@ -20,6 +20,18 @@ spring:
     host: ani-re-w47r78h4gi3x.sr20hx.0001.apn2.cache.amazonaws.com:6379
     port: 6379
 
+  cloud:
+    aws:
+      credentials:
+        accessKey: ${s3_access_key}
+        secretKey: ${s3_secret_key}
+      s3:
+        bucket: ${bucket_name}
+      region:
+        static: ${s3_region}
+      stack:
+        auto: false
+
   jwt:
     secret-key: ${jwt_secret_key}
     expiration-hours: 24
