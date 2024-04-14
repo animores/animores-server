@@ -4,16 +4,16 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
 @RedisHash(value = "blacklistToken", timeToLive = 86400)// 24 hour
-public class BlacklistToken {
+public class BlackListToken {
 
     @Id
-    private String blacklistToken;// key
+    private String blacklistTokenKey;// key
 
     private Long userId;// value
 
 
-    public BlacklistToken(String blacklistToken, Long userId) {
-        this.blacklistToken = blacklistToken;
+    public BlackListToken(String blacklistTokenKey, Long userId) {
+        this.blacklistTokenKey = blacklistTokenKey;
         this.userId = userId;
     }
 
