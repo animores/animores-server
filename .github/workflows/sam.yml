@@ -27,7 +27,7 @@ jobs:
             --no-fail-on-empty-changeset --parameter-overrides \
             ParameterKey=DBUSERNAME,ParameterValue=${{ secrets.DB_USERNAME }} \
             ParameterKey=DBPASSWORD,ParameterValue=${{ secrets.DB_PASSWORD }} \
-            ParameterKey=S3AccessKey,ParameterValue=${{ secrets.S3_ACCESS_KEY }} \
-            ParameterKey=S3SecretKey,ParameterValue=${{ secrets.S3_SECRET_KEY }} \
+            ParameterKey=S3AccessKey,ParameterValue=${{ secrets.AWS_ACCESS_KEY_ID }} \
+            ParameterKey=S3SecretKey,ParameterValue=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
             ParameterKey=S3Region,ParameterValue=${{ secrets.S3_REGION }} \
             ParameterKey=BucketName,ParameterValue=${{ secrets.BUCKET_NAME }}
