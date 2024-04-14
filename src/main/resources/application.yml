@@ -19,3 +19,11 @@ spring:
   redis:
     host: ani-re-w47r78h4gi3x.sr20hx.0001.apn2.cache.amazonaws.com:6379
     port: 6379
+
+  jwt:
+    secret-key: ${jwt_secret_key}
+    expiration-hours: 24
+    issuer: kangmo
+    redis:
+      host: localhost
+      port: 6379

@@ -20,7 +20,7 @@ spring:
         dialect: org.hibernate.dialect.H2Dialect
         format_sql: true
   jwt:
-    secret-key: NiOeyFbN1Gqo10bPgUyTFsRMkJpGLXSvGP04eFqj5B30r5TcrtlSXfQ7TndvYjNvfkEKLqILn0j1SmKODO1Yw3JpBBgI3nVPEahqxeY8qbPSFGyzyEVxnl4AQcrnVneI
+    secret-key: secretKey
     expiration-hours: 24
     issuer: kangmo
     redis:
@@ -30,5 +30,3 @@ spring:
   redis:
     host: localhost
     port: 6379
-
-server-url: https://xnwp1fbxrf.execute-api.ap-northeast-2.amazonaws.com/Stage
