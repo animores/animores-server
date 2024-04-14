@@ -6,7 +6,9 @@ import animores.serverapi.diary.dto.EditDiaryRequest;
 import animores.serverapi.diary.dto.GetAllDiaryResponse;
 import animores.serverapi.diary.dto.GetCalendarDiaryResponse;
 import animores.serverapi.diary.service.DiaryService;
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +18,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -42,8 +46,9 @@ public class DiaryController {
 
     // 일지 등록
     @PostMapping("")
-    public Response<Void> addDiary(@RequestBody AddDiaryRequest request) {
-        diaryService.addDiary(request);
+    public Response<Void> addDiary(@RequestPart(name = "request") AddDiaryRequest request,
+        @RequestPart(name="files", required = false) List<MultipartFile> files) throws IOException {
+        diaryService.addDiary(request, files);
         return Response.success(null);
     }
 

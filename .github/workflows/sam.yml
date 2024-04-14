@@ -3,6 +3,7 @@ on:
     branches:
       - main
       - dev
+
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
@@ -21,4 +22,12 @@ jobs:
       # Run Unit tests- Specify unit tests here
 
       # sam deploy
-      - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --parameter-overrides ParameterKey=DBUSERNAME,ParameterValue=${{ secrets.DB_USERNAME }} ParameterKey=DBPASSWORD,ParameterValue=${{ secrets.DB_PASSWORD }}
+      - run: |
+          sam deploy --no-confirm-changeset \
+            --no-fail-on-empty-changeset --parameter-overrides \
+            ParameterKey=DBUSERNAME,ParameterValue=${{ secrets.DB_USERNAME }} \
+            ParameterKey=DBPASSWORD,ParameterValue=${{ secrets.DB_PASSWORD }} \
+            ParameterKey=S3AccessKey,ParameterValue=${{ secrets.AWS_ACCESS_KEY_ID }} \
+            ParameterKey=S3SecretKey,ParameterValue=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
+            ParameterKey=S3Region,ParameterValue=${{ secrets.S3_REGION }} \
+            ParameterKey=BucketName,ParameterValue=${{ secrets.BUCKET_NAME }}

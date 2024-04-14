@@ -41,6 +41,14 @@ public class DiaryMedia extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private DiaryMediaType type;
 
+    public static DiaryMedia create(Diary diary, String url, int order, DiaryMediaType type) {
+        return DiaryMedia.builder()
+            .diary(diary)
+            .url(url)
+            .mediaOrder(order)
+            .type(type)
+            .build();
+    }
 
 
 }

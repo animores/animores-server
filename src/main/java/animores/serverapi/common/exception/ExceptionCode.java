@@ -12,7 +12,10 @@ public enum ExceptionCode {
 //   to_do 관련 에러
     NOT_FOUND_TO_DO("", "해당 To Do를 찾을 수 없습니다."),
     INAPPROPRIATE_PROFILE_ACCESS("","작성자 Profile 만 수정할 수 있습니다." ),
-    UNHANDLED_EXCEPTION("error_code","알 수 없는 에러가 발생했습니다.");
+    UNHANDLED_EXCEPTION("error_code","알 수 없는 에러가 발생했습니다."),
+
+    // 일지
+    UNSUPPORTED_TYPE("", "지원하지 않는 파일 형식입니다.");
 
     private final String errorCode;
     private final String message;
