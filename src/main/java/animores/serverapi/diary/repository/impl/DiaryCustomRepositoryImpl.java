@@ -37,8 +37,6 @@ public class DiaryCustomRepositoryImpl implements DiaryCustomRepository {
 
         return jpaQueryFactory
                 .from(diary)
-                .leftJoin(diaryWish)
-                .on(diary.id.eq(diaryWish.diary.id))
                 .leftJoin(diaryMedia)
                 .on(diary.id.eq(diaryMedia.diary.id))
                 .where(diary.account.id.eq(accountId))
