@@ -4,16 +4,21 @@ import animores.serverapi.account.domain.Account;
 import animores.serverapi.account.repository.AccountRepository;
 import animores.serverapi.diary.dto.AddDiaryRequest;
 import animores.serverapi.diary.dto.EditDiaryRequest;
+import animores.serverapi.diary.dao.GetAllDiaryDao;
+import animores.serverapi.diary.dto.GetAllDiaryResponse;
+import animores.serverapi.diary.dao.GetCalendarDiaryDao;
+import animores.serverapi.diary.dto.GetCalendarDiaryResponse;
 import animores.serverapi.diary.entity.Diary;
+import animores.serverapi.diary.repository.DiaryCustomRepository;
 import animores.serverapi.diary.repository.DiaryRepository;
 import animores.serverapi.diary.service.DiaryService;
 import animores.serverapi.profile.domain.Profile;
 import animores.serverapi.profile.repository.ProfileRepository;
+import com.querydsl.core.QueryResults;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
-import org.apache.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,20 +29,28 @@ public class DiaryServiceImpl implements DiaryService {
     private final AccountRepository accountRepository;
     private final ProfileRepository profileRepository;
     private final DiaryRepository diaryRepository;
+    private final DiaryCustomRepository diaryCustomRepository;
 
 
     @Override
-    public List<Diary> getAllDiary(Long accountId) {
-        //  querydsl로 수정예정
-        List<Diary> accountDiaries = diaryRepository.findByAccountId(accountId);
-//        .orElseThrow(() -> new NoSuchElementException());
+    @Transactional(readOnly = true)
+    public GetAllDiaryResponse getAllDiary(int page, int size) {
+        Long accountId = 1L;    // 나중에 인증 정보에서 가져오기 param으로 받지x
+        Long profileId = 1L;
 
-        return null;
+        List<GetAllDiaryDao> diaries = diaryCustomRepository.getAllDiary(accountId, profileId, page, size);
+        Long totalCount = diaryCustomRepository.getAllDiaryCount(accountId);
+
+        return new GetAllDiaryResponse(totalCount, diaries);
     }
 
     @Override
-    public void getCalendarDiary(Long userId, String date) {
-        // querydsl 사용해야될듯
+    @Transactional(readOnly = true)
+    public GetCalendarDiaryResponse getCalendarDiary(Long accountId, LocalDate date) {
+        QueryResults<GetCalendarDiaryDao> diaries = diaryCustomRepository.getCalendarDiary(accountId,
+            date);
+
+        return new GetCalendarDiaryResponse(diaries.getTotal(), diaries.getResults());
     }
 
     @Override
