@@ -212,22 +212,22 @@ Resources:
       SecretString:
         Fn::Join:
           - ''
-          - '{"db_username": "'
-          - Fn::GetAtt:
-              - RDSdb
-              - MasterUsername
-          - '", "db_password": "'
-          - !Ref DBPASSWORD
-          - '", "db_host": "'
-          - Fn::GetAtt:
-              - RDSdb
-              - Endpoint.Address
-          - '", "s3_access_key": "'
-          - !Ref S3AccessKey
-          - '", "s3_secret_key": "'
-          - !Ref S3SecretKey
-          - '", "s3_region": "'
-          - !Ref S3Region
-          - '", "bucket_name": "'
-          - !Ref BucketName
-          - '"}'
+          - - '{"db_username": "'
+            - Fn::GetAtt:
+                - RDSdb
+                - MasterUsername
+            - '", "db_password": "'
+            - Ref: DBPASSWORD
+            - '", "db_host": "'
+            - Fn::GetAtt:
+                - RDSdb
+                - Endpoint.Address
+            - '", "s3_access_key": "'
+            - Ref: S3AccessKey
+            - '", "s3_secret_key": "'
+            - Ref: S3SecretKey
+            - '", "s3_region": "'
+            - Ref: S3Region
+            - '", "bucket_name": "'
+            - Ref: BucketName
+            - '"}'
