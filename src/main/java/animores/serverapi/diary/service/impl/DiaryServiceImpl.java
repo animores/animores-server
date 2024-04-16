@@ -80,26 +80,31 @@ public class DiaryServiceImpl implements DiaryService {
         Profile profile = findProfileById(1L);
         //
 
-        Diary diary = diaryRepository.save(Diary.create(account, profile, request.content()));
-
-        for (MultipartFile file : files) {
-            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                .bucket(bucketName)
-                .contentType(file.getContentType())
-                .contentLength(file.getSize())
-                .key(file.getOriginalFilename())
-                .build();
-            RequestBody requestBody = RequestBody.fromBytes(files.get(0).getBytes());
-            s3Client.putObject(putObjectRequest, requestBody);
+        if (files != null) {
+            for (MultipartFile file : files) {
+                PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .contentType(file.getContentType())
+                    .contentLength(file.getSize())
+                    .key(file.getOriginalFilename())
+                    .build();
+                RequestBody requestBody = RequestBody.fromBytes(file.getBytes());
+                s3Client.putObject(putObjectRequest, requestBody);
+            }
         }
 
-        List<DiaryMedia> diaryMedias = IntStream.range(0, files.size())
-            .mapToObj(i -> {
-                MultipartFile file = files.get(i);
-                return DiaryMedia.create(diary, "/" + file.getOriginalFilename(), i, checkType(file.getContentType()));
-            })
-            .collect(Collectors.toList());
-        diaryMediaRepository.saveAll(diaryMedias);
+        Diary diary = diaryRepository.save(Diary.create(account, profile, request.content()));
+
+        if (files != null) {
+            List<DiaryMedia> diaryMedias = IntStream.range(0, files.size())
+                .mapToObj(i -> {
+                    MultipartFile file = files.get(i);
+                    return DiaryMedia.create(diary, "/" + file.getOriginalFilename(), i,
+                        checkType(file.getContentType()));
+                })
+                .collect(Collectors.toList());
+            diaryMediaRepository.saveAll(diaryMedias);
+        }
     }
 
     @Override
