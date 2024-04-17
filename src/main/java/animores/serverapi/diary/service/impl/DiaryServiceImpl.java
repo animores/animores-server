@@ -82,24 +82,13 @@ public class DiaryServiceImpl implements DiaryService {
 
         Diary diary = diaryRepository.save(Diary.create(account, profile, request.content()));
 
-        for (MultipartFile file : files) {
-            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                .bucket(bucketName)
-                .contentType(file.getContentType())
-                .contentLength(file.getSize())
-                .key(file.getOriginalFilename())
-                .build();
-            RequestBody requestBody = RequestBody.fromBytes(files.get(0).getBytes());
-            s3Client.putObject(putObjectRequest, requestBody);
+        if (files != null) {
+            uploadFileToS3(files);
+
+            List<DiaryMedia> diaryMedias = createDiaryMedias(diary, files);
+            diaryMediaRepository.saveAll(diaryMedias);
         }
 
-        List<DiaryMedia> diaryMedias = IntStream.range(0, files.size())
-            .mapToObj(i -> {
-                MultipartFile file = files.get(i);
-                return DiaryMedia.create(diary, "/" + file.getOriginalFilename(), i, checkType(file.getContentType()));
-            })
-            .collect(Collectors.toList());
-        diaryMediaRepository.saveAll(diaryMedias);
     }
 
     @Override
@@ -135,11 +124,34 @@ public class DiaryServiceImpl implements DiaryService {
             .orElseThrow(() -> new NoSuchElementException("Diary not found with id: " + id));
     }
 
+    private List<DiaryMedia> createDiaryMedias(Diary diary, List<MultipartFile> files) throws IOException {
+        return IntStream.range(0, files.size())
+            .mapToObj(i -> {
+                MultipartFile file = files.get(i);
+                return DiaryMedia.create(diary, "/" + file.getOriginalFilename(), i,
+                    checkType(file.getContentType()));
+            })
+            .collect(Collectors.toList());
+    }
+
     public DiaryMediaType checkType(String type) {
         return switch (type) {
             case "image/png" -> I;
             case "video/mp4" -> V;
             default -> throw new IllegalArgumentException("Unsupported type: " + type);
         };
+    }
+
+    public void uploadFileToS3(List<MultipartFile> files) throws IOException {
+        for (MultipartFile file : files) {
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .contentType(file.getContentType())
+                .contentLength(file.getSize())
+                .key(file.getOriginalFilename())
+                .build();
+            RequestBody requestBody = RequestBody.fromBytes(file.getBytes());
+            s3Client.putObject(putObjectRequest, requestBody);
+        }
     }
 }
