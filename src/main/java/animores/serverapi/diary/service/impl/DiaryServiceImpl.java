@@ -5,16 +5,20 @@ import static animores.serverapi.diary.entity.DiaryMediaType.V;
 
 import animores.serverapi.account.domain.Account;
 import animores.serverapi.account.repository.AccountRepository;
+import animores.serverapi.common.exception.CustomException;
+import animores.serverapi.common.exception.ExceptionCode;
 import animores.serverapi.diary.dao.GetAllDiaryDao;
 import animores.serverapi.diary.dao.GetCalendarDiaryDao;
 import animores.serverapi.diary.dto.AddDiaryRequest;
-import animores.serverapi.diary.dto.EditDiaryRequest;
+import animores.serverapi.diary.dto.EditDiaryContentRequest;
+import animores.serverapi.diary.dto.EditDiaryMediaRequest;
 import animores.serverapi.diary.dto.GetAllDiaryResponse;
 import animores.serverapi.diary.dto.GetCalendarDiaryResponse;
 import animores.serverapi.diary.entity.Diary;
 import animores.serverapi.diary.entity.DiaryMedia;
 import animores.serverapi.diary.entity.DiaryMediaType;
 import animores.serverapi.diary.repository.DiaryCustomRepository;
+import animores.serverapi.diary.repository.DiaryMediaCustomRepository;
 import animores.serverapi.diary.repository.DiaryMediaRepository;
 import animores.serverapi.diary.repository.DiaryRepository;
 import animores.serverapi.diary.service.DiaryService;
@@ -34,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 @RequiredArgsConstructor
@@ -47,6 +52,7 @@ public class DiaryServiceImpl implements DiaryService {
     private final DiaryRepository diaryRepository;
     private final DiaryCustomRepository diaryCustomRepository;
     private final DiaryMediaRepository diaryMediaRepository;
+    private final DiaryMediaCustomRepository diaryMediaCustomRepository;
 
     @Value("${spring.cloud.aws.s3.bucket}")
     private String bucketName;
@@ -80,6 +86,8 @@ public class DiaryServiceImpl implements DiaryService {
         Profile profile = findProfileById(1L);
         //
 
+        // files에서 "files"만 넘어오고 파일은 안담겨서 넘어왔을 경우 에러 처리 필요
+
         Diary diary = diaryRepository.save(Diary.create(account, profile, request.content()));
 
         if (files != null) {
@@ -93,11 +101,34 @@ public class DiaryServiceImpl implements DiaryService {
 
     @Override
     @Transactional
-    public void editDiary(Long diaryId, EditDiaryRequest request) {
-        Diary diary = diaryRepository.findById(diaryId)
-            .orElseThrow(NoSuchElementException::new);
+    public void editDiaryContent(Long diaryId, EditDiaryContentRequest request) {
+        Diary diary = findDiaryById(diaryId);
+        // auth 적용 후 diary 작성자와 일치하는지 체크하는 코드 추가 예정
 
-        diary.update(request);
+        diary.updateContent(request.content());
+    }
+
+    @Override
+    @Transactional
+    public void editDiaryMedia(Long diaryId, EditDiaryMediaRequest request,
+        List<MultipartFile> files) throws IOException {
+        Diary diary = findDiaryById(diaryId);
+        // auth 적용 후 diary 작성자와 일치하는지 체크하는 코드 추가 예정
+
+        List<DiaryMedia> mediaListToDelete = diaryMediaRepository.findByIdIn(request.mediaIds());
+        if (mediaListToDelete.isEmpty()) {
+            throw new CustomException(ExceptionCode.NOT_FOUND_DIARY_MEDIA);
+        }
+        removeFileFromS3(mediaListToDelete);
+        diaryMediaRepository.deleteAll(mediaListToDelete);
+
+        uploadFileToS3(files);
+
+        diaryMediaRepository.saveAll(createDiaryMedias(diary, files));
+
+        List<DiaryMedia> mediaListToReorder = diaryMediaCustomRepository.getAllDiaryMediaToReorder(diary.getId(),
+            DiaryMediaType.I);
+        reorderDiaryMedia(mediaListToReorder);
     }
 
     @Override
@@ -134,6 +165,12 @@ public class DiaryServiceImpl implements DiaryService {
             .collect(Collectors.toList());
     }
 
+    public void reorderDiaryMedia(List<DiaryMedia> mediaList) {
+        for (int i = 0; i < mediaList.size(); i++) {
+            mediaList.get(i).updateMediaOrder(i);
+        }
+    }
+
     public DiaryMediaType checkType(String type) {
         return switch (type) {
             case "image/png" -> I;
@@ -152,6 +189,16 @@ public class DiaryServiceImpl implements DiaryService {
                 .build();
             RequestBody requestBody = RequestBody.fromBytes(file.getBytes());
             s3Client.putObject(putObjectRequest, requestBody);
+        }
+    }
+
+    public void removeFileFromS3(List<DiaryMedia> mediaList) {
+        for (DiaryMedia media : mediaList) {
+            DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+                .bucket(bucketName)
+                .key(media.getUrl().split("/")[1])
+                .build();
+            s3Client.deleteObject(deleteObjectRequest);
         }
     }
 }

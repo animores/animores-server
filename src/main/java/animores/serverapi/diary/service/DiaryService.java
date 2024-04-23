@@ -1,6 +1,8 @@
 package animores.serverapi.diary.service;
 
 import animores.serverapi.diary.dto.AddDiaryRequest;
+import animores.serverapi.diary.dto.EditDiaryContentRequest;
+import animores.serverapi.diary.dto.EditDiaryMediaRequest;
 import animores.serverapi.diary.dto.EditDiaryRequest;
 import animores.serverapi.diary.dto.GetAllDiaryResponse;
 import animores.serverapi.diary.dto.GetCalendarDiaryResponse;
@@ -17,7 +19,10 @@ public interface DiaryService {
 
     void addDiary(AddDiaryRequest request, List<MultipartFile> files) throws IOException;
 
-    void editDiary(Long diaryId, EditDiaryRequest request);
+    void editDiaryContent(Long diaryId, EditDiaryContentRequest request);
+
+    void editDiaryMedia(Long diaryId, EditDiaryMediaRequest request, List<MultipartFile> files)
+        throws IOException;
 
     void removeDiary(Long removeDiary);
 

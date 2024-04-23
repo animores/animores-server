@@ -50,5 +50,8 @@ public class DiaryMedia extends BaseEntity {
             .build();
     }
 
+    public void updateMediaOrder(int order) {
+        this.mediaOrder = order;
+    }
 
 }

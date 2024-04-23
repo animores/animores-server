@@ -2,7 +2,6 @@ package animores.serverapi.diary.entity;
 
 import animores.serverapi.account.domain.Account;
 import animores.serverapi.common.BaseEntity;
-import animores.serverapi.diary.dto.EditDiaryRequest;
 import animores.serverapi.profile.domain.Profile;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -65,8 +64,8 @@ public class Diary extends BaseEntity {
             .build();
     }
 
-    public void update(EditDiaryRequest request) {
-        this.content = request.content();
+    public void updateContent(String content) {
+        this.content = content;
     }
 
     public void delete() {
