@@ -21,8 +21,12 @@ public interface DiaryService {
 
     void editDiaryContent(Long diaryId, EditDiaryContentRequest request);
 
+    void addDiaryMedia(Long diaryId, List<MultipartFile> files) throws IOException;
+
     void editDiaryMedia(Long diaryId, EditDiaryMediaRequest request, List<MultipartFile> files)
         throws IOException;
+
+    void removeDiaryMedia(Long diaryId, EditDiaryMediaRequest request);
 
     void removeDiary(Long removeDiary);
 

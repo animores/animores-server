@@ -62,6 +62,22 @@ public class DiaryController {
         return Response.success(null);
     }
 
+    // 일지 내용+미디어 수정
+//    @PatchMapping("/{diaryId}")
+//    public Response<Void> editDiaryContent(@PathVariable Long diaryId,
+//        @RequestBody EditDiaryRequest request) {
+//        diaryService.editDiaryContent(diaryId, request);
+//        return Response.success(null);
+//    }
+
+    // 일지 미디어 추가
+    @PostMapping("/{diaryId}/diary-media")
+    public Response<Void> addDiaryMedia(@PathVariable Long diaryId,
+        @RequestPart(name = "files") List<MultipartFile> files) throws IOException {
+        diaryService.addDiaryMedia(diaryId, files);
+        return Response.success(null);
+    }
+
     // 일지 미디어 수정 (삭제+추가)
     @PutMapping("/{diaryId}/diary-media")
     public Response<Void> editDiaryMedia(@PathVariable Long diaryId,
@@ -71,25 +87,13 @@ public class DiaryController {
         return Response.success(null);
     }
 
-//    // 일지 미디어 삭제
-//    @DeleteMapping("/{diaryId}/diary-media")
-//    public void removeDiaryMedia(@PathVariable Long diaryId, @RequestBody EditDiaryMediaRequest request) {
-//
-//    }
-//
-//    // 일지 미디어 추가
-//    @PutMapping("/{diaryId}/diary-media")
-//    public void addDiaryMedia(@PathVariable Long diaryId, @RequestPart(name="files") List<MultipartFile> files) {
-//
-//    }
-
-    // 일지 내용+미디어 수정
-//    @PatchMapping("/{diaryId}")
-//    public Response<Void> editDiaryContent(@PathVariable Long diaryId,
-//        @RequestBody EditDiaryRequest request) {
-//        diaryService.editDiaryContent(diaryId, request);
-//        return Response.success(null);
-//    }
+    // 일지 미디어 삭제
+    @DeleteMapping("/{diaryId}/diary-media")
+    public Response<Void> removeDiaryMedia(@PathVariable Long diaryId,
+        @RequestBody EditDiaryMediaRequest request) {
+        diaryService.removeDiaryMedia(diaryId, request);
+        return Response.success(null);
+    }
 
     @DeleteMapping("/{diaryId}")
     public Response<Void> removeDiary(@PathVariable Long diaryId) {

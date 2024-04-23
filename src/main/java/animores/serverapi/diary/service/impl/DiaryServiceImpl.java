@@ -108,6 +108,23 @@ public class DiaryServiceImpl implements DiaryService {
         diary.updateContent(request.content());
     }
 
+    @Transactional
+    @Override
+    public void addDiaryMedia(Long diaryId, List<MultipartFile> files) throws IOException {
+        Diary diary = findDiaryById(diaryId);
+        // auth 적용 후 diary 작성자와 일치하는지 체크하는 코드 추가 예정
+
+        uploadFileToS3(files);
+
+        List<DiaryMedia> diaryMedias = createDiaryMedias(diary, files);
+        diaryMediaRepository.saveAll(diaryMedias);
+
+        List<DiaryMedia> mediaListToReorder = diaryMediaCustomRepository.getAllDiaryMediaToReorder(
+            diary.getId(),
+            DiaryMediaType.I);
+        reorderDiaryMedia(mediaListToReorder);
+    }
+
     @Override
     @Transactional
     public void editDiaryMedia(Long diaryId, EditDiaryMediaRequest request,
@@ -127,6 +144,25 @@ public class DiaryServiceImpl implements DiaryService {
         diaryMediaRepository.saveAll(createDiaryMedias(diary, files));
 
         List<DiaryMedia> mediaListToReorder = diaryMediaCustomRepository.getAllDiaryMediaToReorder(diary.getId(),
+            DiaryMediaType.I);
+        reorderDiaryMedia(mediaListToReorder);
+    }
+
+    @Override
+    @Transactional
+    public void removeDiaryMedia(Long diaryId, EditDiaryMediaRequest request) {
+        Diary diary = findDiaryById(diaryId);
+        // auth 적용 후 diary 작성자와 일치하는지 체크하는 코드 추가 예정
+
+        List<DiaryMedia> mediaListToDelete = diaryMediaRepository.findByIdIn(request.mediaIds());
+        if (mediaListToDelete.isEmpty()) {
+            throw new CustomException(ExceptionCode.NOT_FOUND_DIARY_MEDIA);
+        }
+        removeFileFromS3(mediaListToDelete);
+        diaryMediaRepository.deleteAll(mediaListToDelete);
+
+        List<DiaryMedia> mediaListToReorder = diaryMediaCustomRepository.getAllDiaryMediaToReorder(
+            diary.getId(),
             DiaryMediaType.I);
         reorderDiaryMedia(mediaListToReorder);
     }
