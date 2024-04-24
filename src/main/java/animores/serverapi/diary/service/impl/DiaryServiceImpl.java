@@ -116,13 +116,9 @@ public class DiaryServiceImpl implements DiaryService {
 
         uploadFileToS3(files);
 
-        List<DiaryMedia> diaryMedias = createDiaryMedias(diary, files);
-        diaryMediaRepository.saveAll(diaryMedias);
+        diaryMediaRepository.saveAll(createDiaryMedias(diary, files));
 
-        List<DiaryMedia> mediaListToReorder = diaryMediaCustomRepository.getAllDiaryMediaToReorder(
-            diary.getId(),
-            DiaryMediaType.I);
-        reorderDiaryMedia(mediaListToReorder);
+        reorderDiaryMedia(diary.getId(), DiaryMediaType.I);
     }
 
     @Override
@@ -143,9 +139,7 @@ public class DiaryServiceImpl implements DiaryService {
 
         diaryMediaRepository.saveAll(createDiaryMedias(diary, files));
 
-        List<DiaryMedia> mediaListToReorder = diaryMediaCustomRepository.getAllDiaryMediaToReorder(diary.getId(),
-            DiaryMediaType.I);
-        reorderDiaryMedia(mediaListToReorder);
+        reorderDiaryMedia(diary.getId(), DiaryMediaType.I);
     }
 
     @Override
@@ -161,10 +155,7 @@ public class DiaryServiceImpl implements DiaryService {
         removeFileFromS3(mediaListToDelete);
         diaryMediaRepository.deleteAll(mediaListToDelete);
 
-        List<DiaryMedia> mediaListToReorder = diaryMediaCustomRepository.getAllDiaryMediaToReorder(
-            diary.getId(),
-            DiaryMediaType.I);
-        reorderDiaryMedia(mediaListToReorder);
+        reorderDiaryMedia(diary.getId(), DiaryMediaType.I);
     }
 
     @Override
@@ -201,7 +192,10 @@ public class DiaryServiceImpl implements DiaryService {
             .collect(Collectors.toList());
     }
 
-    public void reorderDiaryMedia(List<DiaryMedia> mediaList) {
+    public void reorderDiaryMedia(Long diaryId, DiaryMediaType type) {
+        List<DiaryMedia> mediaList = diaryMediaCustomRepository.getAllDiaryMediaToReorder(diaryId,
+            type);
+
         for (int i = 0; i < mediaList.size(); i++) {
             mediaList.get(i).updateMediaOrder(i);
         }
