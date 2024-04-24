@@ -2,10 +2,13 @@ package animores.serverapi.common.exception;
 
 import animores.serverapi.common.Response;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.sql.SQLIntegrityConstraintViolationException;
 
 @Slf4j
 @RestControllerAdvice
@@ -25,6 +28,12 @@ public class GlobalExceptionHandler {
     public Response<Void> handleIllegalArgumentException(IllegalArgumentException e) {
         return Response.error(e.getMessage());
     }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Response<Void>> handleSQLIntegrityConstraintViolationException(SQLIntegrityConstraintViolationException e) {
+        return ResponseEntity.badRequest().body(Response.error("중복된 값이 존재합니다."));
+    }
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception e) {
