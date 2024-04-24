@@ -1,8 +1,5 @@
 package animores.serverapi.diary.service.impl;
 
-import static animores.serverapi.diary.entity.DiaryMediaType.I;
-import static animores.serverapi.diary.entity.DiaryMediaType.V;
-
 import animores.serverapi.account.domain.Account;
 import animores.serverapi.account.repository.AccountRepository;
 import animores.serverapi.common.exception.CustomException;
@@ -33,7 +30,6 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -182,7 +178,7 @@ public class DiaryServiceImpl implements DiaryService {
             .mapToObj(i -> {
                 MultipartFile file = files.get(i);
                 return DiaryMedia.create(diary, "/" + file.getOriginalFilename(), i,
-                    checkType(file.getContentType()));
+                    DiaryMediaType.checkType(file.getContentType()));
             })
             .collect(Collectors.toList());
     }
@@ -194,14 +190,6 @@ public class DiaryServiceImpl implements DiaryService {
         for (int i = 0; i < mediaList.size(); i++) {
             mediaList.get(i).updateMediaOrder(i);
         }
-    }
-
-    public DiaryMediaType checkType(String type) {
-        return switch (type) {
-            case "image/png" -> I;
-            case "video/mp4" -> V;
-            default -> throw new IllegalArgumentException("Unsupported type: " + type);
-        };
     }
 
     private List<ObjectIdentifier> generateKeysForS3Deletion(List<DiaryMedia> mediaList) {
