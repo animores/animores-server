@@ -17,7 +17,7 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
 
   redis:
-    host: {redis_endpoint}
+    host: ${redis_endpoint}
     port: 6379
 
   cloud:
