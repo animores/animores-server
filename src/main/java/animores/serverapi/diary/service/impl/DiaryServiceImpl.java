@@ -24,6 +24,7 @@ import animores.serverapi.diary.repository.DiaryRepository;
 import animores.serverapi.diary.service.DiaryService;
 import animores.serverapi.profile.domain.Profile;
 import animores.serverapi.profile.repository.ProfileRepository;
+import animores.serverapi.util.S3Util;
 import com.querydsl.core.QueryResults;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -36,16 +37,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import software.amazon.awssdk.core.sync.RequestBody;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
 
 @RequiredArgsConstructor
 @Service
 public class DiaryServiceImpl implements DiaryService {
 
-    private final S3Client s3Client;
+    private final S3Util s3Util;
 
     private final AccountRepository accountRepository;
     private final ProfileRepository profileRepository;
@@ -53,9 +51,6 @@ public class DiaryServiceImpl implements DiaryService {
     private final DiaryCustomRepository diaryCustomRepository;
     private final DiaryMediaRepository diaryMediaRepository;
     private final DiaryMediaCustomRepository diaryMediaCustomRepository;
-
-    @Value("${spring.cloud.aws.s3.bucket}")
-    private String bucketName;
 
     @Override
     @Transactional(readOnly = true)
@@ -91,7 +86,7 @@ public class DiaryServiceImpl implements DiaryService {
         Diary diary = diaryRepository.save(Diary.create(account, profile, request.content()));
 
         if (files != null) {
-            uploadFileToS3(files);
+            s3Util.uploadFilesToS3(files);
 
             List<DiaryMedia> diaryMedias = createDiaryMedias(diary, files);
             diaryMediaRepository.saveAll(diaryMedias);
@@ -114,7 +109,7 @@ public class DiaryServiceImpl implements DiaryService {
         Diary diary = findDiaryById(diaryId);
         // auth 적용 후 diary 작성자와 일치하는지 체크하는 코드 추가 예정
 
-        uploadFileToS3(files);
+        s3Util.uploadFilesToS3(files);
 
         diaryMediaRepository.saveAll(createDiaryMedias(diary, files));
 
@@ -132,10 +127,10 @@ public class DiaryServiceImpl implements DiaryService {
         if (mediaListToDelete.isEmpty()) {
             throw new CustomException(ExceptionCode.NOT_FOUND_DIARY_MEDIA);
         }
-        removeFileFromS3(mediaListToDelete);
+        s3Util.removeFilesFromS3(generateKeysForS3Deletion(mediaListToDelete));
         diaryMediaRepository.deleteAll(mediaListToDelete);
 
-        uploadFileToS3(files);
+        s3Util.uploadFilesToS3(files);
 
         diaryMediaRepository.saveAll(createDiaryMedias(diary, files));
 
@@ -152,7 +147,7 @@ public class DiaryServiceImpl implements DiaryService {
         if (mediaListToDelete.isEmpty()) {
             throw new CustomException(ExceptionCode.NOT_FOUND_DIARY_MEDIA);
         }
-        removeFileFromS3(mediaListToDelete);
+        s3Util.removeFilesFromS3(generateKeysForS3Deletion(mediaListToDelete));
         diaryMediaRepository.deleteAll(mediaListToDelete);
 
         reorderDiaryMedia(diary.getId(), DiaryMediaType.I);
@@ -209,26 +204,9 @@ public class DiaryServiceImpl implements DiaryService {
         };
     }
 
-    public void uploadFileToS3(List<MultipartFile> files) throws IOException {
-        for (MultipartFile file : files) {
-            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                .bucket(bucketName)
-                .contentType(file.getContentType())
-                .contentLength(file.getSize())
-                .key(file.getOriginalFilename())
-                .build();
-            RequestBody requestBody = RequestBody.fromBytes(file.getBytes());
-            s3Client.putObject(putObjectRequest, requestBody);
-        }
-    }
-
-    public void removeFileFromS3(List<DiaryMedia> mediaList) {
-        for (DiaryMedia media : mediaList) {
-            DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
-                .bucket(bucketName)
-                .key(media.getUrl().split("/")[1])
-                .build();
-            s3Client.deleteObject(deleteObjectRequest);
-        }
+    private List<ObjectIdentifier> generateKeysForS3Deletion(List<DiaryMedia> mediaList) {
+        return mediaList.stream()
+            .map(media -> ObjectIdentifier.builder().key(media.getUrl().split("/")[1]).build())
+            .collect(Collectors.toList());
     }
 }
