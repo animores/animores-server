@@ -4,27 +4,12 @@ import animores.serverapi.account.domain.Account;
 import animores.serverapi.common.BaseEntity;
 import animores.serverapi.diary.dto.EditDiaryRequest;
 import animores.serverapi.profile.domain.Profile;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -46,7 +31,7 @@ public class Diary extends BaseEntity {
     private Account account;
 
     @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL)
-    private List<DiaryMedia> media = new ArrayList<>();
+    private List<DiaryMedia> media;
 
     // List<DiaryComment> 연결 예정
 
