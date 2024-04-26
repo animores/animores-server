@@ -1,7 +1,7 @@
 package animores.serverapi.account.service;
 
 public interface EmailAuthService {
-    void sendEmail(String email, String title, String message);
+    void sendEmail(String email, String code);
     boolean verifyEmail(String email, String code);
 
     String createAuthCode(String email);
