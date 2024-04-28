@@ -4,7 +4,7 @@ import animores.serverapi.account.domain.Account;
 import animores.serverapi.account.repository.AccountRepository;
 import animores.serverapi.common.exception.CustomException;
 import animores.serverapi.common.exception.ExceptionCode;
-import animores.serverapi.pet.domain.Pet;
+import animores.serverapi.pet.entity.Pet;
 import animores.serverapi.pet.repository.PetRepository;
 import animores.serverapi.profile.domain.Profile;
 import animores.serverapi.profile.repository.ProfileRepository;

@@ -1,14 +1,11 @@
-package animores.serverapi.pet.domain;
+package animores.serverapi.pet.entity;
 
-import animores.serverapi.account.domain.Account;
-import animores.serverapi.common.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import java.time.LocalDate;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,29 +14,24 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 @Builder
-public class Pet extends BaseEntity {
+public class Breed {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Account account;
+    private Species species;
 
     private String name;
 
-    private LocalDate birthday;
+    private String defaultImageUrl;
 
-    private int gender;
-
-    // 커스텀 요소 보류
-
-    protected Pet(Long id, Account account, String name, LocalDate birthday, int gender) {
+    protected Breed(Long id, Species species, String name, String defaultImageUrl) {
         this.id = id;
-        this.account = account;
+        this.species = species;
         this.name = name;
-        this.birthday = birthday;
-        this.gender = gender;
+        this.defaultImageUrl = defaultImageUrl;
     }
 
 }
