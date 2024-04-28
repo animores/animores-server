@@ -8,9 +8,11 @@ import animores.serverapi.account.repository.auth_mail.ValidMailRepository;
 import animores.serverapi.account.service.EmailAuthService;
 import animores.serverapi.common.exception.CustomException;
 import animores.serverapi.common.exception.ExceptionCode;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Transport;
+import jakarta.mail.internet.InternetAddress;
 import lombok.RequiredArgsConstructor;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,27 +21,31 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Service
 public class GoogleEmailAuthServiceImpl implements EmailAuthService {
-    private final JavaMailSender emailSender;
+    private final Message message;
     private final AuthMailRepository authMailRepository;
     private final ValidMailRepository validMailRepository;
 
     @Override
     public void sendEmail(String email,String code) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("noreply@animores.com");
-        message.setTo(email);
-        message.setSubject("Animores Email Verification");
-        StringBuilder stringBuilder = new StringBuilder();
-        message.setText(stringBuilder
-                .append("""
+        try{
+            message.setFrom(new InternetAddress("noreply@animores.com"));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
+            message.setSubject("Animores Email Verification");
+
+            StringBuilder stringBuilder = new StringBuilder();
+            message.setContent(stringBuilder
+                    .append("""
                 <h1>Animores Email Verification</h1>
                 <p>Here is your verification code:
                 """)
-                .append(code)
-                .append("""
+                    .append(code)
+                    .append("""
                 </p>
-                """).toString());
-        emailSender.send(message);
+                """).toString(), "text/html");
+            Transport.send(message);
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -50,13 +56,13 @@ public class GoogleEmailAuthServiceImpl implements EmailAuthService {
         }
 
         String code = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
-        authMailRepository.save(new AuthMail(email, code));
+        authMailRepository.save(new AuthMail(code, email));
         return code;
     }
 
     @Override
     public boolean verifyEmail(String email, String code) {
-        AuthMail authMail = authMailRepository.findById(email).orElseThrow(
+        AuthMail authMail = authMailRepository.findById(code).orElseThrow(
                 () -> new CustomException(ExceptionCode.EXPIRED_AUTH_CODE)
         );
 

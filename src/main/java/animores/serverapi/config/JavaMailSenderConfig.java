@@ -1,29 +1,45 @@
 package animores.serverapi.config;
 
+import jakarta.mail.Authenticator;
+import jakarta.mail.Message;
+import jakarta.mail.PasswordAuthentication;
+import jakarta.mail.Session;
+import jakarta.mail.internet.MimeMessage;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import java.util.Properties;
 
 @Configuration
 public class JavaMailSenderConfig {
+    @Value("${mail.smtp.host}")
+    private String host;
+    @Value("${mail.smtp.port}")
+    private int port;
+    @Value("${mail.smtp.username}")
+    private String username;
+    @Value("${mail.smtp.password}")
+    private String password;
+    @Value("${mail.smtp.auth}")
+    private String auth;
+    @Value("${mail.smtp.starttls.enable}")
+    private String tlsEnable;
 
     @Bean
-    public JavaMailSender javaMailSender() {
-        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost("smtp.gmail.com");
-        mailSender.setPort(587);
+    public Message messageBean() {
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", auth);
+        props.put("mail.smtp.starttls.enable", tlsEnable);
+        props.put("mail.smtp.host", host);
+        props.put("mail.smtp.port", port);
 
-        mailSender.setUsername("my.gmail@gmail.com");
-        mailSender.setPassword("password");
-
-        Properties props = mailSender.getJavaMailProperties();
-        props.put("mail.transport.protocol", "smtp");
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.debug", "true");
-        return mailSender;
+        Session session = Session.getInstance(props, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(username, password);
+            }
+        });
+        return new MimeMessage(session);
     }
 }
