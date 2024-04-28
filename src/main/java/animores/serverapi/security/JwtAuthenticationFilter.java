@@ -1,4 +1,4 @@
-package animores.serverapi.config.security;
+package animores.serverapi.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

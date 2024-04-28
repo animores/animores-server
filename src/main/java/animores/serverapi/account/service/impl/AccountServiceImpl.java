@@ -10,7 +10,7 @@ import animores.serverapi.account.response.SignUpResponse;
 import animores.serverapi.account.service.AccountService;
 import animores.serverapi.common.exception.CustomException;
 import animores.serverapi.common.exception.ExceptionCode;
-import animores.serverapi.config.security.*;
+import animores.serverapi.security.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;

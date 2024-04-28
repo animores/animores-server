@@ -5,7 +5,7 @@ import animores.serverapi.account.request.SignOutRequest;
 import animores.serverapi.account.request.SignUpRequest;
 import animores.serverapi.account.response.SignInResponse;
 import animores.serverapi.account.response.SignUpResponse;
-import animores.serverapi.config.security.RefreshRequest;
+import animores.serverapi.security.RefreshRequest;
 import org.springframework.security.core.userdetails.User;
 
 public interface AccountService {

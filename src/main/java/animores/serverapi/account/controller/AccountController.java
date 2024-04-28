@@ -8,7 +8,7 @@ import animores.serverapi.account.response.SignInResponse;
 import animores.serverapi.account.response.SignUpResponse;
 import animores.serverapi.account.service.AccountService;
 import animores.serverapi.common.Response;
-import animores.serverapi.config.security.RefreshRequest;
+import animores.serverapi.security.RefreshRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
