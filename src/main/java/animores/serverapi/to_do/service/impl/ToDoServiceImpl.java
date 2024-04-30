@@ -1,5 +1,6 @@
 package animores.serverapi.to_do.service.impl;
 
+import animores.serverapi.account.aop.UserInfo;
 import animores.serverapi.account.domain.Account;
 import animores.serverapi.account.repository.AccountRepository;
 import animores.serverapi.common.exception.CustomException;
@@ -21,9 +22,12 @@ import animores.serverapi.to_do.repository.PetToDoRelationshipRepository;
 import animores.serverapi.to_do.repository.ToDoInstanceRepository;
 import animores.serverapi.to_do.repository.ToDoRepository;
 import animores.serverapi.to_do.service.ToDoService;
+import animores.serverapi.util.RequestConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,15 +45,18 @@ public class ToDoServiceImpl implements ToDoService {
     private final PetToDoRelationshipRepository petToDoRelationshipRepository;
     private final ToDoInstanceRepository toDoInstanceRepository;
 
+    @UserInfo
     @Override
     @Transactional
     public void createToDo(ToDoCreateRequest request) {
-        //TODO: accountRepository.getReferenceById(1L) should be replaced with the actual account id
-        Account account = accountRepository.getReferenceById(1L);
+        Long accountId = Long.parseLong((String) RequestContextHolder.getRequestAttributes().getAttribute(
+                RequestConstants.ACCOUNT_ID_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST));
+        Account account = accountRepository.getReferenceById(accountId);
         //TODO: createProfile should be replaced with the actual profile
         Profile createProfile = profileRepository.getReferenceById(2L);
-        //TODO: List.of(1L, 2L) should be replaced with the actual pet ids
-        Set<Long> accountPetIds = Set.of(1L, 2L);
+
+        Set<Long> accountPetIds = (Set<Long>) RequestContextHolder.getRequestAttributes().getAttribute(
+                RequestConstants.PETS_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
 
         if (!accountPetIds.containsAll(request.petIds())) {
             throw new CustomException(ExceptionCode.ILLEGAL_PET_IDS);
