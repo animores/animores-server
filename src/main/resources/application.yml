@@ -43,6 +43,15 @@ spring:
       host: ${redis_endpoint}
       port: 6379
 
+mail:
+  smtp:
+    host: ${mail_host}
+    port: ${mail_port}
+    username: ${mail_username}
+    password: ${mail_password}
+    auth: true
+    starttls:
+      enable: true
 management:
   endpoints:
     web:
