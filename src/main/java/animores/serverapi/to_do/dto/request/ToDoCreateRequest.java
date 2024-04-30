@@ -1,7 +1,8 @@
 package animores.serverapi.to_do.dto.request;
 
 import animores.serverapi.pet.type.Tag;
-import animores.serverapi.to_do.dto.Repeat;
+import animores.serverapi.to_do.dto.RepeatUnit;
+import animores.serverapi.to_do.dto.WeekDay;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
@@ -24,7 +25,7 @@ public record ToDoCreateRequest(
         Repeat repeat
 ) {
 	public ToDoCreateRequest {
-		if(tag == null && content.isBlank()) {
+		if(tag == null && (content == null || content.isBlank())) {
 			throw new IllegalArgumentException("태그와 내용 중 하나는 필수입니다.");
 		}
 
@@ -44,4 +45,6 @@ public record ToDoCreateRequest(
 			throw new IllegalArgumentException("하루 종일 일정일 때 반복 설정은 할 수 없습니다.");
 		}
 	}
+
+	public record Repeat(RepeatUnit unit, Integer interval, List<WeekDay> weekDays){}
 }

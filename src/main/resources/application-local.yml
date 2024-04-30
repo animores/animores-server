@@ -19,5 +19,26 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
         format_sql: true
+  jwt:
+    secret-key: secretKey
+    expiration-hours: 24
+    issuer: kangmo
+    redis:
+      host: localhost
+      port: 6379
 
-server-url: https://xnwp1fbxrf.execute-api.ap-northeast-2.amazonaws.com/Stage
+  cloud:
+    aws:
+      credentials:
+        accessKey: ${s3_access_key}
+        secretKey: ${s3_secret_key}
+      s3:
+        bucket: ${bucket_name}
+      region:
+        static: ${s3_region}
+      stack:
+        auto: false
+
+  redis:
+    host: localhost
+    port: 6379

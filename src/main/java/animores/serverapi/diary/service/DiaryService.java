@@ -2,20 +2,23 @@ package animores.serverapi.diary.service;
 
 import animores.serverapi.diary.dto.AddDiaryRequest;
 import animores.serverapi.diary.dto.EditDiaryRequest;
-import animores.serverapi.diary.entity.Diary;
+import animores.serverapi.diary.dto.GetAllDiaryResponse;
+import animores.serverapi.diary.dto.GetCalendarDiaryResponse;
+import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
-import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface DiaryService {
 
-    List<Diary> getAllDiary(Long accountId);
+    GetAllDiaryResponse getAllDiary(int page, int size);
 
-    void getCalendarDiary(Long userId, String date);
+    GetCalendarDiaryResponse getCalendarDiary(Long accountId, LocalDate date);
 
-    ResponseEntity<Void> addDiary(AddDiaryRequest request);
+    void addDiary(AddDiaryRequest request, List<MultipartFile> files) throws IOException;
 
-    ResponseEntity<Void> editDiary(Long diaryId, EditDiaryRequest request);
+    void editDiary(Long diaryId, EditDiaryRequest request);
 
-    ResponseEntity<Void> removeDiary(Long removeDiary);
+    void removeDiary(Long removeDiary);
 
 }

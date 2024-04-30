@@ -1,19 +1,44 @@
 spring:
-  config:
-    import: aws-secretsmanager:rds-db-credentials/animoresdbinstatnce1/admin/1702189030443
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
 
   datasource:
-    url: ${url}
-    username: ${username}
-    password: ${password}
+    url: jdbc:mysql://${db_host}:3306/animores
+    username: ${db_username}
+    password: ${db_password}
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
 
   jpa:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
 
-server-url: https://xnwp1fbxrf.execute-api.ap-northeast-2.amazonaws.com/Stage
+  redis:
+    host: ${redis_endpoint}
+    port: 6379
+
+  cloud:
+    aws:
+      credentials:
+        accessKey: ${s3_access_key}
+        secretKey: ${s3_secret_key}
+      s3:
+        bucket: ${bucket_name}
+      region:
+        static: ${s3_region}
+      stack:
+        auto: false
+
+  jwt:
+    secret-key: ${jwt_secret_key}
+    expiration-hours: 24
+    issuer: kangmo
+    redis:
+      host: ${redis_endpoint}
+      port: 6379
