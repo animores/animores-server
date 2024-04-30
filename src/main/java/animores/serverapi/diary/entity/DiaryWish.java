@@ -1,5 +1,6 @@
 package animores.serverapi.diary.entity;
 
+import animores.serverapi.account.domain.Account;
 import animores.serverapi.profile.domain.Profile;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -40,4 +41,11 @@ public class DiaryWish {
 
     @CreatedDate
     private LocalDateTime createdAt;
+
+    public static DiaryWish create(Profile profile, Diary diary) {
+        return DiaryWish.builder()
+            .profile(profile)
+            .diary(diary)
+            .build();
+    }
 }
