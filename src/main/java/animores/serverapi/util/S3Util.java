@@ -1,7 +1,9 @@
 package animores.serverapi.util;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -21,17 +23,28 @@ public class S3Util {
     @Value("${spring.cloud.aws.s3.bucket}")
     private String bucketName;
 
-    public void uploadFilesToS3(List<MultipartFile> files) throws IOException {
+    public List<PutObjectRequest> uploadFilesToS3(List<MultipartFile> files, String path)
+        throws IOException {
+        List<PutObjectRequest> putObjectRequests = new ArrayList<>();
+
         for (MultipartFile file : files) {
-            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                .bucket(bucketName)
-                .contentType(file.getContentType())
-                .contentLength(file.getSize())
-                .key(file.getOriginalFilename())
-                .build();
-            RequestBody requestBody = RequestBody.fromBytes(file.getBytes());
-            s3Client.putObject(putObjectRequest, requestBody);
+            putObjectRequests.add(uploadFileToS3(file, path));
         }
+
+        return putObjectRequests;
+    }
+
+    public PutObjectRequest uploadFileToS3(MultipartFile file, String path) throws IOException {
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+            .bucket(bucketName)
+            .contentType(file.getContentType())
+            .contentLength(file.getSize())
+            .key(path + UUID.randomUUID())
+            .build();
+        RequestBody requestBody = RequestBody.fromBytes(file.getBytes());
+        s3Client.putObject(putObjectRequest, requestBody);
+
+        return putObjectRequest;
     }
 
     public void removeFilesFromS3(List<ObjectIdentifier> keys) {

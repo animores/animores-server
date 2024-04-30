@@ -1,5 +1,7 @@
 package animores.serverapi.diary.service.impl;
 
+import static animores.serverapi.common.S3Path.DIARY_PATH;
+
 import animores.serverapi.account.domain.Account;
 import animores.serverapi.account.repository.AccountRepository;
 import animores.serverapi.common.exception.CustomException;
@@ -34,6 +36,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 @RequiredArgsConstructor
 @Service
@@ -54,7 +57,8 @@ public class DiaryServiceImpl implements DiaryService {
         Long accountId = 1L;    // 나중에 인증 정보에서 가져오기 param으로 받지x
         Long profileId = 1L;
 
-        List<GetAllDiaryDao> diaries = diaryCustomRepository.getAllDiary(accountId, profileId, page, size);
+        List<GetAllDiaryDao> diaries = diaryCustomRepository.getAllDiary(accountId, profileId, page,
+            size);
         Long totalCount = diaryCustomRepository.getAllDiaryCount(accountId);
 
         return new GetAllDiaryResponse(totalCount, diaries);
@@ -63,8 +67,8 @@ public class DiaryServiceImpl implements DiaryService {
     @Override
     @Transactional(readOnly = true)
     public GetCalendarDiaryResponse getCalendarDiary(Long accountId, LocalDate date) {
-        QueryResults<GetCalendarDiaryDao> diaries = diaryCustomRepository.getCalendarDiary(accountId,
-            date);
+        QueryResults<GetCalendarDiaryDao> diaries = diaryCustomRepository.getCalendarDiary(
+            accountId, date);
 
         return new GetCalendarDiaryResponse(diaries.getTotal(), diaries.getResults());
     }
@@ -82,9 +86,10 @@ public class DiaryServiceImpl implements DiaryService {
         Diary diary = diaryRepository.save(Diary.create(account, profile, request.content()));
 
         if (files != null) {
-            s3Util.uploadFilesToS3(files);
 
-            List<DiaryMedia> diaryMedias = createDiaryMedias(diary, files);
+            List<PutObjectRequest> putObjectRequests = s3Util.uploadFilesToS3(files, DIARY_PATH);
+
+            List<DiaryMedia> diaryMedias = createDiaryMedias(diary, putObjectRequests);
             diaryMediaRepository.saveAll(diaryMedias);
         }
 
@@ -105,9 +110,9 @@ public class DiaryServiceImpl implements DiaryService {
         Diary diary = findDiaryById(diaryId);
         // auth 적용 후 diary 작성자와 일치하는지 체크하는 코드 추가 예정
 
-        s3Util.uploadFilesToS3(files);
+        List<PutObjectRequest> putObjectRequests = s3Util.uploadFilesToS3(files, DIARY_PATH);
 
-        diaryMediaRepository.saveAll(createDiaryMedias(diary, files));
+        diaryMediaRepository.saveAll(createDiaryMedias(diary, putObjectRequests));
 
         reorderDiaryMedia(diary.getId(), DiaryMediaType.I);
     }
@@ -126,9 +131,9 @@ public class DiaryServiceImpl implements DiaryService {
         s3Util.removeFilesFromS3(generateKeysForS3Deletion(mediaListToDelete));
         diaryMediaRepository.deleteAll(mediaListToDelete);
 
-        s3Util.uploadFilesToS3(files);
+        List<PutObjectRequest> putObjectRequests = s3Util.uploadFilesToS3(files, DIARY_PATH);
 
-        diaryMediaRepository.saveAll(createDiaryMedias(diary, files));
+        diaryMediaRepository.saveAll(createDiaryMedias(diary, putObjectRequests));
 
         reorderDiaryMedia(diary.getId(), DiaryMediaType.I);
     }
@@ -173,12 +178,12 @@ public class DiaryServiceImpl implements DiaryService {
             .orElseThrow(() -> new NoSuchElementException("Diary not found with id: " + id));
     }
 
-    private List<DiaryMedia> createDiaryMedias(Diary diary, List<MultipartFile> files) throws IOException {
-        return IntStream.range(0, files.size())
+    private List<DiaryMedia> createDiaryMedias(Diary diary,
+        List<PutObjectRequest> putObjectRequests) {
+        return IntStream.range(0, putObjectRequests.size())
             .mapToObj(i -> {
-                MultipartFile file = files.get(i);
-                return DiaryMedia.create(diary, "/" + file.getOriginalFilename(), i,
-                    DiaryMediaType.checkType(file.getContentType()));
+                return DiaryMedia.create(diary, putObjectRequests.get(i).key(), i,
+                    DiaryMediaType.checkType(putObjectRequests.get(i).contentType()));
             })
             .collect(Collectors.toList());
     }
@@ -194,7 +199,9 @@ public class DiaryServiceImpl implements DiaryService {
 
     private List<ObjectIdentifier> generateKeysForS3Deletion(List<DiaryMedia> mediaList) {
         return mediaList.stream()
-            .map(media -> ObjectIdentifier.builder().key(media.getUrl().split("/")[1]).build())
+            .map(media -> ObjectIdentifier.builder()
+                .key(media.getUrl())
+                .build())
             .collect(Collectors.toList());
     }
 }
