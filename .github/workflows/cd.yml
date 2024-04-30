@@ -68,6 +68,10 @@ jobs:
             s3_secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}
             bucket_name=${{ secrets.BUCKET_NAME }}
             s3_region=${{ secrets.S3_REGION }}
+            mail_host=smtp.gmail.com
+            mail_port=587
+            mail_username=${{ secrets.MAIL_USERNAME }}
+            mail_password=${{ secrets.MAIL_PASSWORD }}
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
