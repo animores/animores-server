@@ -1,7 +1,6 @@
 package animores.serverapi.to_do.service.impl;
 
 import animores.serverapi.account.domain.Account;
-import animores.serverapi.account.repository.AccountRepository;
 import animores.serverapi.common.exception.ExceptionCode;
 import animores.serverapi.pet.domain.Pet;
 import animores.serverapi.pet.repository.PetRepository;
@@ -25,10 +24,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -41,8 +37,6 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ToDoServiceImplTest {
-    @Mock
-    private AccountRepository accountRepository;
     @Mock
     private ProfileRepository profileRepository;
     @Mock
@@ -59,94 +53,80 @@ class ToDoServiceImplTest {
     @Test
     void createToDoTest_Success() {
 
-        try (MockedStatic<RequestContextHolder> requestContextHolder = mockStatic(RequestContextHolder.class)){
-            //given
-            Account account = new TestAccount(1L);
+        //given
+        Account account = new TestAccount(1L);
+        Profile createProfile = new Profile();
+        given(profileRepository.getReferenceById(2L)).willReturn(createProfile);
 
-            RequestAttributes requestAttributes = mock(RequestAttributes.class);
-            requestContextHolder.when(RequestContextHolder::getRequestAttributes).thenReturn(requestAttributes);
-            given(requestAttributes.getAttribute("account", RequestAttributes.SCOPE_REQUEST)).willReturn(account);
+        Pet pet1 = new TestPet(1L, "두부");
+        Pet pet2 = new TestPet(2L, "호동이");
+        given(petRepository.findAllByAccount_id(1L))
+                .willReturn(List.of(pet1, pet2));
 
-            Profile createProfile = new Profile();
-            given(profileRepository.getReferenceById(2L)).willReturn(createProfile);
+        given(petRepository.getReferenceById(1L)).willReturn(pet1);
+        given(petRepository.getReferenceById(2L)).willReturn(pet2);
+        when(toDoRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
-            Pet pet1 = new TestPet(1L, "두부");
-            Pet pet2 = new TestPet(2L, "호동이");
-            given(petRepository.findAllByAccount_id(1L))
-                    .willReturn(List.of(pet1, pet2));
+        ToDoCreateRequest request = new ToDoCreateRequest(
+                List.of(1L, 2L),
+                "test",
+                null,
+                null,
+                null,
+                true,
+                null,
+                false,
+                null
+        );
+        ArgumentCaptor<ToDo> toDoArgumentCaptor = ArgumentCaptor.forClass(ToDo.class);
+        ArgumentCaptor<List<PetToDoRelationship>> petToDoRelationshipArgumentCaptor = ArgumentCaptor.forClass(List.class);
 
-            given(petRepository.getReferenceById(1L)).willReturn(pet1);
-            given(petRepository.getReferenceById(2L)).willReturn(pet2);
-            when(toDoRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+        //when
+        serviceUnderTest.createToDo(account, request);
 
-            ToDoCreateRequest request = new ToDoCreateRequest(
-                    List.of(1L, 2L),
-                    "test",
-                    null,
-                    null,
-                    null,
-                    true,
-                    null,
-                    false,
-                    null
-            );
-            ArgumentCaptor<ToDo> toDoArgumentCaptor = ArgumentCaptor.forClass(ToDo.class);
-            ArgumentCaptor<List<PetToDoRelationship>> petToDoRelationshipArgumentCaptor = ArgumentCaptor.forClass(List.class);
+        //then
+        verify(toDoRepository, times(1)).save(toDoArgumentCaptor.capture());
+        ToDo toDo = toDoArgumentCaptor.getValue();
+        assertEquals("test", toDo.getContent());
 
-            //when
-            serviceUnderTest.createToDo(request);
+        verify(petToDoRelationshipRepository, times(1)).saveAll(petToDoRelationshipArgumentCaptor.capture());
+        List<PetToDoRelationship> petToDoRelationships = petToDoRelationshipArgumentCaptor.getValue();
+        assertEquals(2, petToDoRelationships.size());
 
-            //then
-            verify(toDoRepository, times(1)).save(toDoArgumentCaptor.capture());
-            ToDo toDo = toDoArgumentCaptor.getValue();
-            assertEquals("test", toDo.getContent());
-
-            verify(petToDoRelationshipRepository, times(1)).saveAll(petToDoRelationshipArgumentCaptor.capture());
-            List<PetToDoRelationship> petToDoRelationships = petToDoRelationshipArgumentCaptor.getValue();
-            assertEquals(2, petToDoRelationships.size());
-        }
     }
 
     @Test
     @DisplayName("To Do 생성 fail test - 펫 아이디가 잘못된 경우 예외 발생")
     void createToDoTestFail_InvalidPetIds() {
         //given
-        try (MockedStatic<RequestContextHolder> requestContextHolder = mockStatic(RequestContextHolder.class)) {
-            //given
-            Account account = new TestAccount(1L);
+        Account account = new TestAccount(1L);
+        Profile createProfile = new Profile();
+        given(profileRepository.getReferenceById(2L)).willReturn(createProfile);
 
-            RequestAttributes requestAttributes = mock(RequestAttributes.class);
-            requestContextHolder.when(RequestContextHolder::getRequestAttributes).thenReturn(requestAttributes);
-            given(requestAttributes.getAttribute("account", RequestAttributes.SCOPE_REQUEST)).willReturn(account);
+        Pet pet1 = new TestPet(1L, "두부");
+        Pet pet2 = new TestPet(2L, "호동이");
+        given(petRepository.findAllByAccount_id(1L))
+                .willReturn(List.of(pet1, pet2));
 
-            Profile createProfile = new Profile();
-            given(profileRepository.getReferenceById(2L)).willReturn(createProfile);
+        ToDoCreateRequest request = new ToDoCreateRequest(
+                List.of(3L),
+                "test",
+                null,
+                null,
+                null,
+                true,
+                null,
+                false,
+                null
+        );
 
-            Pet pet1 = new TestPet(1L, "두부");
-            Pet pet2 = new TestPet(2L, "호동이");
-            given(petRepository.findAllByAccount_id(1L))
-                    .willReturn(List.of(pet1, pet2));
-
-            ToDoCreateRequest request = new ToDoCreateRequest(
-                    List.of(3L),
-                    "test",
-                    null,
-                    null,
-                    null,
-                    true,
-                    null,
-                    false,
-                    null
-            );
-
-            //when
-            //then
-            try {
-                serviceUnderTest.createToDo(request);
-                fail();
-            } catch (Exception e) {
-                assertEquals(ExceptionCode.ILLEGAL_PET_IDS.getMessage(), e.getMessage());
-            }
+        //when
+        //then
+        try {
+            serviceUnderTest.createToDo(account, request);
+            fail();
+        } catch (Exception e) {
+            assertEquals(ExceptionCode.ILLEGAL_PET_IDS.getMessage(), e.getMessage());
         }
     }
 

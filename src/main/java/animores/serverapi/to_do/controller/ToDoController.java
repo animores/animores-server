@@ -1,5 +1,8 @@
 package animores.serverapi.to_do.controller;
 
+import animores.serverapi.account.aop.UserInfo;
+import animores.serverapi.account.domain.Account;
+import animores.serverapi.account.service.AccountService;
 import animores.serverapi.common.Response;
 import animores.serverapi.to_do.dto.request.ToDoCreateRequest;
 import animores.serverapi.to_do.dto.request.ToDoPatchRequest;
@@ -16,11 +19,14 @@ import java.util.List;
 @RequestMapping("/api/v1/todos")
 public class ToDoController {
 
+	private final AccountService accountService;
 	private final ToDoService toDoService;
 
 	@PostMapping
+	@UserInfo
 	public Response<Void> createToDo(@RequestBody ToDoCreateRequest request) {
-		toDoService.createToDo(request);
+		Account account = accountService.getAccountFromContext();
+		toDoService.createToDo(account, request);
 		return Response.success(null);
 	}
 

@@ -2,7 +2,6 @@ package animores.serverapi.to_do.service.impl;
 
 import animores.serverapi.account.aop.UserInfo;
 import animores.serverapi.account.domain.Account;
-import animores.serverapi.account.repository.AccountRepository;
 import animores.serverapi.common.exception.CustomException;
 import animores.serverapi.common.exception.ExceptionCode;
 import animores.serverapi.pet.domain.Pet;
@@ -22,12 +21,9 @@ import animores.serverapi.to_do.repository.PetToDoRelationshipRepository;
 import animores.serverapi.to_do.repository.ToDoInstanceRepository;
 import animores.serverapi.to_do.repository.ToDoRepository;
 import animores.serverapi.to_do.service.ToDoService;
-import animores.serverapi.util.RequestConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,9 +43,7 @@ public class ToDoServiceImpl implements ToDoService {
 
     @Override
     @Transactional
-    @UserInfo
-    public void createToDo(ToDoCreateRequest request) {
-        Account account = getAccountFromContext();
+    public void createToDo(Account account, ToDoCreateRequest request) {
         Profile createProfile = profileRepository.getReferenceById(2L);
 
         Set<Long> accountPetIds = petRepository.findAllByAccount_id(account.getId())
@@ -204,14 +198,5 @@ public class ToDoServiceImpl implements ToDoService {
             return;
         }
         toDoInstanceRepository.save(nextToDoInstance);
-    }
-
-    private Account getAccountFromContext() {
-        try {
-            return (Account) RequestContextHolder.getRequestAttributes().getAttribute(
-                    RequestConstants.ACCOUNT_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
-        } catch (NullPointerException e) {
-            throw new CustomException(ExceptionCode.INVALID_USER);
-        }
     }
 }

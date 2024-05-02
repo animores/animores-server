@@ -11,11 +11,14 @@ import animores.serverapi.account.service.AccountService;
 import animores.serverapi.common.exception.CustomException;
 import animores.serverapi.common.exception.ExceptionCode;
 import animores.serverapi.security.*;
+import animores.serverapi.util.RequestConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -89,4 +92,13 @@ public class AccountServiceImpl implements AccountService {
         refreshTokenRepository.deleteById(refreshToken);
     }
 
+    @Override
+    public Account getAccountFromContext() {
+        try {
+            return (Account) RequestContextHolder.getRequestAttributes().getAttribute(
+                    RequestConstants.ACCOUNT_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
+        } catch (NullPointerException e) {
+            throw new CustomException(ExceptionCode.INVALID_USER);
+        }
+    }
 }

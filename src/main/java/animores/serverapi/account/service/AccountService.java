@@ -1,5 +1,6 @@
 package animores.serverapi.account.service;
 
+import animores.serverapi.account.domain.Account;
 import animores.serverapi.account.request.SignInRequest;
 import animores.serverapi.account.request.SignOutRequest;
 import animores.serverapi.account.request.SignUpRequest;
@@ -48,5 +49,7 @@ public interface AccountService {
      * @param request
      */
     void signOut(SignOutRequest request, User user);
+
+    Account getAccountFromContext();
 
 }
