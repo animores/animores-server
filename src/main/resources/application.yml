@@ -42,3 +42,6 @@ spring:
     redis:
       host: ${redis_endpoint}
       port: 6379
+
+server:
+  url: ${server_url}
