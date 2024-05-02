@@ -1,6 +1,4 @@
 spring:
-  config:
-    import: aws-secretsmanager:animores-server-DBSecret
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -11,13 +9,18 @@ spring:
     password: ${db_password}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
   jpa:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
 
   redis:
-    host: ani-re-w47r78h4gi3x.sr20hx.0001.apn2.cache.amazonaws.com:6379
+    host: ${redis_endpoint}
     port: 6379
 
   cloud:
@@ -31,3 +34,26 @@ spring:
         static: ${s3_region}
       stack:
         auto: false
+
+  jwt:
+    secret-key: ${jwt_secret_key}
+    expiration-hours: 24
+    issuer: kangmo
+    redis:
+      host: ${redis_endpoint}
+      port: 6379
+
+mail:
+  smtp:
+    host: ${mail_host}
+    port: ${mail_port}
+    username: ${mail_username}
+    password: ${mail_password}
+    auth: true
+    starttls:
+      enable: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "prometheus"
