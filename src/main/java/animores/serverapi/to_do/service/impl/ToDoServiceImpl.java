@@ -1,6 +1,5 @@
 package animores.serverapi.to_do.service.impl;
 
-import animores.serverapi.account.aop.UserInfo;
 import animores.serverapi.account.domain.Account;
 import animores.serverapi.common.exception.CustomException;
 import animores.serverapi.common.exception.ExceptionCode;
@@ -70,7 +69,6 @@ public class ToDoServiceImpl implements ToDoService {
 
     @Override
     @Transactional(readOnly = true)
-    @UserInfo
     public List<ToDoResponse> getTodayToDo(Boolean done, List<Long> pets) {
 
         Set<Long> petIds = Set.of(1L, 2L);
@@ -107,7 +105,6 @@ public class ToDoServiceImpl implements ToDoService {
 
     @Override
     @Transactional(readOnly = true)
-    @UserInfo
     public List<ToDoResponse> getAllToDo(Boolean done, List<Long> pets) {
         Set<Long> petIds = Set.of(1L, 2L);
         if (pets == null || pets.isEmpty()) {
@@ -143,7 +140,6 @@ public class ToDoServiceImpl implements ToDoService {
 
     @Override
     @Transactional(readOnly = true)
-    @UserInfo
     public ToDoDetailResponse getToDoById(Long id) {
         ToDo toDo = toDoRepository.findByIdAndAccount_Id(id, 1L).orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_TO_DO));
         return ToDoDetailResponse.fromToDo(toDo);
