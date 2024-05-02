@@ -7,6 +7,7 @@ import animores.serverapi.account.request.SignUpRequest;
 import animores.serverapi.account.response.SignInResponse;
 import animores.serverapi.account.response.SignUpResponse;
 import animores.serverapi.account.service.AccountService;
+import animores.serverapi.account.service.EmailAuthService;
 import animores.serverapi.common.Response;
 import animores.serverapi.security.RefreshRequest;
 import jakarta.validation.Valid;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 public class AccountController {
 
     private final AccountService accountService;
+    private final EmailAuthService emailAuthService;
 
     @PostMapping("/refresh")
     public Response<SignInResponse> refresh(@Valid @RequestBody RefreshRequest request) {
@@ -59,4 +61,14 @@ public class AccountController {
         return Response.success(accountService.isDuplicatedNickname(nickname));
     }
 
+    @PostMapping("/email-auth-create")
+    public Response<Void> sendAuthEmail(@RequestParam String email) {
+        emailAuthService.sendEmail(email, emailAuthService.createAuthCode(email));
+        return Response.success(null);
+    }
+
+    @PostMapping("/email-auth-verify")
+    public Response<Boolean> verifyEmail(@RequestParam String email, @RequestParam String code) {
+        return Response.success(emailAuthService.verifyEmail(email, code));
+    }
 }
