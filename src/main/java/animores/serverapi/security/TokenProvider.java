@@ -1,4 +1,4 @@
-package animores.serverapi.config.security;
+package animores.serverapi.security;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

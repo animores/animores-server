@@ -1,7 +1,6 @@
 package animores.serverapi.to_do.service.impl;
 
 import animores.serverapi.account.domain.Account;
-import animores.serverapi.account.repository.AccountRepository;
 import animores.serverapi.common.exception.CustomException;
 import animores.serverapi.common.exception.ExceptionCode;
 import animores.serverapi.pet.domain.Pet;
@@ -31,10 +30,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+
 @RequiredArgsConstructor
 @Service
 public class ToDoServiceImpl implements ToDoService {
-    private final AccountRepository accountRepository;
     private final ProfileRepository profileRepository;
     private final ToDoRepository toDoRepository;
     private final PetRepository petRepository;
@@ -43,13 +42,13 @@ public class ToDoServiceImpl implements ToDoService {
 
     @Override
     @Transactional
-    public void createToDo(ToDoCreateRequest request) {
-        //TODO: accountRepository.getReferenceById(1L) should be replaced with the actual account id
-        Account account = accountRepository.getReferenceById(1L);
-        //TODO: createProfile should be replaced with the actual profile
+    public void createToDo(Account account, ToDoCreateRequest request) {
         Profile createProfile = profileRepository.getReferenceById(2L);
-        //TODO: List.of(1L, 2L) should be replaced with the actual pet ids
-        Set<Long> accountPetIds = Set.of(1L, 2L);
+
+        Set<Long> accountPetIds = petRepository.findAllByAccount_id(account.getId())
+                                                .stream()
+                                                .map(Pet::getId)
+                                                .collect(Collectors.toSet());
 
         if (!accountPetIds.containsAll(request.petIds())) {
             throw new CustomException(ExceptionCode.ILLEGAL_PET_IDS);
@@ -66,6 +65,7 @@ public class ToDoServiceImpl implements ToDoService {
         petToDoRelationshipRepository.saveAll(petToDoRelationships);
         toDoInstanceRepository.save(ToDoInstance.fromToDo(toDo));
     }
+
 
     @Override
     @Transactional(readOnly = true)

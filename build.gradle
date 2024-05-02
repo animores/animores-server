@@ -12,6 +12,16 @@ java {
 	sourceCompatibility = '17'
 }
 
+test {
+	jacoco {
+		destinationFile = file("$buildDir/jacoco/jacoco.exec")
+	}
+
+	useJUnitPlatform()
+
+	finalizedBy 'jacocoTestReport'
+}
+
 jacoco {
 	toolVersion = '0.8.7' // Jacoco version
 }
@@ -63,6 +73,8 @@ dependencies {
 	// AWS
 	implementation 'io.awspring.cloud:spring-cloud-aws-s3:3.0.2'
 
+	// Aspectj
+	implementation 'org.aspectj:aspectjweaver:1.9.7'
 	// Mail
 	implementation 'org.springframework.boot:spring-boot-starter-mail:3.1.5'
 
