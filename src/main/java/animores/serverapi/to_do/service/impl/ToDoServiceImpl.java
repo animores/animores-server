@@ -35,28 +35,27 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+
 @RequiredArgsConstructor
 @Service
 public class ToDoServiceImpl implements ToDoService {
-    private final AccountRepository accountRepository;
     private final ProfileRepository profileRepository;
     private final ToDoRepository toDoRepository;
     private final PetRepository petRepository;
     private final PetToDoRelationshipRepository petToDoRelationshipRepository;
     private final ToDoInstanceRepository toDoInstanceRepository;
 
-    @UserInfo
     @Override
     @Transactional
+    @UserInfo
     public void createToDo(ToDoCreateRequest request) {
-        Long accountId = Long.parseLong((String) RequestContextHolder.getRequestAttributes().getAttribute(
-                RequestConstants.ACCOUNT_ID_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST));
-        Account account = accountRepository.getReferenceById(accountId);
-        //TODO: createProfile should be replaced with the actual profile
+        Account account = getAccountFromContext();
         Profile createProfile = profileRepository.getReferenceById(2L);
 
-        Set<Long> accountPetIds = (Set<Long>) RequestContextHolder.getRequestAttributes().getAttribute(
-                RequestConstants.PETS_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
+        Set<Long> accountPetIds = petRepository.findAllByAccount_id(account.getId())
+                                                .stream()
+                                                .map(Pet::getId)
+                                                .collect(Collectors.toSet());
 
         if (!accountPetIds.containsAll(request.petIds())) {
             throw new CustomException(ExceptionCode.ILLEGAL_PET_IDS);
@@ -74,8 +73,10 @@ public class ToDoServiceImpl implements ToDoService {
         toDoInstanceRepository.save(ToDoInstance.fromToDo(toDo));
     }
 
+
     @Override
     @Transactional(readOnly = true)
+    @UserInfo
     public List<ToDoResponse> getTodayToDo(Boolean done, List<Long> pets) {
 
         Set<Long> petIds = Set.of(1L, 2L);
@@ -112,6 +113,7 @@ public class ToDoServiceImpl implements ToDoService {
 
     @Override
     @Transactional(readOnly = true)
+    @UserInfo
     public List<ToDoResponse> getAllToDo(Boolean done, List<Long> pets) {
         Set<Long> petIds = Set.of(1L, 2L);
         if (pets == null || pets.isEmpty()) {
@@ -147,6 +149,7 @@ public class ToDoServiceImpl implements ToDoService {
 
     @Override
     @Transactional(readOnly = true)
+    @UserInfo
     public ToDoDetailResponse getToDoById(Long id) {
         ToDo toDo = toDoRepository.findByIdAndAccount_Id(id, 1L).orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_TO_DO));
         return ToDoDetailResponse.fromToDo(toDo);
@@ -201,5 +204,14 @@ public class ToDoServiceImpl implements ToDoService {
             return;
         }
         toDoInstanceRepository.save(nextToDoInstance);
+    }
+
+    private Account getAccountFromContext() {
+        try {
+            return (Account) RequestContextHolder.getRequestAttributes().getAttribute(
+                    RequestConstants.ACCOUNT_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
+        } catch (NullPointerException e) {
+            throw new CustomException(ExceptionCode.INVALID_USER);
+        }
     }
 }

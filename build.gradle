@@ -12,6 +12,16 @@ java {
 	sourceCompatibility = '17'
 }
 
+test {
+	jacoco {
+		destinationFile = file("$buildDir/jacoco/jacoco.exec")
+	}
+
+	useJUnitPlatform()
+
+	finalizedBy 'jacocoTestReport'
+}
+
 jacoco {
 	toolVersion = '0.8.7' // Jacoco version
 }
