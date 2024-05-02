@@ -1,4 +1,4 @@
-package animores.serverapi.config.security;
+package animores.serverapi.security;
 
 public record RefreshRequest(
 

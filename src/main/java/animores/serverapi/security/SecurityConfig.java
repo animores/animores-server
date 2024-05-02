@@ -1,4 +1,4 @@
-package animores.serverapi.config.security;
+package animores.serverapi.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;

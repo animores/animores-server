@@ -1,5 +1,6 @@
-package animores.serverapi.config.security;
+package animores.serverapi.security;
 
+import animores.serverapi.util.RequestConstants;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,6 +15,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -37,10 +40,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         User user = parseUserSpecification(token);// 사용자 정보 추출
+        RequestContextHolder.getRequestAttributes().setAttribute(RequestConstants.ACCOUNT_ID_ATTRIBUTE, user.getUsername(), RequestAttributes.SCOPE_REQUEST);// 사용자 정보 저장
         AbstractAuthenticationToken authenticated = UsernamePasswordAuthenticationToken.authenticated(user, token, user.getAuthorities());
         authenticated.setDetails(new WebAuthenticationDetails(request));// 토큰 객체 생성
         SecurityContextHolder.getContext().setAuthentication(authenticated);// 토큰 객체 설정 하여 사용자 인증
-
         filterChain.doFilter(request, response);
     }
 
