@@ -68,6 +68,7 @@ jobs:
             s3_secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}
             bucket_name=${{ secrets.BUCKET_NAME }}
             s3_region=${{ secrets.S3_REGION }}
+            server_url=${{ secrets.SERVER_URL }}
             mail_host=smtp.gmail.com
             mail_port=587
             mail_username=${{ secrets.MAIL_USERNAME }}
