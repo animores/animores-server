@@ -6,7 +6,6 @@ import animores.serverapi.to_do.dto.request.ToDoCreateRequest;
 import animores.serverapi.to_do.dto.request.ToDoPatchRequest;
 import animores.serverapi.to_do.dto.response.ToDoDetailResponse;
 import animores.serverapi.to_do.dto.response.ToDoPageResponse;
-import animores.serverapi.to_do.dto.response.ToDoResponse;
 
 import java.util.List;
 
@@ -17,11 +16,11 @@ public interface ToDoService {
 
     ToDoPageResponse getAllToDo(Boolean done, List<Pet> pets, Integer page, Integer size);
 
-    ToDoDetailResponse getToDoById(Long id);
+    ToDoDetailResponse getToDoById(Long id, Long accountId);
 
-    ToDoDetailResponse updateToDoById(Long id, ToDoPatchRequest request);
+    ToDoDetailResponse updateToDoById(Long id, ToDoPatchRequest request, Long accountId);
 
-    void deleteToDoById(Long id);
+    void deleteToDoById(Long id, Long profileId);
 
-    void checkToDo(Long toDoId);
+    void checkToDo(Long toDoId, Long accountId);
 }

@@ -10,7 +10,6 @@ import animores.serverapi.to_do.dto.request.ToDoCreateRequest;
 import animores.serverapi.to_do.dto.request.ToDoPatchRequest;
 import animores.serverapi.to_do.dto.response.ToDoDetailResponse;
 import animores.serverapi.to_do.dto.response.ToDoPageResponse;
-import animores.serverapi.to_do.dto.response.ToDoResponse;
 import animores.serverapi.to_do.service.ToDoService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
@@ -63,21 +62,28 @@ public class ToDoController {
 	@UserInfo
 	public Response<ToDoDetailResponse> getToDoById(@PathVariable Long id) {
 		Account account = accountService.getAccountFromContext();
-		return Response.success(toDoService.getToDoById(id));
+		return Response.success(toDoService.getToDoById(id, account.getId()));
 	}
 
 	@PatchMapping("/{id}")
 	@UserInfo
 	public Response<ToDoDetailResponse> updateToDoById(@PathVariable Long id, @RequestBody ToDoPatchRequest request) {
 		Account account = accountService.getAccountFromContext();
-		return Response.success(toDoService.updateToDoById(id, request));
+		return Response.success(toDoService.updateToDoById(id, request, account.getId()));
 	}
 
 	@DeleteMapping("/{id}")
 	@UserInfo
-	public Response<Void> deleteToDoById(@PathVariable Long id) {
+	public Response<Void> deleteToDoById(@PathVariable Long id, @PathVariable Long profileId) {
+		toDoService.deleteToDoById(id, profileId);
+		return Response.success(null);
+	}
+
+	@PostMapping("/{id}/check")
+	@UserInfo
+	public Response<Void> checkToDo(@PathVariable Long id) {
 		Account account = accountService.getAccountFromContext();
-		toDoService.deleteToDoById(id);
+		toDoService.checkToDo(id, account.getId());
 		return Response.success(null);
 	}
 }

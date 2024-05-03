@@ -107,26 +107,29 @@ public class ToDoServiceImpl implements ToDoService {
 
     @Override
     @Transactional(readOnly = true)
-    public ToDoDetailResponse getToDoById(Long id) {
-        ToDo toDo = toDoRepository.findByIdAndAccount_Id(id, 1L).orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_TO_DO));
+    public ToDoDetailResponse getToDoById(Long id, Long accountId) {
+        ToDo toDo = toDoRepository.findByIdAndAccount_Id(id, accountId).orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_TO_DO));
         return ToDoDetailResponse.fromToDo(toDo);
     }
 
     @Override
     @Transactional
-    public ToDoDetailResponse updateToDoById(Long id, ToDoPatchRequest request) {
-        //TODO: 1L should be replaced with the actual account id
-        ToDo toDo = toDoRepository.findByIdAndAccount_Id(id, 1L).orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_TO_DO));
+    public ToDoDetailResponse updateToDoById(Long id, ToDoPatchRequest request, Long accountId) {
+        ToDo toDo = toDoRepository.findByIdAndAccount_Id(id, accountId).orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_TO_DO));
 
-        //TODO: 실제 현재 로그인한 사용자의 프로필 아이디로 변경
-        if (toDo.getCreateProfile().getId() != 2L) {
+        if (!toDo.getCreateProfile().getId().equals(request.profileId())) {
             throw new CustomException(ExceptionCode.INAPPROPRIATE_PROFILE_ACCESS);
         }
 
         if (!request.petIds().isEmpty()) {
-            Set<Long> petIds = toDo.getPetToDoRelationships().stream().map(PetToDoRelationship::getPet).map(Pet::getId).collect(Collectors.toSet());
+            Set<Long> petIds = toDo.getPetToDoRelationships().stream()
+                    .map(PetToDoRelationship::getPet)
+                    .map(Pet::getId)
+                    .collect(Collectors.toSet());
+
             if (petIds.size() != request.petIds().size() || !petIds.containsAll(request.petIds())) {
                 petToDoRelationshipRepository.deleteAllByToDo_Id(toDo.getId());
+
                 List<PetToDoRelationship> petToDoRelationships = new ArrayList<>();
                 for (Long petId : request.petIds()) {
                     Pet pet = petRepository.getReferenceById(petId);
@@ -143,13 +146,19 @@ public class ToDoServiceImpl implements ToDoService {
 
     @Override
     @Transactional
-    public void deleteToDoById(Long id) {
+    public void deleteToDoById(Long id, Long profileId) {
+        ToDo todo = toDoRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_TO_DO));
+
+        if (!todo.getCreateProfile().getId().equals(profileId)) {
+            throw new CustomException(ExceptionCode.INAPPROPRIATE_PROFILE_ACCESS);
+        }
         toDoRepository.deleteById(id);
     }
 
     @Override
     @Transactional
-    public void checkToDo(Long toDoId) {
+    public void checkToDo(Long toDoId, Long accountId) {
         ToDoInstance toDoInstance = toDoInstanceRepository.findByToDo_IdAndCompleteProfileIsNull(toDoId)
                 .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_TO_DO));
 

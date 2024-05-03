@@ -14,7 +14,6 @@ public enum ExceptionCode {
     ILLEGAL_PET_IDS( "error_code","잘못된 펫이 입력되었습니다."),
     NOT_FOUND_TO_DO("", "해당 To Do를 찾을 수 없습니다."),
     INAPPROPRIATE_PROFILE_ACCESS("","작성자 Profile 만 수정할 수 있습니다." ),
-
     // 일지
     UNSUPPORTED_TYPE("", "지원하지 않는 파일 형식입니다."),
 
