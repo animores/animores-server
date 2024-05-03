@@ -11,6 +11,8 @@ import java.time.LocalTime;
 import java.util.List;
 
 public record ToDoCreateRequest(
+		@NotNull(message = "프로필 아이디는 필수입니다.")
+		Long profileId,
 		@NotNull(message = "펫 아이디는 필수입니다.")
 		@NotEmpty(message = "펫 아이디는 비어있을 수 없습니다.")
         List<Long> petIds,
