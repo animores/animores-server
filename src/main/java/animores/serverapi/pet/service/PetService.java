@@ -1,7 +1,9 @@
 package animores.serverapi.pet.service;
 
+import animores.serverapi.pet.domain.Pet;
+
 import java.util.List;
 
 public interface PetService {
-    void checkAccountPets(Long accountId, List<Long> petIds);
+    List<Pet> checkAccountPets(Long accountId, List<Long> petIds);
 }

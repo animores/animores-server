@@ -20,16 +20,20 @@ public class PetServiceImpl implements PetService {
 
     @Override
     @Transactional(readOnly = true)
-    public void checkAccountPets(Long accountId, List<Long> petIds) {
+    public List<Pet> checkAccountPets(Long accountId, List<Long> petIds) {
+        List<Pet> pets = petRepository.findAllByAccount_id(accountId);
 
-        Set<Long> petIdsSet = new HashSet<>(petIds);
-
-        petRepository.findAllByAccount_id(accountId).stream()
-            .map(Pet::getId)
-            .forEach(petId -> {
-                if (!petIdsSet.contains(petId)) {
+        if(petIds.isEmpty()){
+            return pets;
+        } else {
+            Set<Long> petIdsSet = new HashSet<>(petIds);
+            pets.forEach(pet -> {
+                if(!petIdsSet.contains(pet.getId())){
                     throw new CustomException(ExceptionCode.ILLEGAL_PET_IDS);
                 }
             });
+
+            return pets.stream().filter(pet -> petIdsSet.contains(pet.getId())).toList();
+        }
     }
 }
