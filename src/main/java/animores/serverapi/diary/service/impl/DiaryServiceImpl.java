@@ -6,6 +6,7 @@ import animores.serverapi.account.domain.Account;
 import animores.serverapi.account.repository.AccountRepository;
 import animores.serverapi.common.exception.CustomException;
 import animores.serverapi.common.exception.ExceptionCode;
+import animores.serverapi.common.service.S3Service;
 import animores.serverapi.diary.dao.GetAllDiaryDao;
 import animores.serverapi.diary.dao.GetCalendarDiaryDao;
 import animores.serverapi.diary.dto.AddDiaryRequest;
@@ -23,7 +24,6 @@ import animores.serverapi.diary.repository.DiaryRepository;
 import animores.serverapi.diary.service.DiaryService;
 import animores.serverapi.profile.domain.Profile;
 import animores.serverapi.profile.repository.ProfileRepository;
-import animores.serverapi.util.S3Util;
 import com.querydsl.core.QueryResults;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -38,12 +38,11 @@ import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class DiaryServiceImpl implements DiaryService {
 
-    private final S3Util s3Util;
-
+    private final S3Service s3Service;
     private final AccountRepository accountRepository;
     private final ProfileRepository profileRepository;
     private final DiaryRepository diaryRepository;
@@ -87,7 +86,7 @@ public class DiaryServiceImpl implements DiaryService {
 
         if (files != null) {
 
-            List<PutObjectRequest> putObjectRequests = s3Util.uploadFilesToS3(files, DIARY_PATH);
+            List<PutObjectRequest> putObjectRequests = s3Service.uploadFilesToS3(files, DIARY_PATH);
 
             List<DiaryMedia> diaryMedias = createDiaryMedias(diary, putObjectRequests);
             diaryMediaRepository.saveAll(diaryMedias);
@@ -110,7 +109,7 @@ public class DiaryServiceImpl implements DiaryService {
         Diary diary = findDiaryById(diaryId);
         // auth 적용 후 diary 작성자와 일치하는지 체크하는 코드 추가 예정
 
-        List<PutObjectRequest> putObjectRequests = s3Util.uploadFilesToS3(files, DIARY_PATH);
+        List<PutObjectRequest> putObjectRequests = s3Service.uploadFilesToS3(files, DIARY_PATH);
 
         diaryMediaRepository.saveAll(createDiaryMedias(diary, putObjectRequests));
 
@@ -128,10 +127,10 @@ public class DiaryServiceImpl implements DiaryService {
         if (mediaListToDelete.isEmpty()) {
             throw new CustomException(ExceptionCode.NOT_FOUND_DIARY_MEDIA);
         }
-        s3Util.removeFilesFromS3(generateKeysForS3Deletion(mediaListToDelete));
+        s3Service.removeFilesFromS3(generateKeysForS3Deletion(mediaListToDelete));
         diaryMediaRepository.deleteAll(mediaListToDelete);
 
-        List<PutObjectRequest> putObjectRequests = s3Util.uploadFilesToS3(files, DIARY_PATH);
+        List<PutObjectRequest> putObjectRequests = s3Service.uploadFilesToS3(files, DIARY_PATH);
 
         diaryMediaRepository.saveAll(createDiaryMedias(diary, putObjectRequests));
 
@@ -148,7 +147,7 @@ public class DiaryServiceImpl implements DiaryService {
         if (mediaListToDelete.isEmpty()) {
             throw new CustomException(ExceptionCode.NOT_FOUND_DIARY_MEDIA);
         }
-        s3Util.removeFilesFromS3(generateKeysForS3Deletion(mediaListToDelete));
+        s3Service.removeFilesFromS3(generateKeysForS3Deletion(mediaListToDelete));
         diaryMediaRepository.deleteAll(mediaListToDelete);
 
         reorderDiaryMedia(diary.getId(), DiaryMediaType.I);

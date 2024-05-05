@@ -1,12 +1,13 @@
-package animores.serverapi.util;
+package animores.serverapi.common.service.impl;
 
+import animores.serverapi.common.service.S3Service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -14,9 +15,9 @@ import software.amazon.awssdk.services.s3.model.DeleteObjectsRequest;
 import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
-@Component
+@Service
 @RequiredArgsConstructor
-public class S3Util {
+public class S3ServiceImpl implements S3Service {
 
     private final S3Client s3Client;
 
@@ -55,4 +56,5 @@ public class S3Util {
 
         s3Client.deleteObjects(deleteObjectsRequest);
     }
+
 }
