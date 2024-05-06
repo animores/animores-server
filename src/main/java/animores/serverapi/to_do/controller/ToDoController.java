@@ -11,6 +11,7 @@ import animores.serverapi.to_do.dto.request.ToDoPatchRequest;
 import animores.serverapi.to_do.dto.response.ToDoDetailResponse;
 import animores.serverapi.to_do.dto.response.ToDoPageResponse;
 import animores.serverapi.to_do.service.ToDoService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +28,7 @@ public class ToDoController {
 	private final PetService petService;
 	private final ToDoService toDoService;
 
+	@Operation(summary = "To Do 생성", description = "To Do를 생성합니다.")
 	@PostMapping
 	@UserInfo
 	public Response<Void> createToDo(@RequestBody ToDoCreateRequest request) {
@@ -36,6 +38,7 @@ public class ToDoController {
 		return Response.success(null);
 	}
 
+	@Operation(summary = "오늘의 To Do 조회", description = "오늘의 To Do를 조회합니다.")
 	@GetMapping("/today")
 	@UserInfo
 	public Response<ToDoPageResponse> getTodayToDo(@RequestParam(required = false) Boolean done,
@@ -47,6 +50,7 @@ public class ToDoController {
 		return Response.success(toDoService.getTodayToDo(done, petList, page, size));
 	}
 
+	@Operation(summary = "To Do 전체 조회", description = "To Do를 전체 조회합니다.")
 	@GetMapping("")
 	@UserInfo
 	public Response<ToDoPageResponse> getAllToDo(@RequestParam(required = false) Boolean done,
@@ -58,6 +62,7 @@ public class ToDoController {
 		return Response.success(toDoService.getAllToDo(done, petList, page, size));
 	}
 
+	@Operation(summary = "To Do 상세 조회", description = "To Do id를 입력받아 To Do를 상세 조회합니다.")
 	@GetMapping("/{id}")
 	@UserInfo
 	public Response<ToDoDetailResponse> getToDoById(@PathVariable Long id) {
@@ -65,6 +70,7 @@ public class ToDoController {
 		return Response.success(toDoService.getToDoById(id, account.getId()));
 	}
 
+	@Operation(summary = "To Do 수정", description = "To Do id를 입력받아 To Do를 수정합니다.")
 	@PatchMapping("/{id}")
 	@UserInfo
 	public Response<ToDoDetailResponse> updateToDoById(@PathVariable Long id, @RequestBody ToDoPatchRequest request) {
@@ -72,6 +78,7 @@ public class ToDoController {
 		return Response.success(toDoService.updateToDoById(id, request, account.getId()));
 	}
 
+	@Operation(summary = "To Do 삭제", description = "To Do id를 입력받아 To Do를 삭제합니다.")
 	@DeleteMapping("/{id}")
 	@UserInfo
 	public Response<Void> deleteToDoById(@PathVariable Long id, @PathVariable Long profileId) {
@@ -79,6 +86,7 @@ public class ToDoController {
 		return Response.success(null);
 	}
 
+	@Operation(summary = "To Do 체크", description = "To Do id를 입력받아 To Do를 체크합니다.")
 	@PostMapping("/{id}/check")
 	@UserInfo
 	public Response<Void> checkToDo(@PathVariable Long id) {
