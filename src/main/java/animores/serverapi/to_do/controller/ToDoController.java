@@ -1,6 +1,6 @@
 package animores.serverapi.to_do.controller;
 
-import animores.serverapi.account.aop.UserInfo;
+import animores.serverapi.common.aop.UserInfo;
 import animores.serverapi.account.domain.Account;
 import animores.serverapi.account.service.AccountService;
 import animores.serverapi.common.Response;
