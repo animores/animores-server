@@ -14,11 +14,13 @@ import animores.serverapi.to_do.service.ToDoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @SecurityRequirement(name = "Authorization")
+@PreAuthorize("hasRole('USER')")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/todos")
