@@ -2,6 +2,8 @@ package animores.serverapi.diary.controller;
 
 import animores.serverapi.common.Response;
 import animores.serverapi.diary.dto.AddDiaryRequest;
+import animores.serverapi.diary.dto.EditDiaryContentRequest;
+import animores.serverapi.diary.dto.EditDiaryMediaRequest;
 import animores.serverapi.diary.dto.EditDiaryRequest;
 import animores.serverapi.diary.dto.GetAllDiaryResponse;
 import animores.serverapi.diary.dto.GetCalendarDiaryResponse;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -52,11 +55,44 @@ public class DiaryController {
         return Response.success(null);
     }
 
-    // 일지 수정
+    // 일지 내용 수정
     @PatchMapping("/{diaryId}")
-    public Response<Void> editDiary(@PathVariable Long diaryId,
-        @RequestBody EditDiaryRequest request) {
-        diaryService.editDiary(diaryId, request);
+    public Response<Void> editDiaryContent(@PathVariable Long diaryId,
+        @RequestBody EditDiaryContentRequest request) {
+        diaryService.editDiaryContent(diaryId, request);
+        return Response.success(null);
+    }
+
+    // 일지 내용+미디어 수정
+//    @PatchMapping("/{diaryId}")
+//    public Response<Void> editDiaryContent(@PathVariable Long diaryId,
+//        @RequestBody EditDiaryRequest request) {
+//        diaryService.editDiaryContent(diaryId, request);
+//        return Response.success(null);
+//    }
+
+    // 일지 미디어 추가
+    @PostMapping("/{diaryId}/diary-media")
+    public Response<Void> addDiaryMedia(@PathVariable Long diaryId,
+        @RequestPart(name = "files") List<MultipartFile> files) throws IOException {
+        diaryService.addDiaryMedia(diaryId, files);
+        return Response.success(null);
+    }
+
+    // 일지 미디어 수정 (삭제+추가)
+    @PutMapping("/{diaryId}/diary-media")
+    public Response<Void> editDiaryMedia(@PathVariable Long diaryId,
+        @RequestPart EditDiaryMediaRequest request,
+        @RequestPart(name="files") List<MultipartFile> files) throws IOException {
+        diaryService.editDiaryMedia(diaryId, request, files);
+        return Response.success(null);
+    }
+
+    // 일지 미디어 삭제
+    @DeleteMapping("/{diaryId}/diary-media")
+    public Response<Void> removeDiaryMedia(@PathVariable Long diaryId,
+        @RequestBody EditDiaryMediaRequest request) {
+        diaryService.removeDiaryMedia(diaryId, request);
         return Response.success(null);
     }
 
