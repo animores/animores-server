@@ -9,6 +9,5 @@ import java.util.List;
 @Repository
 public interface PetToDoRelationshipRepository extends JpaRepository<PetToDoRelationship, Long> {
 	List<PetToDoRelationship> findAllByPet_IdIn(List<Long> petIds);
-
-	void deleteAllByToDo_Id(Long toDoId);
+    void deleteAllByToDo_IdAndPet_IdIn(Long toDoId, List<Long> petIdsToDelete);
 }

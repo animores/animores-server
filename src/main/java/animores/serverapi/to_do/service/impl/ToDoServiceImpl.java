@@ -127,17 +127,21 @@ public class ToDoServiceImpl implements ToDoService {
                     .map(Pet::getId)
                     .collect(Collectors.toSet());
 
-            if (petIds.size() != request.petIds().size() || !petIds.containsAll(request.petIds())) {
-                petToDoRelationshipRepository.deleteAllByToDo_Id(toDo.getId());
+            List<Long> petIdsToDelete = petIds.stream().
+                    filter(petId -> !request.petIds().contains(petId))
+                    .toList();
 
-                List<PetToDoRelationship> petToDoRelationships = new ArrayList<>();
-                for (Long petId : request.petIds()) {
-                    Pet pet = petRepository.getReferenceById(petId);
-                    petToDoRelationships.add(new PetToDoRelationship(pet, toDo));
-                }
-                toDo.setPetToDoRelationships(petToDoRelationships);
-                petToDoRelationshipRepository.saveAll(petToDoRelationships);
-            }
+            petToDoRelationshipRepository.deleteAllByToDo_IdAndPet_IdIn(toDo.getId(), petIdsToDelete);
+
+            List<Long> petIdsToAdd = request.petIds().stream()
+                    .filter(petId -> !petIds.contains(petId))
+                    .toList();
+
+            petToDoRelationshipRepository.saveAll(petIdsToAdd.stream()
+                    .map(petRepository::getReferenceById)
+                    .map(pet -> new PetToDoRelationship(pet, toDo))
+                    .toList());
+
         }
 
         toDo.update(request);
