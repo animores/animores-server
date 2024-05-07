@@ -1,4 +1,4 @@
-package animores.serverapi.pet.domain;
+package animores.serverapi.pet.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

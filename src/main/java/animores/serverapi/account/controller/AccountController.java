@@ -12,6 +12,8 @@ import animores.serverapi.common.Response;
 import animores.serverapi.security.RefreshRequest;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
@@ -19,11 +21,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/account")
+@Validated
 public class AccountController {
 
     private final AccountService accountService;
@@ -64,13 +68,14 @@ public class AccountController {
     }
 
     @PostMapping("/email-auth-create")
-    public Response<Void> sendAuthEmail(@RequestParam String email) {
+    public Response<Void> sendAuthEmail(@RequestParam @Email(message = "이메일 형식으로 입력해주세요.") String email) {
         emailAuthService.sendEmail(email, emailAuthService.createAuthCode(email));
         return Response.success(null);
     }
 
     @PostMapping("/email-auth-verify")
-    public Response<Boolean> verifyEmail(@RequestParam String email, @RequestParam String code) {
+    public Response<Boolean> verifyEmail(@RequestParam @Email(message = "이메일 형식으로 입력해주세요.") String email,
+                                         @RequestParam String code) {
         return Response.success(emailAuthService.verifyEmail(email, code));
     }
 }

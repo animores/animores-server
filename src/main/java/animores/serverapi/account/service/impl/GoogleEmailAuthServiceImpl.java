@@ -28,7 +28,6 @@ public class GoogleEmailAuthServiceImpl implements EmailAuthService {
     @Override
     public void sendEmail(String email,String code) {
         try{
-            message.setFrom(new InternetAddress("noreply@animores.com"));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
             message.setSubject("Animores Email Verification");
 
