@@ -1,9 +1,11 @@
 package animores.serverapi.pet.service.impl;
 
 import animores.serverapi.account.domain.Account;
+import animores.serverapi.pet.dao.PetDao;
 import animores.serverapi.pet.domain.Breed;
 import animores.serverapi.pet.domain.Pet;
 import animores.serverapi.pet.domain.Species;
+import animores.serverapi.pet.dto.PetDto;
 import animores.serverapi.pet.dto.request.PetCreateRequest;
 import animores.serverapi.pet.dto.response.BreedResponse;
 import animores.serverapi.pet.dto.response.PetCreateResponse;
@@ -47,5 +49,12 @@ public class PetServiceImpl implements PetService {
         pet = petRepository.save(pet);
 
         return new PetCreateResponse(pet.getId(),pet.getName());
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<PetDto> getPets(Account account) {
+        List<PetDao> pets = petRepository.findAllByAccount_IdWithImages(account.getId());
+        return pets.stream().map(PetDto::fromDao).toList();
     }
 }

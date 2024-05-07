@@ -4,6 +4,7 @@ import animores.serverapi.account.aop.UserInfo;
 import animores.serverapi.account.domain.Account;
 import animores.serverapi.account.service.AccountService;
 import animores.serverapi.common.Response;
+import animores.serverapi.pet.dto.PetDto;
 import animores.serverapi.pet.dto.request.PetCreateRequest;
 import animores.serverapi.pet.dto.response.BreedResponse;
 import animores.serverapi.pet.dto.response.PetCreateResponse;
@@ -46,5 +47,15 @@ public class PetController {
     public Response<PetCreateResponse> createPet(@RequestBody PetCreateRequest request) {
         Account account = accountService.getAccountFromContext();
         return Response.success(petService.createPet(account, request));
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @SecurityRequirement(name = "Authorization")
+    @UserInfo
+    @GetMapping("")
+    @Operation(summary = "펫 List", description = "해당 계정의 펫을 가져옵니다.")
+    public Response<List<PetDto>> getPets() {
+        Account account = accountService.getAccountFromContext();
+        return Response.success(petService.getPets(account));
     }
 }
