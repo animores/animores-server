@@ -9,7 +9,12 @@ import animores.serverapi.pet.dto.response.SpeciesResponse;
 
 import java.util.List;
 
+import animores.serverapi.pet.entity.Pet;
+
+import java.util.List;
+
 public interface PetService {
+    List<Pet> checkAccountPets(Long accountId, List<Long> petIds);
     List<SpeciesResponse> getSpecies();
     List<BreedResponse> getBreedsOfSpecies(Long speciesId);
     PetCreateResponse createPet(Account account, PetCreateRequest request);

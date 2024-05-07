@@ -1,4 +1,4 @@
-package animores.serverapi.account.aop;
+package animores.serverapi.common.aop;
 
 import animores.serverapi.account.domain.Account;
 import animores.serverapi.account.repository.AccountRepository;

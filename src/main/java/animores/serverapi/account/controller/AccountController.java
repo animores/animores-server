@@ -10,6 +10,7 @@ import animores.serverapi.account.service.AccountService;
 import animores.serverapi.account.service.EmailAuthService;
 import animores.serverapi.common.Response;
 import animores.serverapi.security.RefreshRequest;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -49,6 +50,7 @@ public class AccountController {
 
     @PostMapping("/sign-out")
     @PreAuthorize("hasAuthority('USER')")
+    @SecurityRequirement(name = "Authorization")
     public ResponseEntity<Void> signOut(@Valid @RequestBody SignOutRequest request, @AuthenticationPrincipal User user) {
         accountService.signOut(request, user);
         return ResponseEntity.noContent().build();
