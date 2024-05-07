@@ -1,4 +1,4 @@
-package animores.serverapi.pet.domain;
+package animores.serverapi.pet.entity;
 
 import animores.serverapi.pet.type.Tag;
 import jakarta.persistence.Entity;
