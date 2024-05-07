@@ -8,8 +8,8 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static animores.serverapi.pet.domain.QBreed.breed;
-import static animores.serverapi.pet.domain.QPet.pet;
+import static animores.serverapi.pet.entity.QBreed.breed;
+import static animores.serverapi.pet.entity.QPet.pet;
 
 @RequiredArgsConstructor
 public class PetCustomRepositoryImpl implements PetCustomRepository {
