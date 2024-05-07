@@ -1,6 +1,6 @@
 package animores.serverapi.pet.repository;
 
-import animores.serverapi.pet.domain.Species;
+import animores.serverapi.pet.entity.Species;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,6 +1,6 @@
 package animores.serverapi.pet.dto.response;
 
-import animores.serverapi.pet.domain.Species;
+import animores.serverapi.pet.entity.Species;
 
 public record SpeciesResponse(
         Long id,

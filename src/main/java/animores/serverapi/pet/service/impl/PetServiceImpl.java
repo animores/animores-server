@@ -2,9 +2,9 @@ package animores.serverapi.pet.service.impl;
 
 import animores.serverapi.account.domain.Account;
 import animores.serverapi.pet.dao.PetDao;
-import animores.serverapi.pet.domain.Breed;
-import animores.serverapi.pet.domain.Pet;
-import animores.serverapi.pet.domain.Species;
+import animores.serverapi.pet.entity.Breed;
+import animores.serverapi.pet.entity.Pet;
+import animores.serverapi.pet.entity.Species;
 import animores.serverapi.pet.dto.PetDto;
 import animores.serverapi.pet.dto.request.PetCreateRequest;
 import animores.serverapi.pet.dto.response.BreedResponse;

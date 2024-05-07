@@ -1,6 +1,6 @@
 package animores.serverapi.pet.repository;
 
-import animores.serverapi.pet.domain.Breed;
+import animores.serverapi.pet.entity.Breed;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
