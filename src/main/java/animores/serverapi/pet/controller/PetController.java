@@ -5,16 +5,17 @@ import animores.serverapi.account.domain.Account;
 import animores.serverapi.account.service.AccountService;
 import animores.serverapi.common.Response;
 import animores.serverapi.pet.dto.request.PetCreateRequest;
+import animores.serverapi.pet.dto.response.BreedResponse;
 import animores.serverapi.pet.dto.response.PetCreateResponse;
+import animores.serverapi.pet.dto.response.SpeciesResponse;
 import animores.serverapi.pet.service.PetService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -23,6 +24,19 @@ public class PetController {
 
     private final AccountService accountService;
     private final PetService petService;
+
+    @GetMapping("/species")
+    @Operation(summary = "종 조회", description = "종을 조회합니다.")
+    public Response<List<SpeciesResponse>> getSpecies() {
+        return Response.success(petService.getSpecies());
+    }
+
+    @GetMapping("/breeds")
+    @Operation(summary = "품종 조회", description = "해당 종의 품종을 조회합니다.")
+    public Response<List<BreedResponse>> getBreedsOfSpecies(@RequestParam Long speciesId) {
+        return Response.success(petService.getBreedsOfSpecies(speciesId));
+    }
+
 
     @PreAuthorize("hasRole('USER')")
     @SecurityRequirement(name = "Authorization")
