@@ -43,6 +43,10 @@ spring:
       host: ${redis_endpoint}
       port: 6379
 
+
+server:
+  url: ${server_url}
+
 mail:
   smtp:
     host: ${mail_host}
@@ -57,3 +61,4 @@ management:
     web:
       exposure:
         include: "prometheus"
+

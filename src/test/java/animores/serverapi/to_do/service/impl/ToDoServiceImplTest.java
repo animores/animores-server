@@ -1,7 +1,6 @@
 package animores.serverapi.to_do.service.impl;
 
 import animores.serverapi.account.domain.Account;
-import animores.serverapi.account.repository.AccountRepository;
 import animores.serverapi.common.exception.ExceptionCode;
 import animores.serverapi.pet.entity.Pet;
 import animores.serverapi.pet.repository.PetRepository;
@@ -39,8 +38,6 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class ToDoServiceImplTest {
     @Mock
-    private AccountRepository accountRepository;
-    @Mock
     private ProfileRepository profileRepository;
     @Mock
     private ToDoRepository toDoRepository;
@@ -55,15 +52,19 @@ class ToDoServiceImplTest {
 
     @Test
     void createToDoTest_Success() {
-        //given
-        Account account = new Account();
-        given(accountRepository.getReferenceById(1L)).willReturn(account);
 
+        //given
+        Account account = new TestAccount(1L);
         Profile createProfile = new Profile();
         given(profileRepository.getReferenceById(2L)).willReturn(createProfile);
 
-        given(petRepository.getReferenceById(1L)).willReturn(new Pet());
-        given(petRepository.getReferenceById(2L)).willReturn(new Pet());
+        Pet pet1 = new TestPet(1L, "두부");
+        Pet pet2 = new TestPet(2L, "호동이");
+        given(petRepository.findAllByAccount_id(1L))
+                .willReturn(List.of(pet1, pet2));
+
+        given(petRepository.getReferenceById(1L)).willReturn(pet1);
+        given(petRepository.getReferenceById(2L)).willReturn(pet2);
         when(toDoRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
         ToDoCreateRequest request = new ToDoCreateRequest(
@@ -81,7 +82,7 @@ class ToDoServiceImplTest {
         ArgumentCaptor<List<PetToDoRelationship>> petToDoRelationshipArgumentCaptor = ArgumentCaptor.forClass(List.class);
 
         //when
-        serviceUnderTest.createToDo(request);
+        serviceUnderTest.createToDo(account, request);
 
         //then
         verify(toDoRepository, times(1)).save(toDoArgumentCaptor.capture());
@@ -91,17 +92,21 @@ class ToDoServiceImplTest {
         verify(petToDoRelationshipRepository, times(1)).saveAll(petToDoRelationshipArgumentCaptor.capture());
         List<PetToDoRelationship> petToDoRelationships = petToDoRelationshipArgumentCaptor.getValue();
         assertEquals(2, petToDoRelationships.size());
+
     }
 
     @Test
     @DisplayName("To Do 생성 fail test - 펫 아이디가 잘못된 경우 예외 발생")
     void createToDoTestFail_InvalidPetIds() {
         //given
-        Account account = new Account();
-        given(accountRepository.getReferenceById(1L)).willReturn(account);
-
+        Account account = new TestAccount(1L);
         Profile createProfile = new Profile();
         given(profileRepository.getReferenceById(2L)).willReturn(createProfile);
+
+        Pet pet1 = new TestPet(1L, "두부");
+        Pet pet2 = new TestPet(2L, "호동이");
+        given(petRepository.findAllByAccount_id(1L))
+                .willReturn(List.of(pet1, pet2));
 
         ToDoCreateRequest request = new ToDoCreateRequest(
                 List.of(3L),
@@ -118,7 +123,7 @@ class ToDoServiceImplTest {
         //when
         //then
         try {
-            serviceUnderTest.createToDo(request);
+            serviceUnderTest.createToDo(account, request);
             fail();
         } catch (Exception e) {
             assertEquals(ExceptionCode.ILLEGAL_PET_IDS.getMessage(), e.getMessage());
@@ -386,6 +391,12 @@ class ToDoServiceImplTest {
 
         // then
         verify(toDoRepository, times(1)).deleteById(1L);
+    }
+
+    class TestAccount extends Account {
+        public TestAccount(Long id) {
+            super(id, null, null, null, null, false);
+        }
     }
 
     class TestProfile extends Profile {
