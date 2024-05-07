@@ -1,11 +1,9 @@
-package animores.serverapi.pet.domain;
+package animores.serverapi.pet.entity;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,24 +12,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 @Builder
-public class Breed {
+public class Species {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Species species;
-
     private String name;
 
-    private String defaultImageUrl;
-
-    protected Breed(Long id, Species species, String name, String defaultImageUrl) {
+    protected Species(Long id, String name) {
         this.id = id;
-        this.species = species;
         this.name = name;
-        this.defaultImageUrl = defaultImageUrl;
     }
 
 }
