@@ -1,6 +1,6 @@
 package animores.serverapi.pet.service;
 
-import animores.serverapi.pet.domain.Pet;
+import animores.serverapi.pet.entity.Pet;
 
 import java.util.List;
 

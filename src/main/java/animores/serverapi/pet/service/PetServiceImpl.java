@@ -2,7 +2,7 @@ package animores.serverapi.pet.service;
 
 import animores.serverapi.common.exception.CustomException;
 import animores.serverapi.common.exception.ExceptionCode;
-import animores.serverapi.pet.domain.Pet;
+import animores.serverapi.pet.entity.Pet;
 import animores.serverapi.pet.repository.PetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

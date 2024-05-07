@@ -4,7 +4,7 @@ import animores.serverapi.common.aop.UserInfo;
 import animores.serverapi.account.domain.Account;
 import animores.serverapi.account.service.AccountService;
 import animores.serverapi.common.Response;
-import animores.serverapi.pet.domain.Pet;
+import animores.serverapi.pet.entity.Pet;
 import animores.serverapi.pet.service.PetService;
 import animores.serverapi.to_do.dto.request.ToDoCreateRequest;
 import animores.serverapi.to_do.dto.request.ToDoPatchRequest;
