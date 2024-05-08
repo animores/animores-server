@@ -1,6 +1,9 @@
 package animores.serverapi.diary.service.impl;
 
+import animores.serverapi.common.exception.CustomException;
+import animores.serverapi.common.exception.ExceptionCode;
 import animores.serverapi.diary.dto.AddDiaryWishRequest;
+import animores.serverapi.diary.dto.CancelDiaryWishRequest;
 import animores.serverapi.diary.entity.Diary;
 import animores.serverapi.diary.entity.DiaryWish;
 import animores.serverapi.diary.repository.DiaryRepository;
@@ -32,11 +35,15 @@ public class DiaryWishServiceImpl implements DiaryWishService {
     }
 
     @Override
-    public void removeDiaryWish(Long diaryWishId) {
-        DiaryWish diaryWish = findDiaryWishById(diaryWishId);
+    public void cancelDiaryWish(CancelDiaryWishRequest request) {
+        Profile profile = findProfileById(request.profileId());
+        Diary diary = findDiaryById(request.diaryId());
         // auth 적용 후 diary wish 등록한 사람과 일치하는지 체크하는 코드 추가 예정
 
-        diaryWishRepository.delete(diaryWish);
+        DiaryWish diaryWishToDelete = diaryWishRepository.findByDiaryIdAndProfileId(profile.getId(), diary.getId())
+            .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_DIARY_WISH));
+
+        diaryWishRepository.delete(diaryWishToDelete);
     }
 
     private Profile findProfileById(Long id) {  // 일지 수정, 삭제 모두 dev에 머지되면 코드 공통으로 분리

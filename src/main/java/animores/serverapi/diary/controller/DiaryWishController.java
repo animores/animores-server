@@ -2,10 +2,10 @@ package animores.serverapi.diary.controller;
 
 import animores.serverapi.common.Response;
 import animores.serverapi.diary.dto.AddDiaryWishRequest;
+import animores.serverapi.diary.dto.CancelDiaryWishRequest;
 import animores.serverapi.diary.service.DiaryWishService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,9 +24,9 @@ public class DiaryWishController {
         return Response.success(null);
     }
 
-    @DeleteMapping("/{diaryWishId}")
-    public Response<Void> removeDiaryWish(@PathVariable Long diaryWishId) {
-        diaryWishService.removeDiaryWish(diaryWishId);
+    @DeleteMapping("")
+    public Response<Void> cancelDiaryWish(@RequestBody CancelDiaryWishRequest request) {
+        diaryWishService.cancelDiaryWish(request);
         return Response.success(null);
     }
 
