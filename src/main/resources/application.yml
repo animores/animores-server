@@ -42,3 +42,23 @@ spring:
     redis:
       host: ${redis_endpoint}
       port: 6379
+
+
+server:
+  url: ${server_url}
+
+mail:
+  smtp:
+    host: ${mail_host}
+    port: ${mail_port}
+    username: ${mail_username}
+    password: ${mail_password}
+    auth: true
+    starttls:
+      enable: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "prometheus"
+

@@ -1,11 +1,11 @@
-package animores.serverapi.to_do.entity.vo;
+package animores.serverapi.to_do.dao;
 
 
 import animores.serverapi.pet.type.Tag;
 import animores.serverapi.to_do.entity.ToDo;
 
 
-public record ToDoVo(
+public record ToDoDao(
 Long id,
 boolean isAllDay,
 String content,
@@ -14,8 +14,8 @@ String color,
 boolean isUsingAlarm
 ) {
 
-    public static ToDoVo fromToDo(ToDo toDo) {
-        return new ToDoVo(
+    public static ToDoDao fromToDo(ToDo toDo) {
+        return new ToDoDao(
                 toDo.getId(),
                 toDo.isAllDay(),
                 toDo.getContent(),
