@@ -44,8 +44,12 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public SignInResponse signIn(SignInRequest request) {
         Account account = accountRepository.findByEmail(request.email())
-                .filter(ac -> passwordEncoder.matches(request.password(), ac.getPassword()))// 비밀번호 확인
                 .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_USER));
+
+        if (!passwordEncoder.matches(request.password(), account.getPassword())) {
+            throw new CustomException(ExceptionCode.PASSWORD_MISMATCH);// 비밀번호 확인
+        }
+
 
         // at, rt 생성
         String accessToken = tokenProvider.createToken(String.format("%s:%s", account.getId(), account.getRole()));
