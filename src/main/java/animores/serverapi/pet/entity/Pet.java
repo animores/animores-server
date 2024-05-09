@@ -45,4 +45,11 @@ public class Pet extends BaseEntity {
                 .birthday(request.birthday())
                 .build();
     }
+
+    public void update(PetCreateRequest request, Breed breed) {
+        this.breed = breed;
+        this.name = request.name();
+        this.birthday = request.birthday();
+        this.gender = request.gender();
+    }
 }

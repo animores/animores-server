@@ -19,4 +19,8 @@ public interface PetService {
     List<PetDto> getPets(Account account);
 
     GetPetDetailResponse getPet(Long petId);
+
+    PetCreateResponse updatePet(Long petId, PetCreateRequest request);
+
+    void deletePet(Long petId);
 }

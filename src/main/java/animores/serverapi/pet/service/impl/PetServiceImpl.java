@@ -90,5 +90,20 @@ public class PetServiceImpl implements PetService {
                 .orElseThrow(() -> new CustomException(ExceptionCode.ILLEGAL_PET_IDS)));
     }
 
+    @Transactional
+    @Override
+    public PetCreateResponse updatePet(Long petId, PetCreateRequest request) {
+        Pet pet = petRepository.findById(petId)
+                .orElseThrow(() -> new CustomException(ExceptionCode.ILLEGAL_PET_IDS));
 
+        Breed breed = breedRepository.getReferenceById(request.breedId());
+        pet.update(request, breed);
+        return new PetCreateResponse(pet.getId(),pet.getName());
+    }
+
+    @Transactional
+    @Override
+    public void deletePet(Long petId) {
+        petRepository.deleteById(petId);
+    }
 }

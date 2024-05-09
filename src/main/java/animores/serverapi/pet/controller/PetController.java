@@ -60,6 +60,7 @@ public class PetController {
         return Response.success(petService.getPets(account));
     }
 
+    //    @PreAuthorize("hasRole('USER')")
     @SecurityRequirement(name = "Authorization")
     @UserInfo
     @GetMapping("/{petId}")
@@ -68,5 +69,28 @@ public class PetController {
         Account account = accountService.getAccountFromContext();
         petService.checkAccountPets(account.getId(), List.of(petId));
         return Response.success(petService.getPet(petId));
+    }
+
+    //    @PreAuthorize("hasRole('USER')")
+    @SecurityRequirement(name = "Authorization")
+    @UserInfo
+    @PutMapping("/{petId}")
+    @Operation(summary = "펫 수정", description = "id 로 해당 펫을 수정합니다.")
+    public Response<PetCreateResponse> updatePet(@PathVariable Long petId, @RequestBody PetCreateRequest request) {
+        Account account = accountService.getAccountFromContext();
+        petService.checkAccountPets(account.getId(), List.of(petId));
+        return Response.success(petService.updatePet(petId, request));
+    }
+
+    //    @PreAuthorize("hasRole('USER')")
+    @SecurityRequirement(name = "Authorization")
+    @UserInfo
+    @DeleteMapping("/{petId}")
+    @Operation(summary = "펫 삭제", description = "id 로 해당 펫을 삭제합니다.")
+    public Response<Void> deletePet(@PathVariable Long petId) {
+        Account account = accountService.getAccountFromContext();
+        petService.checkAccountPets(account.getId(), List.of(petId));
+        petService.deletePet(petId);
+        return Response.success(null);
     }
 }
