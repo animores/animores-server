@@ -4,6 +4,7 @@ import animores.serverapi.account.domain.Account;
 import animores.serverapi.common.exception.CustomException;
 import animores.serverapi.common.exception.ExceptionCode;
 import animores.serverapi.pet.dao.PetDao;
+import animores.serverapi.pet.dto.response.GetPetDetailResponse;
 import animores.serverapi.pet.entity.Breed;
 import animores.serverapi.pet.entity.Pet;
 import animores.serverapi.pet.entity.Species;
@@ -80,4 +81,14 @@ public class PetServiceImpl implements PetService {
         List<PetDao> pets = petRepository.findAllByAccount_IdWithImages(account.getId());
         return pets.stream().map(PetDto::fromDao).toList();
     }
+
+    @Transactional(readOnly = true)
+    @Override
+    public GetPetDetailResponse getPet(Long petId) {
+
+        return GetPetDetailResponse.fromEntity(petRepository.findById(petId)
+                .orElseThrow(() -> new CustomException(ExceptionCode.ILLEGAL_PET_IDS)));
+    }
+
+
 }

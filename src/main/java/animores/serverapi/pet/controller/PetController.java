@@ -7,6 +7,7 @@ import animores.serverapi.common.Response;
 import animores.serverapi.pet.dto.PetDto;
 import animores.serverapi.pet.dto.request.PetCreateRequest;
 import animores.serverapi.pet.dto.response.BreedResponse;
+import animores.serverapi.pet.dto.response.GetPetDetailResponse;
 import animores.serverapi.pet.dto.response.PetCreateResponse;
 import animores.serverapi.pet.dto.response.SpeciesResponse;
 import animores.serverapi.pet.service.PetService;
@@ -39,7 +40,7 @@ public class PetController {
     }
 
 
-    @PreAuthorize("hasRole('USER')")
+//    @PreAuthorize("hasRole('USER')")
     @SecurityRequirement(name = "Authorization")
     @UserInfo
     @PostMapping("")
@@ -49,7 +50,7 @@ public class PetController {
         return Response.success(petService.createPet(account, request));
     }
 
-    @PreAuthorize("hasRole('USER')")
+//    @PreAuthorize("hasRole('USER')")
     @SecurityRequirement(name = "Authorization")
     @UserInfo
     @GetMapping("")
@@ -57,5 +58,15 @@ public class PetController {
     public Response<List<PetDto>> getPets() {
         Account account = accountService.getAccountFromContext();
         return Response.success(petService.getPets(account));
+    }
+
+    @SecurityRequirement(name = "Authorization")
+    @UserInfo
+    @GetMapping("/{petId}")
+    @Operation(summary = "펫 조회", description = "id 로 해당 펫을 조회합니다.")
+    public Response<GetPetDetailResponse> getPet(@PathVariable Long petId) {
+        Account account = accountService.getAccountFromContext();
+        petService.checkAccountPets(account.getId(), List.of(petId));
+        return Response.success(petService.getPet(petId));
     }
 }
