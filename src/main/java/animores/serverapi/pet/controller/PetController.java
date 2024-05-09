@@ -40,7 +40,7 @@ public class PetController {
     }
 
 
-//    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     @SecurityRequirement(name = "Authorization")
     @UserInfo
     @PostMapping("")
@@ -50,7 +50,7 @@ public class PetController {
         return Response.success(petService.createPet(account, request));
     }
 
-//    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     @SecurityRequirement(name = "Authorization")
     @UserInfo
     @GetMapping("")
@@ -60,7 +60,7 @@ public class PetController {
         return Response.success(petService.getPets(account));
     }
 
-    //    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     @SecurityRequirement(name = "Authorization")
     @UserInfo
     @GetMapping("/{petId}")
@@ -71,7 +71,7 @@ public class PetController {
         return Response.success(petService.getPet(petId));
     }
 
-    //    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     @SecurityRequirement(name = "Authorization")
     @UserInfo
     @PutMapping("/{petId}")
@@ -82,7 +82,7 @@ public class PetController {
         return Response.success(petService.updatePet(petId, request));
     }
 
-    //    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     @SecurityRequirement(name = "Authorization")
     @UserInfo
     @DeleteMapping("/{petId}")
