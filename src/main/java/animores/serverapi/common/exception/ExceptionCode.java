@@ -10,6 +10,7 @@ public enum ExceptionCode {
     INVALID_REFRESH_TOKEN("","해당 refresh token 을 찾을 수 없습니다" ),
     INVALID_USER("","해당 유저를 찾을 수 없습니다" ),
     EXPIRED_AUTH_CODE("", "인증 코드가 만료되었습니다."),
+    NOT_VERIFIED_EMAIL("", "이메일 인증이 되지 않았습니다."),
     //   to_do 관련 에러
     ILLEGAL_PET_IDS( "error_code","잘못된 펫이 입력되었습니다."),
     NOT_FOUND_TO_DO("", "해당 To Do를 찾을 수 없습니다."),

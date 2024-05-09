@@ -35,34 +35,10 @@ public class AccountServiceImpl implements AccountService {
     private final BlacklistTokenRepository blacklistTokenRepository;
 
     @Override
-    public SignInResponse refresh(RefreshRequest request) {
-        RefreshToken refreshToken = refreshTokenRepository.findById(request.refreshToken())
-                .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_REFRESH_TOKEN));
-        Account account = accountRepository.findById(request.userId())
-                .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_USER));
-
-        String accessToken = tokenProvider.createToken(String.format("%s:%s", account.getId(), account.getRole()));
-
-        return new SignInResponse(account.getId(), accessToken, LocalDateTime.now().plusHours(tokenProvider.getExpirationHours()), refreshToken.getRefreshToken());
-    }
-
-    @Override
     public SignUpResponse signUp(SignUpRequest request) {
         return SignUpResponse.toResponse(
                 accountRepository.save(Account.toEntity(request, passwordEncoder))
         );
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public boolean isDuplicatedEmail(String email) {
-        return accountRepository.existsByEmail(email);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public boolean isDuplicatedNickname(String nickname) {
-        return accountRepository.existsByNickname(nickname);
     }
 
     @Override
@@ -81,8 +57,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void signOut(SignOutRequest request, User user) {
-        String accessToken = request.accessToken();
+    public void signOut(SignOutRequest request, String accessToken, User user) {
         String refreshToken = request.refreshToken();
         Long userId = Long.parseLong(user.getUsername());
 
@@ -91,6 +66,31 @@ public class AccountServiceImpl implements AccountService {
         // rt 제거
         refreshTokenRepository.deleteById(refreshToken);
     }
+
+    @Override
+    public SignInResponse refresh(RefreshRequest request, Long userId) {
+        RefreshToken refreshToken = refreshTokenRepository.findById(request.refreshToken())
+                .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_REFRESH_TOKEN));
+        Account account = accountRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_USER));
+
+        String accessToken = tokenProvider.createToken(String.format("%s:%s", account.getId(), account.getRole()));
+
+        return new SignInResponse(account.getId(), accessToken, LocalDateTime.now().plusHours(tokenProvider.getExpirationHours()), refreshToken.getRefreshToken());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isDuplicatedEmail(String email) {
+        return accountRepository.existsByEmail(email);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isDuplicatedNickname(String nickname) {
+        return accountRepository.existsByNickname(nickname);
+    }
+
 
     @Override
     public Account getAccountFromContext() {

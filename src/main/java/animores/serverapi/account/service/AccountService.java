@@ -10,32 +10,12 @@ import animores.serverapi.security.RefreshRequest;
 import org.springframework.security.core.userdetails.User;
 
 public interface AccountService {
-
-    /**
-     * accessToken 재발급
-     * @param request
-     * @return
-     */
-    SignInResponse refresh(RefreshRequest request);
-
     /**
      * 계정 생성
      * @param request
      * @return
      */
     SignUpResponse signUp(SignUpRequest request);
-
-    /**
-     * 이메일 중복 체크
-     * @param email
-     */
-    boolean isDuplicatedEmail(String email);
-
-    /**
-     * 닉네임 중복 체크
-     * @param nickname
-     */
-    boolean isDuplicatedNickname(String nickname);
 
     /**
      * 로그인
@@ -48,7 +28,26 @@ public interface AccountService {
      * 로그아웃
      * @param request
      */
-    void signOut(SignOutRequest request, User user);
+    void signOut(SignOutRequest request, String token, User user);
+
+    /**
+     * accessToken 재발급
+     * @param request
+     * @return
+     */
+    SignInResponse refresh(RefreshRequest request, Long userId);
+
+    /**
+     * 이메일 중복 체크
+     * @param email
+     */
+    boolean isDuplicatedEmail(String email);
+
+    /**
+     * 닉네임 중복 체크
+     * @param nickname
+     */
+    boolean isDuplicatedNickname(String nickname);
 
     Account getAccountFromContext();
 
