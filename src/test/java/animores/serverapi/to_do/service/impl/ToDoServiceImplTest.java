@@ -404,7 +404,7 @@ class ToDoServiceImplTest {
 
     static class TestPet extends Pet {
         public TestPet(Long id, String name) {
-            super(id, null,name, null, 0);
+            super(id, null, null, name, null, 0);
         }
     }
 
