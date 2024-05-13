@@ -67,7 +67,7 @@ class AccountServiceImplTest {
 
         when(accountRepository.findByEmail(anyString())).thenReturn(Optional.of(account));
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
-        when(tokenProvider.createToken(anyString())).thenReturn("token");
+        when(tokenProvider.createToken(any(), any())).thenReturn("token");
         when(tokenProvider.getExpirationHours()).thenReturn(1);
 
         SignInResponse response = accountService.signIn(request);
@@ -128,7 +128,7 @@ class AccountServiceImplTest {
 
         when(refreshTokenRepository.findById(anyString())).thenReturn(Optional.of(new RefreshToken(REFRESH_TOKEN, ACCOUNT_ID)));
         when(accountRepository.findById(anyLong())).thenReturn(Optional.of(new Account()));
-        when(tokenProvider.createToken(anyString())).thenReturn("token");
+        when(tokenProvider.createToken(any(), any())).thenReturn("token");
         when(tokenProvider.getExpirationHours()).thenReturn(1);
 
         SignInResponse response = accountService.refresh(request, 1L);
