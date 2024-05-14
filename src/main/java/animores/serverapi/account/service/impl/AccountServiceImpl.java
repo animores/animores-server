@@ -35,22 +35,52 @@ public class AccountServiceImpl implements AccountService {
     private final BlacklistTokenRepository blacklistTokenRepository;
 
     @Override
-    public SignInResponse refresh(RefreshRequest request) {
-        RefreshToken refreshToken = refreshTokenRepository.findById(request.refreshToken())
-                .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_REFRESH_TOKEN));
-        Account account = accountRepository.findById(request.userId())
-                .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_USER));
-
-        String accessToken = tokenProvider.createToken(String.format("%s:%s", account.getId(), account.getRole()));
-
-        return new SignInResponse(account.getId(), accessToken, LocalDateTime.now().plusHours(tokenProvider.getExpirationHours()), refreshToken.getRefreshToken());
-    }
-
-    @Override
     public SignUpResponse signUp(SignUpRequest request) {
         return SignUpResponse.toResponse(
                 accountRepository.save(Account.toEntity(request, passwordEncoder))
         );
+    }
+
+    @Override
+    public SignInResponse signIn(SignInRequest request) {
+        Account account = accountRepository.findByEmail(request.email())
+                .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_USER));
+
+        if (!passwordEncoder.matches(request.password(), account.getPassword())) {
+            throw new CustomException(ExceptionCode.PASSWORD_MISMATCH);// 비밀번호 확인
+        }
+
+
+        // at, rt 생성
+        String accessToken = tokenProvider.createToken(account.getId(), account.getRole());
+        String refreshToken = UUID.randomUUID().toString();
+        RefreshToken redisRefreshToken = new RefreshToken(refreshToken, account.getId());
+        refreshTokenRepository.save(redisRefreshToken);
+
+        return new SignInResponse(account.getId(), accessToken, LocalDateTime.now().plusHours(tokenProvider.getExpirationHours()), refreshToken);
+    }
+
+    @Override
+    public void signOut(SignOutRequest request, String accessToken, User user) {
+        String refreshToken = request.refreshToken();
+        Long userId = Long.parseLong(user.getUsername());
+
+        // at 블랙리스트에 넣기
+        blacklistTokenRepository.save(new BlackListToken(accessToken, userId));
+        // rt 제거
+        refreshTokenRepository.deleteById(refreshToken);
+    }
+
+    @Override
+    public SignInResponse refresh(RefreshRequest request, Long userId) {
+        RefreshToken refreshToken = refreshTokenRepository.findById(request.refreshToken())
+                .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_REFRESH_TOKEN));
+        Account account = accountRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_USER));
+
+        String accessToken = tokenProvider.createToken(account.getId(), account.getRole());
+
+        return new SignInResponse(account.getId(), accessToken, LocalDateTime.now().plusHours(tokenProvider.getExpirationHours()), refreshToken.getRefreshToken());
     }
 
     @Override
@@ -65,32 +95,6 @@ public class AccountServiceImpl implements AccountService {
         return accountRepository.existsByNickname(nickname);
     }
 
-    @Override
-    public SignInResponse signIn(SignInRequest request) {
-        Account account = accountRepository.findByEmail(request.email())
-                .filter(ac -> passwordEncoder.matches(request.password(), ac.getPassword()))// 비밀번호 확인
-                .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_USER));
-
-        // at, rt 생성
-        String accessToken = tokenProvider.createToken(String.format("%s:%s", account.getId(), account.getRole()));
-        String refreshToken = UUID.randomUUID().toString();
-        RefreshToken redisRefreshToken = new RefreshToken(refreshToken, account.getId());
-        refreshTokenRepository.save(redisRefreshToken);
-
-        return new SignInResponse(account.getId(), accessToken, LocalDateTime.now().plusHours(tokenProvider.getExpirationHours()), refreshToken);
-    }
-
-    @Override
-    public void signOut(SignOutRequest request, User user) {
-        String accessToken = request.accessToken();
-        String refreshToken = request.refreshToken();
-        Long userId = Long.parseLong(user.getUsername());
-
-        // at 블랙리스트에 넣기
-        blacklistTokenRepository.save(new BlackListToken(accessToken, userId));
-        // rt 제거
-        refreshTokenRepository.deleteById(refreshToken);
-    }
 
     @Override
     public Account getAccountFromContext() {
