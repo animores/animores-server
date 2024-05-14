@@ -40,7 +40,8 @@ public class DiaryWishServiceImpl implements DiaryWishService {
         Diary diary = findDiaryById(request.diaryId());
         // auth 적용 후 diary wish 등록한 사람과 일치하는지 체크하는 코드 추가 예정
 
-        DiaryWish diaryWishToDelete = diaryWishRepository.findByDiaryIdAndProfileId(profile.getId(), diary.getId())
+        DiaryWish diaryWishToDelete = diaryWishRepository.findByDiaryIdAndProfileId(diary.getId(),
+                profile.getId())
             .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_DIARY_WISH));
 
         diaryWishRepository.delete(diaryWishToDelete);
