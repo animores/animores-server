@@ -75,4 +75,11 @@ public class GoogleEmailAuthServiceImpl implements EmailAuthService {
 
         return false;
     }
+
+    @Override
+    public void checkVerifiedEmail(String email) {
+        if (!validMailRepository.existsById(email)) {
+            throw new CustomException(ExceptionCode.NOT_VERIFIED_EMAIL);
+        }
+    }
 }
