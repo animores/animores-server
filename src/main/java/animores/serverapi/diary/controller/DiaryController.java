@@ -149,6 +149,9 @@ public class DiaryController {
         return Response.success(null);
     }
 
+    @PreAuthorize("hasAuthority('USER')")
+    @SecurityRequirement(name = "Authorization")
+    @UserInfo
     @PostMapping("/{diaryId}/likes")
     @Operation(summary = "일지 좋아요", description = "일지 좋아요를 등록합니다.")
     public Response<Void> addDiaryLike(
@@ -159,6 +162,9 @@ public class DiaryController {
         return Response.success(null);
     }
 
+    @PreAuthorize("hasAuthority('USER')")
+    @SecurityRequirement(name = "Authorization")
+    @UserInfo
     @DeleteMapping("/{diaryId}/likes")
     @Operation(summary = "일지 좋아요 취소", description = "일지 좋아요를 취소합니다.")
     public Response<Void> cancelDiaryLike(
