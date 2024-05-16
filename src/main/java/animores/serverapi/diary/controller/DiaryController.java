@@ -6,6 +6,8 @@ import animores.serverapi.common.Response;
 import animores.serverapi.common.aop.UserInfo;
 import animores.serverapi.diary.dto.AddDiaryMediaRequest;
 import animores.serverapi.diary.dto.AddDiaryRequest;
+import animores.serverapi.diary.dto.AddDiaryLikeRequest;
+import animores.serverapi.diary.dto.CancelDiaryLikeRequest;
 import animores.serverapi.diary.dto.EditDiaryContentRequest;
 import animores.serverapi.diary.dto.EditDiaryMediaRequest;
 import animores.serverapi.diary.dto.GetAllDiaryResponse;
@@ -147,4 +149,23 @@ public class DiaryController {
         return Response.success(null);
     }
 
+    @PostMapping("/{diaryId}/likes")
+    @Operation(summary = "일지 좋아요", description = "일지 좋아요를 등록합니다.")
+    public Response<Void> addDiaryLike(
+        @PathVariable @Parameter(description = "일지 아이디", required = true) Long diaryId,
+        @RequestBody @Parameter(description = "일지 좋아요에 대한 요청 데이터", required = true) AddDiaryLikeRequest request) {
+        Account account = accountService.getAccountFromContext();
+        diaryService.addDiaryLike(account, diaryId, request);
+        return Response.success(null);
+    }
+
+    @DeleteMapping("/{diaryId}/likes")
+    @Operation(summary = "일지 좋아요 취소", description = "일지 좋아요를 취소합니다.")
+    public Response<Void> cancelDiaryLike(
+        @PathVariable @Parameter(description = "일지 아이디", required = true) Long diaryId,
+        @RequestBody @Parameter(description = "일지 좋아요 취소에 대한 요청 데이터", required = true) CancelDiaryLikeRequest request) {
+        Account account = accountService.getAccountFromContext();
+        diaryService.cancelDiaryLike(account, diaryId, request);
+        return Response.success(null);
+    }
 }

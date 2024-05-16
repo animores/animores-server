@@ -21,7 +21,7 @@ import java.util.List;
 
 import static animores.serverapi.diary.entity.QDiary.diary;
 import static animores.serverapi.diary.entity.QDiaryMedia.diaryMedia;
-import static animores.serverapi.diary.entity.QDiaryWish.diaryWish;
+import static animores.serverapi.diary.entity.QDiaryLike.diaryLike;
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.group.GroupBy.list;
 import static com.querydsl.jpa.JPAExpressions.select;
@@ -52,7 +52,7 @@ public class DiaryCustomRepositoryImpl implements DiaryCustomRepository {
                                                 new QGetAllDiaryMediaDao(diaryMedia.id, diaryMedia.url,
                                                         diaryMedia.mediaOrder, diaryMedia.type).skipNulls()
                                         ),
-                                        createWishYnExpression(diary.id, profileId),
+                                        createLikeYnExpression(diary.id, profileId),
                                         diary.createdAt,
                                         diary.profile.id,
                                         diary.profile.name,
@@ -95,12 +95,12 @@ public class DiaryCustomRepositoryImpl implements DiaryCustomRepository {
             .fetchResults();
     }
 
-    private BooleanExpression createWishYnExpression(NumberPath<Long> diaryId, Long profileId) {
+    private BooleanExpression createLikeYnExpression(NumberPath<Long> diaryId, Long profileId) {
 
         return new CaseBuilder()
-            .when(select(diaryWish.count()).from(diaryWish)
-                .where(diaryWish.diary.id.eq(diaryId)
-                    .and(diaryWish.profile.id.eq(profileId))).eq(1L))
+            .when(select(diaryLike.count()).from(diaryLike)
+                .where(diaryLike.diary.id.eq(diaryId)
+                    .and(diaryLike.profile.id.eq(profileId))).eq(1L))
             .then(true)
             .otherwise(false);
     }

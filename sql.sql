@@ -85,16 +85,16 @@ CREATE TABLE `diary_reply` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE `diary_wish` (
+CREATE TABLE `diary_like` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `diary_id` bigint NOT NULL,
   `profile_id` bigint NOT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `diary_wish_diary_FK` (`diary_id`),
-  KEY `diary_wish_profile_FK` (`profile_id`),
-  CONSTRAINT `diary_wish_diary_FK` FOREIGN KEY (`diary_id`) REFERENCES `diary` (`id`),
-  CONSTRAINT `diary_wish_profile_FK` FOREIGN KEY (`profile_id`) REFERENCES `profile` (`id`)
+  KEY `diary_like_diary_FK` (`diary_id`),
+  KEY `diary_like_profile_FK` (`profile_id`),
+  CONSTRAINT `diary_like_diary_FK` FOREIGN KEY (`diary_id`) REFERENCES `diary` (`id`),
+  CONSTRAINT `diary_like_profile_FK` FOREIGN KEY (`profile_id`) REFERENCES `profile` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `pet` (

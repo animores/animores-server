@@ -24,7 +24,7 @@ public enum ExceptionCode {
     UNAUTHORIZED_DIARY_ACCESS("", "접근 권한이 없는 다이어리입니다."),
 
     // 일지 관심
-    NOT_FOUND_DIARY_WISH("", "해당 Diary Wish 를 찾을 수 없습니다."),
+    NOT_FOUND_DIARY_LIKE("", "해당 Diary Like 를 찾을 수 없습니다."),
 
     // 500 에러
     UNHANDLED_EXCEPTION("error_code","알 수 없는 에러가 발생했습니다.");

@@ -3,15 +3,16 @@ package animores.serverapi.diary.service.impl;
 import static animores.serverapi.common.S3Path.DIARY_PATH;
 
 import animores.serverapi.account.domain.Account;
-import animores.serverapi.account.repository.AccountRepository;
 import animores.serverapi.common.exception.CustomException;
 import animores.serverapi.common.exception.ExceptionCode;
 import animores.serverapi.common.service.AuthorizationService;
 import animores.serverapi.common.service.S3Service;
 import animores.serverapi.diary.dao.GetAllDiaryDao;
 import animores.serverapi.diary.dao.GetCalendarDiaryDao;
+import animores.serverapi.diary.dto.AddDiaryLikeRequest;
 import animores.serverapi.diary.dto.AddDiaryMediaRequest;
 import animores.serverapi.diary.dto.AddDiaryRequest;
+import animores.serverapi.diary.dto.CancelDiaryLikeRequest;
 import animores.serverapi.diary.dto.EditDiaryContentRequest;
 import animores.serverapi.diary.dto.EditDiaryMediaRequest;
 import animores.serverapi.diary.dto.GetAllDiaryResponse;
@@ -19,7 +20,9 @@ import animores.serverapi.diary.dto.GetCalendarDiaryResponse;
 import animores.serverapi.diary.entity.Diary;
 import animores.serverapi.diary.entity.DiaryMedia;
 import animores.serverapi.diary.entity.DiaryMediaType;
+import animores.serverapi.diary.entity.DiaryLike;
 import animores.serverapi.diary.repository.DiaryCustomRepository;
+import animores.serverapi.diary.repository.DiaryLikeRepository;
 import animores.serverapi.diary.repository.DiaryMediaCustomRepository;
 import animores.serverapi.diary.repository.DiaryMediaRepository;
 import animores.serverapi.diary.repository.DiaryRepository;
@@ -52,6 +55,7 @@ public class DiaryServiceImpl implements DiaryService {
     private final DiaryCustomRepository diaryCustomRepository;
     private final DiaryMediaRepository diaryMediaRepository;
     private final DiaryMediaCustomRepository diaryMediaCustomRepository;
+    private final DiaryLikeRepository diaryLikeRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -177,6 +181,32 @@ public class DiaryServiceImpl implements DiaryService {
             .orElseThrow(NoSuchElementException::new);
 
         diary.delete();
+    }
+
+    @Override
+    @Transactional
+    public void addDiaryLike(Account account, Long diaryId, AddDiaryLikeRequest request) {
+        Profile profile = findProfileById(request.profileId());
+        Diary diary = findDiaryById(diaryId);
+
+        authorizationService.validateProfileAccess(account, profile);
+
+        diaryLikeRepository.save(DiaryLike.create(profile, diary));
+    }
+
+    @Override
+    @Transactional
+    public void cancelDiaryLike(Account account, Long diaryId, CancelDiaryLikeRequest request) {
+        Profile profile = findProfileById(request.profileId());
+        Diary diary = findDiaryById(diaryId);
+
+        authorizationService.validateProfileAccess(account, profile);
+
+        DiaryLike diaryLikeToDelete = diaryLikeRepository.findByDiaryIdAndProfileId(diary.getId(),
+                profile.getId())
+            .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_DIARY_LIKE));
+
+        diaryLikeRepository.delete(diaryLikeToDelete);
     }
 
     private Profile findProfileById(Long id) {

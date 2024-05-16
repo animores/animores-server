@@ -1,8 +1,10 @@
 package animores.serverapi.diary.service;
 
 import animores.serverapi.account.domain.Account;
+import animores.serverapi.diary.dto.AddDiaryLikeRequest;
 import animores.serverapi.diary.dto.AddDiaryMediaRequest;
 import animores.serverapi.diary.dto.AddDiaryRequest;
+import animores.serverapi.diary.dto.CancelDiaryLikeRequest;
 import animores.serverapi.diary.dto.EditDiaryContentRequest;
 import animores.serverapi.diary.dto.EditDiaryMediaRequest;
 import animores.serverapi.diary.dto.GetAllDiaryResponse;
@@ -32,5 +34,9 @@ public interface DiaryService {
     void removeDiaryMedia(Account account, Long diaryId, EditDiaryMediaRequest request);
 
     void removeDiary(Long removeDiary);
+
+    void addDiaryLike(Account account, Long diaryId, AddDiaryLikeRequest request);
+
+    void cancelDiaryLike(Account account, Long diaryId, CancelDiaryLikeRequest request);
 
 }
