@@ -1,6 +1,5 @@
 package animores.serverapi.diary.entity;
 
-import animores.serverapi.account.domain.Account;
 import animores.serverapi.profile.domain.Profile;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -26,10 +25,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "diary_wish", uniqueConstraints = {
+@Table(name = "diary_like", uniqueConstraints = {
     @UniqueConstraint(name = "UK_diary_profile", columnNames = {"diary_id", "profile_id"})
 })
-public class DiaryWish {
+public class DiaryLike {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,8 +44,8 @@ public class DiaryWish {
     @CreatedDate
     private LocalDateTime createdAt;
 
-    public static DiaryWish create(Profile profile, Diary diary) {
-        return DiaryWish.builder()
+    public static DiaryLike create(Profile profile, Diary diary) {
+        return DiaryLike.builder()
             .profile(profile)
             .diary(diary)
             .build();

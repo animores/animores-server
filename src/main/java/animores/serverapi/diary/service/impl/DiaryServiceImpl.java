@@ -3,13 +3,16 @@ package animores.serverapi.diary.service.impl;
 import static animores.serverapi.common.S3Path.DIARY_PATH;
 
 import animores.serverapi.account.domain.Account;
-import animores.serverapi.account.repository.AccountRepository;
 import animores.serverapi.common.exception.CustomException;
 import animores.serverapi.common.exception.ExceptionCode;
+import animores.serverapi.common.service.AuthorizationService;
 import animores.serverapi.common.service.S3Service;
 import animores.serverapi.diary.dao.GetAllDiaryDao;
 import animores.serverapi.diary.dao.GetCalendarDiaryDao;
+import animores.serverapi.diary.dto.AddDiaryLikeRequest;
+import animores.serverapi.diary.dto.AddDiaryMediaRequest;
 import animores.serverapi.diary.dto.AddDiaryRequest;
+import animores.serverapi.diary.dto.CancelDiaryLikeRequest;
 import animores.serverapi.diary.dto.EditDiaryContentRequest;
 import animores.serverapi.diary.dto.EditDiaryMediaRequest;
 import animores.serverapi.diary.dto.GetAllDiaryResponse;
@@ -17,7 +20,9 @@ import animores.serverapi.diary.dto.GetCalendarDiaryResponse;
 import animores.serverapi.diary.entity.Diary;
 import animores.serverapi.diary.entity.DiaryMedia;
 import animores.serverapi.diary.entity.DiaryMediaType;
+import animores.serverapi.diary.entity.DiaryLike;
 import animores.serverapi.diary.repository.DiaryCustomRepository;
+import animores.serverapi.diary.repository.DiaryLikeRepository;
 import animores.serverapi.diary.repository.DiaryMediaCustomRepository;
 import animores.serverapi.diary.repository.DiaryMediaRepository;
 import animores.serverapi.diary.repository.DiaryRepository;
@@ -43,49 +48,53 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 public class DiaryServiceImpl implements DiaryService {
 
     private final S3Service s3Service;
-    private final AccountRepository accountRepository;
+    private final AuthorizationService authorizationService;
+
     private final ProfileRepository profileRepository;
     private final DiaryRepository diaryRepository;
     private final DiaryCustomRepository diaryCustomRepository;
     private final DiaryMediaRepository diaryMediaRepository;
     private final DiaryMediaCustomRepository diaryMediaCustomRepository;
+    private final DiaryLikeRepository diaryLikeRepository;
 
     @Override
     @Transactional(readOnly = true)
-    public GetAllDiaryResponse getAllDiary(int page, int size) {
-        Long accountId = 1L;    // 나중에 인증 정보에서 가져오기 param으로 받지x
-        Long profileId = 1L;
+    public GetAllDiaryResponse getAllDiary(Account account, Long profileId, int page, int size) {
+        Profile profile = findProfileById(profileId);
+        authorizationService.validateProfileAccess(account, profile);
 
-        List<GetAllDiaryDao> diaries = diaryCustomRepository.getAllDiary(accountId, profileId, page,
-            size);
-        Long totalCount = diaryCustomRepository.getAllDiaryCount(accountId);
+        List<GetAllDiaryDao> diaries = diaryCustomRepository.getAllDiary(account.getId(), profileId,
+            page, size);
+        Long totalCount = diaryCustomRepository.getAllDiaryCount(account.getId());
 
         return new GetAllDiaryResponse(totalCount, diaries);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public GetCalendarDiaryResponse getCalendarDiary(Long accountId, LocalDate date) {
+    public GetCalendarDiaryResponse getCalendarDiary(Account account, Long profileId,
+        LocalDate date) {
+        Profile profile = findProfileById(profileId);
+        authorizationService.validateProfileAccess(account, profile);
+
         QueryResults<GetCalendarDiaryDao> diaries = diaryCustomRepository.getCalendarDiary(
-            accountId, date);
+            account.getId(), date);
 
         return new GetCalendarDiaryResponse(diaries.getTotal(), diaries.getResults());
     }
 
     @Override
     @Transactional
-    public void addDiary(AddDiaryRequest request, List<MultipartFile> files) throws IOException {
-        // 유저쪽 코드 병합되면 수정
-        Account account = findAccountById(1L);
-        Profile profile = findProfileById(1L);
-        //
+    public void addDiary(Account account, AddDiaryRequest request, List<MultipartFile> files)
+        throws IOException {
+        Profile profile = findProfileById(request.profileId());
+        authorizationService.validateProfileAccess(account, profile);
 
         // files에서 "files"만 넘어오고 파일은 안담겨서 넘어왔을 경우 에러 처리 필요
 
         Diary diary = diaryRepository.save(Diary.create(account, profile, request.content()));
 
         if (files != null) {
-
             List<PutObjectRequest> putObjectRequests = s3Service.uploadFilesToS3(files, DIARY_PATH);
 
             List<DiaryMedia> diaryMedias = createDiaryMedias(diary, putObjectRequests);
@@ -96,18 +105,25 @@ public class DiaryServiceImpl implements DiaryService {
 
     @Override
     @Transactional
-    public void editDiaryContent(Long diaryId, EditDiaryContentRequest request) {
+    public void editDiaryContent(Account account, Long diaryId, EditDiaryContentRequest request) {
+        Profile profile = findProfileById(request.profileId());
         Diary diary = findDiaryById(diaryId);
-        // auth 적용 후 diary 작성자와 일치하는지 체크하는 코드 추가 예정
+
+        authorizationService.validateProfileAccess(account, profile);
+        authorizationService.validateDiaryAccess(diary, profile);
 
         diary.updateContent(request.content());
     }
 
     @Transactional
     @Override
-    public void addDiaryMedia(Long diaryId, List<MultipartFile> files) throws IOException {
+    public void addDiaryMedia(Account account, Long diaryId, AddDiaryMediaRequest request,
+        List<MultipartFile> files) throws IOException {
+        Profile profile = findProfileById(request.profileId());
         Diary diary = findDiaryById(diaryId);
-        // auth 적용 후 diary 작성자와 일치하는지 체크하는 코드 추가 예정
+
+        authorizationService.validateProfileAccess(account, profile);
+        authorizationService.validateDiaryAccess(diary, profile);
 
         List<PutObjectRequest> putObjectRequests = s3Service.uploadFilesToS3(files, DIARY_PATH);
 
@@ -118,10 +134,13 @@ public class DiaryServiceImpl implements DiaryService {
 
     @Override
     @Transactional
-    public void editDiaryMedia(Long diaryId, EditDiaryMediaRequest request,
+    public void editDiaryMedia(Account account, Long diaryId, EditDiaryMediaRequest request,
         List<MultipartFile> files) throws IOException {
+        Profile profile = findProfileById(request.profileId());
         Diary diary = findDiaryById(diaryId);
-        // auth 적용 후 diary 작성자와 일치하는지 체크하는 코드 추가 예정
+
+        authorizationService.validateProfileAccess(account, profile);
+        authorizationService.validateDiaryAccess(diary, profile);
 
         List<DiaryMedia> mediaListToDelete = diaryMediaRepository.findByIdIn(request.mediaIds());
         if (mediaListToDelete.isEmpty()) {
@@ -131,7 +150,6 @@ public class DiaryServiceImpl implements DiaryService {
         diaryMediaRepository.deleteAll(mediaListToDelete);
 
         List<PutObjectRequest> putObjectRequests = s3Service.uploadFilesToS3(files, DIARY_PATH);
-
         diaryMediaRepository.saveAll(createDiaryMedias(diary, putObjectRequests));
 
         reorderDiaryMedia(diary.getId(), DiaryMediaType.I);
@@ -139,9 +157,12 @@ public class DiaryServiceImpl implements DiaryService {
 
     @Override
     @Transactional
-    public void removeDiaryMedia(Long diaryId, EditDiaryMediaRequest request) {
+    public void removeDiaryMedia(Account account, Long diaryId, EditDiaryMediaRequest request) {
+        Profile profile = findProfileById(request.profileId());
         Diary diary = findDiaryById(diaryId);
-        // auth 적용 후 diary 작성자와 일치하는지 체크하는 코드 추가 예정
+
+        authorizationService.validateProfileAccess(account, profile);
+        authorizationService.validateDiaryAccess(diary, profile);
 
         List<DiaryMedia> mediaListToDelete = diaryMediaRepository.findByIdIn(request.mediaIds());
         if (mediaListToDelete.isEmpty()) {
@@ -162,9 +183,30 @@ public class DiaryServiceImpl implements DiaryService {
         diary.delete();
     }
 
-    private Account findAccountById(Long id) {
-        return accountRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException("Account not found with id: " + id));
+    @Override
+    @Transactional
+    public void addDiaryLike(Account account, Long diaryId, AddDiaryLikeRequest request) {
+        Profile profile = findProfileById(request.profileId());
+        Diary diary = findDiaryById(diaryId);
+
+        authorizationService.validateProfileAccess(account, profile);
+
+        diaryLikeRepository.save(DiaryLike.create(profile, diary));
+    }
+
+    @Override
+    @Transactional
+    public void cancelDiaryLike(Account account, Long diaryId, CancelDiaryLikeRequest request) {
+        Profile profile = findProfileById(request.profileId());
+        Diary diary = findDiaryById(diaryId);
+
+        authorizationService.validateProfileAccess(account, profile);
+
+        DiaryLike diaryLikeToDelete = diaryLikeRepository.findByDiaryIdAndProfileId(diary.getId(),
+                profile.getId())
+            .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_DIARY_LIKE));
+
+        diaryLikeRepository.delete(diaryLikeToDelete);
     }
 
     private Profile findProfileById(Long id) {
