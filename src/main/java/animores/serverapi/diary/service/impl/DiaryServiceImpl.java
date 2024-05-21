@@ -17,10 +17,11 @@ import animores.serverapi.diary.dto.EditDiaryContentRequest;
 import animores.serverapi.diary.dto.EditDiaryMediaRequest;
 import animores.serverapi.diary.dto.GetAllDiaryResponse;
 import animores.serverapi.diary.dto.GetCalendarDiaryResponse;
+import animores.serverapi.diary.dto.RemoveDiaryRequest;
 import animores.serverapi.diary.entity.Diary;
+import animores.serverapi.diary.entity.DiaryLike;
 import animores.serverapi.diary.entity.DiaryMedia;
 import animores.serverapi.diary.entity.DiaryMediaType;
-import animores.serverapi.diary.entity.DiaryLike;
 import animores.serverapi.diary.repository.DiaryCustomRepository;
 import animores.serverapi.diary.repository.DiaryLikeRepository;
 import animores.serverapi.diary.repository.DiaryMediaCustomRepository;
@@ -176,9 +177,12 @@ public class DiaryServiceImpl implements DiaryService {
 
     @Override
     @Transactional
-    public void removeDiary(Long diaryId) {
-        Diary diary = diaryRepository.findById(diaryId)
-            .orElseThrow(NoSuchElementException::new);
+    public void removeDiary(Account account, Long diaryId, RemoveDiaryRequest request) {
+        Profile profile = findProfileById(request.profileId());
+        Diary diary = findDiaryById(diaryId);
+
+        authorizationService.validateProfileAccess(account, profile);
+        authorizationService.validateDiaryAccess(diary, profile);
 
         diary.delete();
     }
