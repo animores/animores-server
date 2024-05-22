@@ -4,14 +4,15 @@ import animores.serverapi.account.domain.Account;
 import animores.serverapi.account.service.AccountService;
 import animores.serverapi.common.Response;
 import animores.serverapi.common.aop.UserInfo;
+import animores.serverapi.diary.dto.AddDiaryLikeRequest;
 import animores.serverapi.diary.dto.AddDiaryMediaRequest;
 import animores.serverapi.diary.dto.AddDiaryRequest;
-import animores.serverapi.diary.dto.AddDiaryLikeRequest;
 import animores.serverapi.diary.dto.CancelDiaryLikeRequest;
 import animores.serverapi.diary.dto.EditDiaryContentRequest;
 import animores.serverapi.diary.dto.EditDiaryMediaRequest;
 import animores.serverapi.diary.dto.GetAllDiaryResponse;
 import animores.serverapi.diary.dto.GetCalendarDiaryResponse;
+import animores.serverapi.diary.dto.RemoveDiaryRequest;
 import animores.serverapi.diary.service.DiaryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -143,9 +144,10 @@ public class DiaryController {
     @UserInfo
     @DeleteMapping("/{diaryId}")
     @Operation(summary = "일지 삭제", description = "일지를 삭제합니다.")
-    public Response<Void> removeDiary(@PathVariable Long diaryId) {
+    public Response<Void> removeDiary(@PathVariable Long diaryId,
+        @RequestBody RemoveDiaryRequest request) {
         Account account = accountService.getAccountFromContext();
-        diaryService.removeDiary(diaryId);
+        diaryService.removeDiary(account, diaryId, request);
         return Response.success(null);
     }
 
