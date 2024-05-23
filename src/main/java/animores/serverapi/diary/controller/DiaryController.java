@@ -103,7 +103,7 @@ public class DiaryController {
     @Operation(summary = "일지 미디어 추가", description = "일지의 사진 및 영상파일을 추가합니다.")
     public Response<Void> addDiaryMedia(
         @PathVariable @Parameter(description = "일지 아이디", required = true) Long diaryId,
-        @RequestBody @Parameter(description = "일지 미디어 추가에 대한 요청 데이터", required = true) AddDiaryMediaRequest request,
+        @RequestPart @Parameter(description = "일지 미디어 추가에 대한 요청 데이터", required = true) AddDiaryMediaRequest request,
         @RequestPart(name = "files") @Parameter(description = "업로드할 파일들", required = true) List<MultipartFile> files)
         throws IOException {
         Account account = accountService.getAccountFromContext();
