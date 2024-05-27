@@ -29,6 +29,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final ProfileRepository profileRepository;
     private final S3Service s3Service;
     private static final String DEFAULT_PROFILE_IMAGE_URL = PROFILE_IMAGE_PATH + "default_profile_image.png";
+    private static final Integer MAX_PROFILE_COUNT = 6;
 
     @Override
     @Transactional(readOnly = true)
@@ -40,6 +41,9 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     @Transactional
     public void createProfile(Account account, ProfileCreateRequest request, MultipartFile profileImage) {
+        if(profileRepository.countByAccountId(account.getId()) >= MAX_PROFILE_COUNT) {
+            throw new CustomException(ExceptionCode.MAX_PROFILE_COUNT);
+        }
         String imageUrl = DEFAULT_PROFILE_IMAGE_URL;
 
         if(profileImage != null) {
@@ -91,6 +95,11 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     @Transactional
     public void deleteProfile(Long profileId) {
+        Profile profile = profileRepository.findById(profileId).orElseThrow(
+                () -> new CustomException(ExceptionCode.INVALID_PROFILE)
+        );
+
+        s3Service.removeFilesFromS3(List.of(profile.getImageUrl()));
         profileRepository.deleteById(profileId);
     }
 }

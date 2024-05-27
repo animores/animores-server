@@ -14,6 +14,7 @@ public enum ExceptionCode {
     PASSWORD_MISMATCH("", "비밀번호가 일치하지 않습니다."),
     INVALID_PROFILE("", "해당 프로필을 찾을 수 없습니다."),
     UNAUTHORIZED_PROFILE_ACCESS("", "접근 권한이 없는 프로필입니다."),
+    MAX_PROFILE_COUNT("", "프로필은 최대 6개까지 등록할 수 있습니다."),
 
     //   to_do 관련 에러
     ILLEGAL_PET_IDS( "error_code","잘못된 펫이 입력되었습니다."),
