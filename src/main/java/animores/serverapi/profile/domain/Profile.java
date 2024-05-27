@@ -2,18 +2,12 @@ package animores.serverapi.profile.domain;
 
 import animores.serverapi.account.domain.Account;
 import animores.serverapi.common.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Builder
 public class Profile extends BaseEntity {
@@ -36,15 +30,11 @@ public class Profile extends BaseEntity {
 
     private String pushToken;
 
-    // 생성, 수정, 삭제 생략
-
-
-    public Profile(Long id, Account account, String name, String imageUrl, String pushToken) {
-        this.id = id;
-        this.account = account;
-        this.name = name;
+    public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
-        this.pushToken = pushToken;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
 }
