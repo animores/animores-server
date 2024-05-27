@@ -53,7 +53,7 @@ public class ProfileController {
     @UserInfo
     @Valid
     @Operation(summary = "프로필 수정", description = "프로필을 수정합니다.")
-    public Response<Void> updateProfile(@Valid @RequestBody ProfileUpdateRequest request,
+    public Response<Void> updateProfile(@Valid @RequestPart ProfileUpdateRequest request,
                               @RequestPart(required = false) MultipartFile profileImage) {
         Account account = accountService.getAccountFromContext();
         profileService.checkProfile(account, request.profileId());
