@@ -1,6 +1,6 @@
 package animores.serverapi.to_do.repository.impl;
 
-import animores.serverapi.profile.domain.vo.ProfileVo;
+import animores.serverapi.profile.dao.ProfileVo;
 import animores.serverapi.to_do.dao.GetToDoPageDao;
 import animores.serverapi.to_do.dao.ToDoInstanceDao;
 import animores.serverapi.to_do.dao.ToDoDao;

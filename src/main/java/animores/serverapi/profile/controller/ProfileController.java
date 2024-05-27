@@ -3,9 +3,9 @@ package animores.serverapi.profile.controller;
 import animores.serverapi.account.domain.Account;
 import animores.serverapi.account.service.AccountService;
 import animores.serverapi.common.aop.UserInfo;
-import animores.serverapi.profile.domain.vo.ProfileVo;
 import animores.serverapi.profile.dto.request.ProfileCreateRequest;
 import animores.serverapi.profile.dto.request.ProfileUpdateRequest;
+import animores.serverapi.profile.dto.response.ProfileResponse;
 import animores.serverapi.profile.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +22,7 @@ public class ProfileController {
 
     @GetMapping("")
     @UserInfo
-    public List<ProfileVo> getProfiles() {
+    public List<ProfileResponse> getProfiles() {
         Account account = accountService.getAccountFromContext();
         return profileService.getProfiles(account);
     }
