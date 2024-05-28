@@ -3,6 +3,7 @@ package animores.serverapi.pet.service;
 import animores.serverapi.account.domain.Account;
 import animores.serverapi.pet.dto.PetDto;
 import animores.serverapi.pet.dto.request.PetCreateRequest;
+import animores.serverapi.pet.dto.request.PetUpdateRequest;
 import animores.serverapi.pet.dto.response.BreedResponse;
 import animores.serverapi.pet.dto.response.GetPetDetailResponse;
 import animores.serverapi.pet.dto.response.PetCreateResponse;
@@ -20,7 +21,7 @@ public interface PetService {
 
     GetPetDetailResponse getPet(Long petId);
 
-    PetCreateResponse updatePet(Long petId, PetCreateRequest request);
+    PetCreateResponse updatePet(Long petId, PetUpdateRequest request);
 
     void deletePet(Long petId);
 }

@@ -5,6 +5,7 @@ import animores.serverapi.common.exception.CustomException;
 import animores.serverapi.pet.dao.PetDao;
 import animores.serverapi.pet.dto.PetDto;
 import animores.serverapi.pet.dto.request.PetCreateRequest;
+import animores.serverapi.pet.dto.request.PetUpdateRequest;
 import animores.serverapi.pet.dto.response.BreedResponse;
 import animores.serverapi.pet.dto.response.GetPetDetailResponse;
 import animores.serverapi.pet.dto.response.PetCreateResponse;
@@ -107,6 +108,7 @@ class PetServiceImplTest {
         Account account = new Account();
         PetCreateRequest request = new PetCreateRequest(
                 BREED_ID,
+                1L,
                 "name",
                 0,
                 LocalDate.of(2021, 1, 1),
@@ -143,8 +145,9 @@ class PetServiceImplTest {
 
     @Test
     void updatePetReturnsUpdatedPet() {
-        PetCreateRequest request = new PetCreateRequest(
+        PetUpdateRequest request = new PetUpdateRequest(
                 BREED_ID,
+                1L,
                 "name",
                 0,
                 LocalDate.of(2021, 1, 1),
@@ -171,17 +174,17 @@ class PetServiceImplTest {
 
     private static class TestBreed extends Breed {
         public TestBreed(Long id, String name) {
-            super(id, null, name, null);
+            super(id, null, name);
         }
     }
 
     private static class TestPet extends Pet {
         public TestPet(Long id) {
-            super(id, null, null, null, null, 0);
+            super(id, null, null, null, null,null, 0, null);
         }
 
         public TestPet (Long id, Breed breed) {
-            super(id, null, breed, null, null, 0);
+            super(id, null, breed, null, null, null, 0, null);
         }
     }
 }
