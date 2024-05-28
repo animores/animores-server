@@ -9,6 +9,7 @@ import animores.serverapi.diary.dto.EditDiaryContentRequest;
 import animores.serverapi.diary.dto.EditDiaryMediaRequest;
 import animores.serverapi.diary.dto.GetAllDiaryResponse;
 import animores.serverapi.diary.dto.GetCalendarDiaryResponse;
+import animores.serverapi.diary.dto.RemoveDiaryRequest;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
@@ -33,7 +34,7 @@ public interface DiaryService {
 
     void removeDiaryMedia(Account account, Long diaryId, EditDiaryMediaRequest request);
 
-    void removeDiary(Long diaryId);
+    void removeDiary(Account account, Long diaryId, RemoveDiaryRequest request);
 
     void addDiaryLike(Account account, Long diaryId, AddDiaryLikeRequest request);
 
