@@ -33,7 +33,7 @@ public interface DiaryService {
 
     void removeDiaryMedia(Account account, Long diaryId, EditDiaryMediaRequest request);
 
-    void removeDiary(Long removeDiary);
+    void removeDiary(Long diaryId);
 
     void addDiaryLike(Account account, Long diaryId, AddDiaryLikeRequest request);
 

@@ -5,6 +5,7 @@ import animores.serverapi.common.exception.CustomException;
 import animores.serverapi.common.exception.ExceptionCode;
 import animores.serverapi.common.service.AuthorizationService;
 import animores.serverapi.diary.entity.Diary;
+import animores.serverapi.diary.entity.DiaryComment;
 import animores.serverapi.profile.domain.Profile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,5 +28,11 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         }
     }
 
+    @Override
+    public void validateDiaryCommentAccess(DiaryComment diaryComment, Profile profile) {
+        if (!diaryComment.getProfile().getId().equals(profile.getId())) {
+            throw new CustomException(ExceptionCode.UNAUTHORIZED_DIARY_COMMENT_ACCESS);
+        }
+    }
 
 }

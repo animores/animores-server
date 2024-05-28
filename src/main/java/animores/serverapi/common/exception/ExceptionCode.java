@@ -26,6 +26,9 @@ public enum ExceptionCode {
     // 일지 관심
     NOT_FOUND_DIARY_LIKE("", "해당 Diary Like 를 찾을 수 없습니다."),
 
+    // 일지 댓글
+    UNAUTHORIZED_DIARY_COMMENT_ACCESS("", "접근 권한이 없는 댓글입니다."),
+
     // 500 에러
     UNHANDLED_EXCEPTION("error_code","알 수 없는 에러가 발생했습니다.");
 
