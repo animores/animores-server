@@ -8,8 +8,8 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static animores.serverapi.pet.entity.QBreed.breed;
 import static animores.serverapi.pet.entity.QPet.pet;
+import static animores.serverapi.pet.entity.QPetImage.petImage;
 
 @RequiredArgsConstructor
 public class PetCustomRepositoryImpl implements PetCustomRepository {
@@ -22,10 +22,10 @@ public class PetCustomRepositoryImpl implements PetCustomRepository {
                         PetDao.class,
                         pet.id,
                         pet.name,
-                        breed.defaultImageUrl
+                        petImage.url
                 ))
                 .from(pet)
-                .join(pet.breed, breed)
+                .join(pet.image, petImage)
                 .where(pet.account.id.eq(id))
                 .fetch();
     }

@@ -11,7 +11,7 @@ import java.util.Optional;
 @Repository
 public interface PetRepository extends JpaRepository<Pet, Long>, PetCustomRepository {
     @Override
-    @EntityGraph(attributePaths = {"breed"})
+    @EntityGraph(attributePaths = {"breed", "image"})
     Optional<Pet> findById(Long id);
     List<Pet> findAllByAccount_id(Long id);
 }

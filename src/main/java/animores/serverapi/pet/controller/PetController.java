@@ -6,6 +6,7 @@ import animores.serverapi.account.service.AccountService;
 import animores.serverapi.common.Response;
 import animores.serverapi.pet.dto.PetDto;
 import animores.serverapi.pet.dto.request.PetCreateRequest;
+import animores.serverapi.pet.dto.request.PetUpdateRequest;
 import animores.serverapi.pet.dto.response.BreedResponse;
 import animores.serverapi.pet.dto.response.GetPetDetailResponse;
 import animores.serverapi.pet.dto.response.PetCreateResponse;
@@ -76,7 +77,7 @@ public class PetController {
     @UserInfo
     @PutMapping("/{petId}")
     @Operation(summary = "펫 수정", description = "id 로 해당 펫을 수정합니다.")
-    public Response<PetCreateResponse> updatePet(@PathVariable Long petId, @RequestBody PetCreateRequest request) {
+    public Response<PetCreateResponse> updatePet(@PathVariable Long petId, @RequestBody PetUpdateRequest request) {
         Account account = accountService.getAccountFromContext();
         petService.checkAccountPets(account.getId(), List.of(petId));
         return Response.success(petService.updatePet(petId, request));

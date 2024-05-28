@@ -4,9 +4,11 @@ import animores.serverapi.account.domain.Account;
 import animores.serverapi.common.exception.CustomException;
 import animores.serverapi.common.exception.ExceptionCode;
 import animores.serverapi.pet.dao.PetDao;
+import animores.serverapi.pet.dto.request.PetUpdateRequest;
 import animores.serverapi.pet.dto.response.GetPetDetailResponse;
 import animores.serverapi.pet.entity.Breed;
 import animores.serverapi.pet.entity.Pet;
+import animores.serverapi.pet.entity.PetImage;
 import animores.serverapi.pet.entity.Species;
 import animores.serverapi.pet.dto.PetDto;
 import animores.serverapi.pet.dto.request.PetCreateRequest;
@@ -14,6 +16,7 @@ import animores.serverapi.pet.dto.response.BreedResponse;
 import animores.serverapi.pet.dto.response.PetCreateResponse;
 import animores.serverapi.pet.dto.response.SpeciesResponse;
 import animores.serverapi.pet.repository.BreedRepository;
+import animores.serverapi.pet.repository.PetImageRepository;
 import animores.serverapi.pet.repository.PetRepository;
 import animores.serverapi.pet.repository.SpeciesRepository;
 import animores.serverapi.pet.service.PetService;
@@ -31,6 +34,7 @@ public class PetServiceImpl implements PetService {
     private final SpeciesRepository speciesRepository;
     private final BreedRepository breedRepository;
     private final PetRepository petRepository;
+    private final PetImageRepository petImageRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -40,14 +44,16 @@ public class PetServiceImpl implements PetService {
         if(petIds.isEmpty()){
             return pets;
         } else {
-            Set<Long> petIdsSet = new HashSet<>(petIds);
-            pets.forEach(pet -> {
-                if(!petIdsSet.contains(pet.getId())){
+            Set<Long> petSet = pets.stream().map(Pet::getId)
+                    .collect(HashSet::new, Set::add, Set::addAll);
+
+            petIds.forEach(petId -> {
+                if(!petSet.contains(petId)){
                     throw new CustomException(ExceptionCode.ILLEGAL_PET_IDS);
                 }
             });
 
-            return pets.stream().filter(pet -> petIdsSet.contains(pet.getId())).toList();
+            return pets.stream().filter(pet -> petSet.contains(pet.getId())).toList();
         }
     }
 
@@ -69,7 +75,10 @@ public class PetServiceImpl implements PetService {
         Breed breed = breedRepository.findById(request.breedId())
                                      .orElseThrow(() -> new IllegalArgumentException("Breed not found"));
 
-        Pet pet = Pet.createFromRequest(account, request, breed);
+        Long imageId = request.imageId() == null ? breed.getSpecies().getBasicPetImage().getId(): request.imageId();
+        PetImage image = petImageRepository.getReferenceById(imageId);
+
+        Pet pet = Pet.createFromRequest(account, request, breed, image);
         pet = petRepository.save(pet);
 
         return new PetCreateResponse(pet.getId(),pet.getName());
@@ -92,12 +101,17 @@ public class PetServiceImpl implements PetService {
 
     @Transactional
     @Override
-    public PetCreateResponse updatePet(Long petId, PetCreateRequest request) {
+    public PetCreateResponse updatePet(Long petId, PetUpdateRequest request) {
         Pet pet = petRepository.findById(petId)
                 .orElseThrow(() -> new CustomException(ExceptionCode.ILLEGAL_PET_IDS));
 
-        Breed breed = breedRepository.getReferenceById(request.breedId());
-        pet.update(request, breed);
+        Breed breed = request.breedId() == null ? pet.getBreed() : breedRepository.findById(request.breedId())
+                .orElseThrow(() -> new IllegalArgumentException("Breed not found"));
+
+        PetImage image = request.imageId() == null ? pet.getImage() : petImageRepository.findById(request.imageId())
+                .orElseThrow(() -> new IllegalArgumentException("Image not found"));
+
+        pet.update(request, breed, image);
         return new PetCreateResponse(pet.getId(),pet.getName());
     }
 
