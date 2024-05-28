@@ -28,7 +28,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     private final ProfileRepository profileRepository;
     private final S3Service s3Service;
-    private static final String DEFAULT_PROFILE_IMAGE_URL = PROFILE_IMAGE_PATH + "default_profile_image.png";
+    private static final String DEFAULT_PROFILE_IMAGE_URL = PROFILE_IMAGE_PATH + "default_profile.png";
     private static final Integer MAX_PROFILE_COUNT = 6;
 
     @Override
