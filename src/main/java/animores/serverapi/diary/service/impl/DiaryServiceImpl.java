@@ -7,6 +7,7 @@ import animores.serverapi.common.exception.CustomException;
 import animores.serverapi.common.exception.ExceptionCode;
 import animores.serverapi.common.service.AuthorizationService;
 import animores.serverapi.common.service.S3Service;
+import animores.serverapi.diary.dao.GetAllDiaryCommentDao;
 import animores.serverapi.diary.dao.GetAllDiaryDao;
 import animores.serverapi.diary.dao.GetCalendarDiaryDao;
 import animores.serverapi.diary.dto.AddDiaryLikeRequest;
@@ -15,6 +16,7 @@ import animores.serverapi.diary.dto.AddDiaryRequest;
 import animores.serverapi.diary.dto.CancelDiaryLikeRequest;
 import animores.serverapi.diary.dto.EditDiaryContentRequest;
 import animores.serverapi.diary.dto.EditDiaryMediaRequest;
+import animores.serverapi.diary.dto.GetAllDiaryCommentResponse;
 import animores.serverapi.diary.dto.GetAllDiaryResponse;
 import animores.serverapi.diary.dto.GetCalendarDiaryResponse;
 import animores.serverapi.diary.dto.RemoveDiaryRequest;
@@ -22,6 +24,7 @@ import animores.serverapi.diary.entity.Diary;
 import animores.serverapi.diary.entity.DiaryLike;
 import animores.serverapi.diary.entity.DiaryMedia;
 import animores.serverapi.diary.entity.DiaryMediaType;
+import animores.serverapi.diary.repository.DiaryCommentCustomRepository;
 import animores.serverapi.diary.repository.DiaryCustomRepository;
 import animores.serverapi.diary.repository.DiaryLikeRepository;
 import animores.serverapi.diary.repository.DiaryMediaCustomRepository;
@@ -57,6 +60,7 @@ public class DiaryServiceImpl implements DiaryService {
     private final DiaryMediaRepository diaryMediaRepository;
     private final DiaryMediaCustomRepository diaryMediaCustomRepository;
     private final DiaryLikeRepository diaryLikeRepository;
+    private final DiaryCommentCustomRepository diaryCommentCustomRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -211,6 +215,20 @@ public class DiaryServiceImpl implements DiaryService {
             .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_DIARY_LIKE));
 
         diaryLikeRepository.delete(diaryLikeToDelete);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public GetAllDiaryCommentResponse getAllDiaryComment(Account account, Long diaryId,
+        Long profileId, int page, int size) {
+        Profile profile = findProfileById(profileId);
+        authorizationService.validateProfileAccess(account, profile);
+
+        List<GetAllDiaryCommentDao> comments = diaryCommentCustomRepository.getAllDiaryComment(
+            profileId, page, size);
+        Long totalCount = diaryCommentCustomRepository.getAllDiaryCommentCount(diaryId);
+
+        return new GetAllDiaryCommentResponse(totalCount, comments);
     }
 
     private Profile findProfileById(Long id) {
