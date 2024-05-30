@@ -5,6 +5,8 @@ import animores.serverapi.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
@@ -29,6 +31,7 @@ public class Profile extends BaseEntity {
     private String imageUrl;
 
     private String pushToken;
+    private LocalDateTime deletedAt;
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
@@ -36,5 +39,9 @@ public class Profile extends BaseEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void delete() {
+        this.deletedAt = LocalDateTime.now();
     }
 }

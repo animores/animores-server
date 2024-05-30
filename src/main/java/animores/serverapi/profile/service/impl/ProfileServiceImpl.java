@@ -36,14 +36,14 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     @Transactional(readOnly = true)
     public List<ProfileResponse> getProfiles(Account account) {
-        List<Profile> profiles = profileRepository.findAllByAccountId(account.getId());
+        List<Profile> profiles = profileRepository.findAllByAccountIdAndDeletedAtIsNull(account.getId());
         return profiles.stream().map(ProfileResponse::fromEntity).toList();
     }
 
     @Override
     @Transactional
     public void createProfile(Account account, ProfileCreateRequest request, MultipartFile profileImage) {
-        if(profileRepository.countByAccountId(account.getId()) >= MAX_PROFILE_COUNT) {
+        if(profileRepository.countByAccountIdAndDeletedAtIsNull(account.getId()) >= MAX_PROFILE_COUNT) {
             throw new CustomException(ExceptionCode.MAX_PROFILE_COUNT);
         }
         String imageUrl = DEFAULT_PROFILE_IMAGE_URL;
@@ -69,14 +69,14 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     @Transactional(readOnly = true)
     public void checkProfile(Account account, Long profileId) {
-        profileRepository.findByIdAndAccountId(profileId, account.getId())
+        profileRepository.findByIdAndAccountIdAndDeletedAtIsNull(profileId, account.getId())
                 .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_PROFILE));
     }
 
     @Override
     @Transactional
     public void updateProfile(ProfileUpdateRequest request, MultipartFile profileImage) {
-        Profile profile = profileRepository.findById(request.profileId()).orElseThrow(
+        Profile profile = profileRepository.findByIdAndDeletedAtIsNull(request.profileId()).orElseThrow(
                 () -> new CustomException(ExceptionCode.INVALID_PROFILE));
 
         if (request.name() != null && !request.name().equals(profile.getName())) {
@@ -102,12 +102,12 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     @Transactional
     public void deleteProfile(Long profileId) {
-        Profile profile = profileRepository.findById(profileId).orElseThrow(
+        Profile profile = profileRepository.findByIdAndDeletedAtIsNull(profileId).orElseThrow(
                 () -> new CustomException(ExceptionCode.INVALID_PROFILE)
         );
 
         s3Service.removeFilesFromS3(List.of(profile.getImageUrl()));
-        profileRepository.deleteById(profileId);
+        profile.delete();
     }
 
     private void checkContentType(MultipartFile profileImage) {
