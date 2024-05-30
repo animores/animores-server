@@ -5,16 +5,13 @@ import animores.serverapi.common.exception.CustomException;
 import animores.serverapi.common.exception.ExceptionCode;
 import animores.serverapi.pet.dao.PetDao;
 import animores.serverapi.pet.dto.request.PetUpdateRequest;
-import animores.serverapi.pet.dto.response.GetPetDetailResponse;
+import animores.serverapi.pet.dto.response.*;
 import animores.serverapi.pet.entity.Breed;
 import animores.serverapi.pet.entity.Pet;
 import animores.serverapi.pet.entity.PetImage;
 import animores.serverapi.pet.entity.Species;
 import animores.serverapi.pet.dto.PetDto;
 import animores.serverapi.pet.dto.request.PetCreateRequest;
-import animores.serverapi.pet.dto.response.BreedResponse;
-import animores.serverapi.pet.dto.response.PetCreateResponse;
-import animores.serverapi.pet.dto.response.SpeciesResponse;
 import animores.serverapi.pet.repository.BreedRepository;
 import animores.serverapi.pet.repository.PetImageRepository;
 import animores.serverapi.pet.repository.PetRepository;
@@ -67,6 +64,13 @@ public class PetServiceImpl implements PetService {
     public List<BreedResponse> getBreedsOfSpecies(Long speciesId) {
         List<Breed> breeds = breedRepository.findAllBySpecies_Id(speciesId);
         return breeds.stream().map(BreedResponse::fromEntity).toList();
+    }
+
+    @Override
+    public List<PetImageResponse> getPetImages(Long speciesId) {
+
+        return petImageRepository.findAllBySpeciesId(speciesId).stream()
+                .map(PetImageResponse::fromEntity).toList();
     }
 
     @Transactional
