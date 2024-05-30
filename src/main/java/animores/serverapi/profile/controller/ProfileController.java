@@ -52,7 +52,14 @@ public class ProfileController {
     @PutMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @UserInfo
     @Valid
-    @Operation(summary = "프로필 수정", description = "프로필을 수정합니다.")
+    @Operation(summary = "프로필 수정",
+            description = """
+                        프로필을 수정합니다.
+                        request에 isUpdateImage parameter 를 통해 image를 수정할지 여부를 결정할 수 있습니다.
+                        isUpdateImage 가 true 일 경우 profileImage 가 null 일 수도 있고 아닐 수도 있습니다.
+                        profileImage 가 null 일 경우 기존 이미지를 삭제하고 기본 이미지로 변경됩니다.
+                        profileImage 가 null 이 아닐 경우 새로운 이미지로 변경됩니다.
+                        """)
     public Response<Void> updateProfile(@Valid @RequestPart ProfileUpdateRequest request,
                               @RequestPart(required = false) MultipartFile profileImage) {
         Account account = accountService.getAccountFromContext();

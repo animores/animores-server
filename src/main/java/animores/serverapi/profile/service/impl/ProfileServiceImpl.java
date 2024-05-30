@@ -80,16 +80,19 @@ public class ProfileServiceImpl implements ProfileService {
             profile.setName(request.name());
         }
 
-        if(profileImage != null) {
-            try {
-                s3Service.removeFilesFromS3(List.of(profile.getImageUrl()));
-                PutObjectRequest putObjectRequest = s3Service.uploadFileToS3(profileImage, PROFILE_IMAGE_PATH);
-                profile.setImageUrl(putObjectRequest.key());
-            } catch (Exception e) {
-                log.error("Failed to update profile image: {}", e.getMessage());
+        if (request.isUpdateImage()) {
+            if (profileImage.isEmpty()) {
+                profile.setImageUrl(DEFAULT_PROFILE_IMAGE_URL);
+            } else {
+                try {
+                    s3Service.removeFilesFromS3(List.of(profile.getImageUrl()));
+                    PutObjectRequest putObjectRequest = s3Service.uploadFileToS3(profileImage, PROFILE_IMAGE_PATH);
+                    profile.setImageUrl(putObjectRequest.key());
+                } catch (Exception e) {
+                    log.error("Failed to update profile image: {}", e.getMessage());
+                }
             }
         }
-
     }
 
     @Override
