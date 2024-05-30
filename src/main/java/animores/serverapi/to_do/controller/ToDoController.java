@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@SecurityRequirement(name = "Authorization")
-@PreAuthorize("hasRole('USER')")
+//@SecurityRequirement(name = "Authorization")
+//@PreAuthorize("hasRole('USER')")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/todos")

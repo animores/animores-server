@@ -23,8 +23,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/profiles")
-@PreAuthorize("hasAuthority('USER')")
-@SecurityRequirement(name = "Authorization")
+//@PreAuthorize("hasAuthority('USER')")
+//@SecurityRequirement(name = "Authorization")
 @Validated
 public class ProfileController {
 
