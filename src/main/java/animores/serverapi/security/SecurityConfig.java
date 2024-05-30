@@ -19,7 +19,8 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final String[] allowedUrls = {"/", "/swagger-ui/**", "/api/v1/account/sign-up", "/api/v1/account/sign-in"};
+//    private final String[] allowedUrls = {"/", "/swagger-ui/**", "/api/v1/account/sign-up", "/api/v1/account/sign-in"};
+    private final String[] allowedUrls = {"/*"};
 
     @Bean
     public PasswordEncoder passwordEncoder() {
