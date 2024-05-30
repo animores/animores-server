@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
 
+@Schema(description = "펫 수정 요청")
 public record PetUpdateRequest(
         @Schema(description = "펫 품종 ID", example = "1")
         Long breedId,
