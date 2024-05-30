@@ -394,11 +394,11 @@ class ToDoServiceImplTest {
 
     static class TestProfile extends Profile {
         public TestProfile(String imageUrl) {
-            super(null, null, null, imageUrl,null);
+            super(null, null, null, imageUrl,null, null);
         }
 
         public TestProfile(Long id, String imageUrl) {
-            super(id, null, null,  imageUrl,null);
+            super(id, null, null,  imageUrl,null, null);
         }
     }
 
