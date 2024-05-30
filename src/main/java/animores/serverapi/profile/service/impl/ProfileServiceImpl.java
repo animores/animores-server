@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.util.List;
+import java.util.Set;
 
 import static animores.serverapi.common.S3Path.PROFILE_IMAGE_PATH;
 
@@ -30,6 +31,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final S3Service s3Service;
     private static final String DEFAULT_PROFILE_IMAGE_URL = PROFILE_IMAGE_PATH + "default_profile.png";
     private static final Integer MAX_PROFILE_COUNT = 6;
+    private static final Set<String> SUPPORTED_IMAGE_TYPE = Set.of("image/jpeg", "image/png");
 
     @Override
     @Transactional(readOnly = true)
@@ -48,6 +50,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         if(profileImage != null) {
             try {
+                checkContentType(profileImage);
                 imageUrl = s3Service.uploadFileToS3(profileImage, PROFILE_IMAGE_PATH).key();
             } catch (Exception e) {
                 imageUrl = DEFAULT_PROFILE_IMAGE_URL;
@@ -84,6 +87,7 @@ public class ProfileServiceImpl implements ProfileService {
             if (profileImage.isEmpty()) {
                 profile.setImageUrl(DEFAULT_PROFILE_IMAGE_URL);
             } else {
+                checkContentType(profileImage);
                 try {
                     s3Service.removeFilesFromS3(List.of(profile.getImageUrl()));
                     PutObjectRequest putObjectRequest = s3Service.uploadFileToS3(profileImage, PROFILE_IMAGE_PATH);
@@ -104,5 +108,11 @@ public class ProfileServiceImpl implements ProfileService {
 
         s3Service.removeFilesFromS3(List.of(profile.getImageUrl()));
         profileRepository.deleteById(profileId);
+    }
+
+    private void checkContentType(MultipartFile profileImage) {
+        if (!SUPPORTED_IMAGE_TYPE.contains(profileImage.getContentType())) {
+            throw new CustomException(ExceptionCode.INVALID_IMAGE_TYPE);
+        }
     }
 }
