@@ -37,6 +37,8 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+//@PreAuthorize("hasAuthority('USER')")
+//@SecurityRequirement(name = "Authorization")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/diaries")
@@ -45,8 +47,6 @@ public class DiaryController {
     private final AccountService accountService;
     private final DiaryService diaryService;
 
-    @PreAuthorize("hasAuthority('USER')")
-    @SecurityRequirement(name = "Authorization")
     @UserInfo
     @GetMapping("")
     @Operation(summary = "일지 목록 조회", description = "일지 목록을 조회합니다.")
@@ -58,8 +58,6 @@ public class DiaryController {
         return Response.success(diaryService.getAllDiary(account, profileId, page, size));
     }
 
-    @PreAuthorize("hasAuthority('USER')")
-    @SecurityRequirement(name = "Authorization")
     @UserInfo
     @GetMapping("/calendar")
     @Operation(summary = "일지 캘린더 목록 조회 (개발중)", description = "캘린더의 일지 목록을 조회합니다.")
@@ -70,8 +68,6 @@ public class DiaryController {
         return Response.success(diaryService.getCalendarDiary(account, profileId, date));
     }
 
-    @PreAuthorize("hasAuthority('USER')")
-    @SecurityRequirement(name = "Authorization")
     @UserInfo
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "일지 생성", description = "일지를 생성합니다.")
@@ -84,8 +80,6 @@ public class DiaryController {
         return Response.success(null);
     }
 
-    @PreAuthorize("hasAuthority('USER')")
-    @SecurityRequirement(name = "Authorization")
     @UserInfo
     @PatchMapping("/{diaryId}")
     @Operation(summary = "일지 내용 수정", description = "일지 내용을 수정합니다.")
@@ -97,8 +91,6 @@ public class DiaryController {
         return Response.success(null);
     }
 
-    @PreAuthorize("hasAuthority('USER')")
-    @SecurityRequirement(name = "Authorization")
     @UserInfo
     @PostMapping(value = "/{diaryId}/diary-media", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "일지 미디어 추가", description = "일지의 사진 및 영상파일을 추가합니다.")
@@ -112,8 +104,6 @@ public class DiaryController {
         return Response.success(null);
     }
 
-    @PreAuthorize("hasAuthority('USER')")
-    @SecurityRequirement(name = "Authorization")
     @UserInfo
     @PutMapping(value = "/{diaryId}/diary-media", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "일지 미디어 수정", description = "일지의 사진 및 영상파일을 추가 및 삭제합니다.")
@@ -127,8 +117,6 @@ public class DiaryController {
         return Response.success(null);
     }
 
-    @PreAuthorize("hasAuthority('USER')")
-    @SecurityRequirement(name = "Authorization")
     @UserInfo
     @DeleteMapping("/{diaryId}/diary-media")
     @Operation(summary = "일지 미디어 삭제", description = "일지의 사진 및 영상파일을 삭제합니다.")
@@ -140,8 +128,6 @@ public class DiaryController {
         return Response.success(null);
     }
 
-    @PreAuthorize("hasAuthority('USER')")
-    @SecurityRequirement(name = "Authorization")
     @UserInfo
     @DeleteMapping("/{diaryId}")
     @Operation(summary = "일지 삭제", description = "일지를 삭제합니다.")
@@ -152,8 +138,6 @@ public class DiaryController {
         return Response.success(null);
     }
 
-    @PreAuthorize("hasAuthority('USER')")
-    @SecurityRequirement(name = "Authorization")
     @UserInfo
     @PostMapping("/{diaryId}/likes")
     @Operation(summary = "일지 좋아요", description = "일지 좋아요를 등록합니다.")
@@ -165,8 +149,6 @@ public class DiaryController {
         return Response.success(null);
     }
 
-    @PreAuthorize("hasAuthority('USER')")
-    @SecurityRequirement(name = "Authorization")
     @UserInfo
     @DeleteMapping("/{diaryId}/likes")
     @Operation(summary = "일지 좋아요 취소", description = "일지 좋아요를 취소합니다.")

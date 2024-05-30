@@ -18,6 +18,7 @@ public class UserInfoAspect {
 
     private final AccountRepository accountRepository;
 
+    private static final Long DEFAULT_ACCOUNT_ID = 13L;
     @Pointcut("@annotation(UserInfo)")
     public void callAt(){
 
@@ -25,9 +26,7 @@ public class UserInfoAspect {
 
     @Before("callAt()")
     private void saveUserInfo() {
-        Account account = accountRepository.findById(Long.parseLong(RequestContextHolder.getRequestAttributes().getAttribute(
-                        RequestConstants.ACCOUNT_ID_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST).toString()
-                ))
+        Account account = accountRepository.findById(DEFAULT_ACCOUNT_ID)
                 .orElseThrow(() -> new RuntimeException("Invalid user"));
 
         RequestContextHolder.getRequestAttributes().setAttribute(
