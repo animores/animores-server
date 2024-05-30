@@ -14,6 +14,9 @@ public enum ExceptionCode {
     PASSWORD_MISMATCH("", "비밀번호가 일치하지 않습니다."),
     UNAUTHORIZED_PROFILE_ACCESS("", "접근 권한이 없는 프로필입니다."),
 
+    // 프로필
+    NOT_FOUND_PROFILE("", "해당 프로필을 찾을 수 없습니다."),
+
     //   to_do 관련 에러
     ILLEGAL_PET_IDS( "error_code","잘못된 펫이 입력되었습니다."),
     NOT_FOUND_TO_DO("", "해당 To Do를 찾을 수 없습니다."),
@@ -27,7 +30,12 @@ public enum ExceptionCode {
     NOT_FOUND_DIARY_LIKE("", "해당 Diary Like 를 찾을 수 없습니다."),
 
     // 일지 댓글
+    NOT_FOUND_DIARY_COMMENT("","해당 댓글을 찾을 수 없습니다."),
     UNAUTHORIZED_DIARY_COMMENT_ACCESS("", "접근 권한이 없는 댓글입니다."),
+
+    // 일지 대댓글
+    NOT_FOUND_DIARY_REPLY("", "해당 대댓글을 찾을 수 없습니다."),
+    UNAUTHORIZED_DIARY_REPLY_ACCESS("", "접근 권한이 없는 대댓글입니다."),
 
     // 500 에러
     UNHANDLED_EXCEPTION("error_code","알 수 없는 에러가 발생했습니다.");

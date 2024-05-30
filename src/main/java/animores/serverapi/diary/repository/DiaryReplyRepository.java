@@ -1,12 +1,12 @@
 package animores.serverapi.diary.repository;
 
-import animores.serverapi.diary.entity.DiaryComment;
+import animores.serverapi.diary.entity.DiaryReply;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface DiaryCommentRepository extends JpaRepository<DiaryComment, Long> {
+public interface DiaryReplyRepository extends JpaRepository<DiaryReply, Long> {
 
-    Optional<DiaryComment> findByIdAndDeletedDtIsNull(Long id);
+    Optional<DiaryReply> findByIdAndDeletedDtIsNull(Long id);
 }

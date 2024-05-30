@@ -11,9 +11,7 @@ import animores.serverapi.diary.dto.RemoveDiaryCommentRequest;
 import animores.serverapi.diary.service.DiaryCommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,11 +26,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class DiaryCommentController {
 
     private final AccountService accountService;
-    private final AccountRepository accountRepository;
     private final DiaryCommentService diaryCommentService;
 
-    @PreAuthorize("hasAuthority('USER')")
-    @SecurityRequirement(name = "Authorization")
     @UserInfo
     @PostMapping("")
     @Operation(summary = "댓글 작성", description = "댓글을 작성합니다.")
@@ -43,8 +38,6 @@ public class DiaryCommentController {
         return Response.success(null);
     }
 
-    @PreAuthorize("hasAuthority('USER')")
-    @SecurityRequirement(name = "Authorization")
     @UserInfo
     @PatchMapping("/{commentId}")
     @Operation(summary = "댓글 수정", description = "댓글을 수정합니다.")
@@ -56,8 +49,6 @@ public class DiaryCommentController {
         return Response.success(null);
     }
 
-    @PreAuthorize("hasAuthority('USER')")
-    @SecurityRequirement(name = "Authorization")
     @UserInfo
     @DeleteMapping("/{commentId}")
     @Operation(summary = "댓글 삭제", description = "댓글을 삭제합니다.")
