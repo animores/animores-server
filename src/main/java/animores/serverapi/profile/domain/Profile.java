@@ -7,6 +7,8 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+import static animores.serverapi.common.S3Path.PROFILE_IMAGE_PATH;
+
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
@@ -32,6 +34,12 @@ public class Profile extends BaseEntity {
 
     private String pushToken;
     private LocalDateTime deletedAt;
+
+    private static final String DEFAULT_PROFILE_IMAGE_URL = PROFILE_IMAGE_PATH + "default_profile.png";
+
+    public String getImageUrl() {
+        return this.imageUrl == null ? DEFAULT_PROFILE_IMAGE_URL : this.imageUrl;
+    }
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;

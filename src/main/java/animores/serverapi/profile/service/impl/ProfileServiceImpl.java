@@ -29,8 +29,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     private final ProfileRepository profileRepository;
     private final S3Service s3Service;
-    private static final String DEFAULT_PROFILE_IMAGE_URL = PROFILE_IMAGE_PATH + "default_profile.png";
-    private static final Integer MAX_PROFILE_COUNT = 6;
+    private static final int MAX_PROFILE_COUNT = 6;
     private static final Set<String> SUPPORTED_IMAGE_TYPE = Set.of("image/jpeg", "image/png");
 
     @Override
@@ -46,14 +45,15 @@ public class ProfileServiceImpl implements ProfileService {
         if(profileRepository.countByAccountIdAndDeletedAtIsNull(account.getId()) >= MAX_PROFILE_COUNT) {
             throw new CustomException(ExceptionCode.MAX_PROFILE_COUNT);
         }
-        String imageUrl = DEFAULT_PROFILE_IMAGE_URL;
+
+        String imageUrl = null;
 
         if(profileImage != null) {
             try {
                 checkContentType(profileImage);
                 imageUrl = s3Service.uploadFileToS3(profileImage, PROFILE_IMAGE_PATH).key();
             } catch (Exception e) {
-                imageUrl = DEFAULT_PROFILE_IMAGE_URL;
+                log.error("Failed to upload profile image: {}", e.getMessage());
             }
         }
 
@@ -85,7 +85,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         if (request.isUpdateImage()) {
             if (profileImage.isEmpty()) {
-                profile.setImageUrl(DEFAULT_PROFILE_IMAGE_URL);
+                profile.setImageUrl(null);
             } else {
                 checkContentType(profileImage);
                 try {
