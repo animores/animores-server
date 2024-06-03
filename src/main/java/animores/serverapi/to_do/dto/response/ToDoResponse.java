@@ -1,6 +1,6 @@
 package animores.serverapi.to_do.dto.response;
 
-import animores.serverapi.to_do.entity.vo.ToDoInstanceVo;
+import animores.serverapi.to_do.dao.ToDoInstanceDao;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,19 +21,19 @@ public record ToDoResponse(
 
 ) {
 
-	public static ToDoResponse fromToDoInstanceVo(ToDoInstanceVo toDoInstanceVo, List<PetResponse> pets) {
+	public static ToDoResponse fromToDoInstanceDao(ToDoInstanceDao toDoInstanceDao, List<PetResponse> pets) {
 
 		return new ToDoResponse(
-				toDoInstanceVo.toDo().id(),
-				toDoInstanceVo.toDo().tag() == null ?  toDoInstanceVo.toDo().content() : toDoInstanceVo.toDo().tag().name(),
+				toDoInstanceDao.toDo().id(),
+				toDoInstanceDao.toDo().tag() == null ?  toDoInstanceDao.toDo().content() : toDoInstanceDao.toDo().tag().name(),
 				pets,
-				toDoInstanceVo.toDo().isAllDay(),
-				toDoInstanceVo.date(),
-				toDoInstanceVo.time(),
-				toDoInstanceVo.toDo().isUsingAlarm(),
-				toDoInstanceVo.toDo().color(),
-				toDoInstanceVo.completeProfile() == null ? null : toDoInstanceVo.completeProfile().imageUrl(),
-				toDoInstanceVo.completeTime()
+				toDoInstanceDao.toDo().isAllDay(),
+				toDoInstanceDao.date(),
+				toDoInstanceDao.time(),
+				toDoInstanceDao.toDo().isUsingAlarm(),
+				toDoInstanceDao.toDo().color(),
+				toDoInstanceDao.completeProfile() == null ? null : toDoInstanceDao.completeProfile().imageUrl(),
+				toDoInstanceDao.completeTime()
 		);
 	}
 }

@@ -28,7 +28,7 @@ public class SwaggerConfig {
                 .info(apiInfo())
                 .servers(List.of(server))
                 .components(new Components()
-                        .addSecuritySchemes("bearer-key", new SecurityScheme()
+                        .addSecuritySchemes("Authorization", new SecurityScheme()
                                 .type(SecurityScheme.Type.HTTP)
                                 .scheme("bearer")
                                 .bearerFormat("JWT")));

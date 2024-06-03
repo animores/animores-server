@@ -1,8 +1,9 @@
 package animores.serverapi.to_do.repository.impl;
 
 import animores.serverapi.profile.domain.vo.ProfileVo;
-import animores.serverapi.to_do.entity.vo.ToDoInstanceVo;
-import animores.serverapi.to_do.entity.vo.ToDoVo;
+import animores.serverapi.to_do.dao.GetToDoPageDao;
+import animores.serverapi.to_do.dao.ToDoInstanceDao;
+import animores.serverapi.to_do.dao.ToDoDao;
 import animores.serverapi.to_do.repository.ToDoInstanceCustomRepository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -23,202 +24,308 @@ public class ToDoInstanceCustomRepositoryImpl implements ToDoInstanceCustomRepos
 
 
 	@Override
-	public List<ToDoInstanceVo> findAllByCompleteFalseAndTodayToDoIdIn(List<Long> toDoIds) {
-		return jpaQueryFactory.select(
-						Projections.constructor(
-								ToDoInstanceVo.class,
-								toDoInstance.id,
-								Projections.constructor(
-										ToDoVo.class,
-										toDo.id,
-										toDo.isAllDay,
-										toDo.content,
-										toDo.tag,
-										toDo.color,
-										toDo.isUsingAlarm
-								),
-								toDoInstance.date.min().as("date"),
-								toDoInstance.time.min().as("time"),
-								Projections.constructor(
-										ProfileVo.class,
-										profile.name,
-										profile.imageUrl),
-								toDoInstance.completeTime
-						)
-				)
+	public GetToDoPageDao findAllByCompleteFalseAndTodayToDoIdIn(List<Long> toDoIds, Integer page, Integer size) {
+		int offset = (page - 1) * size;
+		int totalCount = jpaQueryFactory.select(toDoInstance.id)
 				.from(toDoInstance)
 				.join(toDoInstance.toDo, toDo)
-				.leftJoin(toDoInstance.completeProfile, profile)
-				.groupBy(toDo)
 				.where(toDo.id.in(toDoIds)
 						.and(toDoInstance.date.eq(LocalDate.now()))
-						.and(profile.isNull()))
-				.fetch();
+						.and(toDoInstance.completeProfile.isNull()))
+				.fetch()
+				.size();
+
+		return new GetToDoPageDao(
+				page,
+				size,
+				totalCount,
+				totalCount % size == 0 ? totalCount/size : totalCount/size + 1,
+				jpaQueryFactory.select(
+								Projections.constructor(
+										ToDoInstanceDao.class,
+										toDoInstance.id,
+										Projections.constructor(
+												ToDoDao.class,
+												toDo.id,
+												toDo.isAllDay,
+												toDo.content,
+												toDo.tag,
+												toDo.color,
+												toDo.isUsingAlarm
+										),
+										toDoInstance.date.min().as("date"),
+										toDoInstance.time.min().as("time"),
+										Projections.constructor(
+												ProfileVo.class,
+												profile.name,
+												profile.imageUrl),
+										toDoInstance.completeTime
+								)
+						)
+						.from(toDoInstance)
+						.join(toDoInstance.toDo, toDo)
+						.leftJoin(toDoInstance.completeProfile, profile)
+						.groupBy(toDo)
+						.where(toDo.id.in(toDoIds)
+								.and(toDoInstance.date.eq(LocalDate.now()))
+								.and(profile.isNull()))
+						.offset(offset)
+						.limit(size)
+						.fetch());
+
 	}
 
 	@Override
-	public List<ToDoInstanceVo> findAllByCompleteAndTodayToDoIdIn(List<Long> toDoIds) {
-		return jpaQueryFactory.select(
-						Projections.constructor(
-								ToDoInstanceVo.class,
-								toDoInstance.id,
-								Projections.constructor(
-										ToDoVo.class,
-										toDo.id,
-										toDo.isAllDay,
-										toDo.content,
-										toDo.tag,
-										toDo.color,
-										toDo.isUsingAlarm
-								),
-								toDoInstance.date.min().as("date"),
-								toDoInstance.time.min().as("time"),
-								Projections.constructor(
-										ProfileVo.class,
-										profile.name,
-										profile.imageUrl),
-								toDoInstance.completeTime
-						)
-				)
+	public GetToDoPageDao findAllByCompleteAndTodayToDoIdIn(List<Long> toDoIds, Integer page, Integer size) {
+
+		int offset = (page - 1) * size;
+		int totalCount = jpaQueryFactory.select(toDoInstance.id)
 				.from(toDoInstance)
 				.join(toDoInstance.toDo, toDo)
-				.leftJoin(toDoInstance.completeProfile, profile)
-				.groupBy(toDo)
 				.where(toDo.id.in(toDoIds)
 						.and(toDoInstance.date.eq(LocalDate.now()))
-						.and(profile.isNotNull())
-				)
-				.fetch();
+						.and(toDoInstance.completeProfile.isNotNull()))
+				.fetch()
+				.size();
+
+		return new GetToDoPageDao(
+				page,
+				size,
+				totalCount,
+				totalCount % size == 0 ? totalCount/size : totalCount/size + 1,
+				jpaQueryFactory.select(
+								Projections.constructor(
+										ToDoInstanceDao.class,
+										toDoInstance.id,
+										Projections.constructor(
+												ToDoDao.class,
+												toDo.id,
+												toDo.isAllDay,
+												toDo.content,
+												toDo.tag,
+												toDo.color,
+												toDo.isUsingAlarm
+										),
+										toDoInstance.date.min().as("date"),
+										toDoInstance.time.min().as("time"),
+										Projections.constructor(
+												ProfileVo.class,
+												profile.name,
+												profile.imageUrl),
+										toDoInstance.completeTime
+								)
+						)
+						.from(toDoInstance)
+						.join(toDoInstance.toDo, toDo)
+						.leftJoin(toDoInstance.completeProfile, profile)
+						.groupBy(toDo)
+						.where(toDo.id.in(toDoIds)
+								.and(toDoInstance.date.eq(LocalDate.now()))
+								.and(profile.isNotNull())
+						)
+						.offset(offset)
+						.limit(size)
+						.fetch()
+		);
 	}
 
 	@Override
-	public List<ToDoInstanceVo> findAllByTodayToDoIdIn(List<Long> toDoIds) {
-		return jpaQueryFactory.select(
-						Projections.constructor(
-								ToDoInstanceVo.class,
-								toDoInstance.id,
-								Projections.constructor(
-										ToDoVo.class,
-										toDo.id,
-										toDo.isAllDay,
-										toDo.content,
-										toDo.tag,
-										toDo.color,
-										toDo.isUsingAlarm
-								),
-								toDoInstance.date.min().as("date"),
-								toDoInstance.time.min().as("time"),
-								Projections.constructor(
-										ProfileVo.class,
-										profile.name,
-										profile.imageUrl),
-								toDoInstance.completeTime
-						)
-				)
+	public GetToDoPageDao findAllByTodayToDoIdIn(List<Long> toDoIds, Integer page, Integer size) {
+		int offset = (page - 1) * size;
+		int totalCount = jpaQueryFactory.select(toDoInstance.id)
 				.from(toDoInstance)
 				.join(toDoInstance.toDo, toDo)
-				.leftJoin(toDoInstance.completeProfile, profile)
-				.groupBy(toDo)
 				.where(toDo.id.in(toDoIds)
 						.and(toDoInstance.date.eq(LocalDate.now())))
-				.fetch();
+				.fetch()
+				.size();
+
+
+		return new GetToDoPageDao(
+				page,
+				size,
+				totalCount,
+				totalCount % size == 0 ? totalCount/size : totalCount/size + 1,
+				jpaQueryFactory.select(
+								Projections.constructor(
+										ToDoInstanceDao.class,
+										toDoInstance.id,
+										Projections.constructor(
+												ToDoDao.class,
+												toDo.id,
+												toDo.isAllDay,
+												toDo.content,
+												toDo.tag,
+												toDo.color,
+												toDo.isUsingAlarm
+										),
+										toDoInstance.date.min().as("date"),
+										toDoInstance.time.min().as("time"),
+										Projections.constructor(
+												ProfileVo.class,
+												profile.name,
+												profile.imageUrl),
+										toDoInstance.completeTime
+								)
+						)
+						.from(toDoInstance)
+						.join(toDoInstance.toDo, toDo)
+						.leftJoin(toDoInstance.completeProfile, profile)
+						.groupBy(toDo)
+						.where(toDo.id.in(toDoIds)
+								.and(toDoInstance.date.eq(LocalDate.now())))
+						.offset(offset)
+						.limit(size)
+						.fetch()
+		);
 	}
 
 	@Override
-	public List<ToDoInstanceVo> findAllByCompleteFalseAndToDoIdIn(List<Long> toDoIds) {
-		return jpaQueryFactory.select(
-						Projections.constructor(
-								ToDoInstanceVo.class,
-								toDoInstance.id,
-								Projections.constructor(
-										ToDoVo.class,
-										toDo.id,
-										toDo.isAllDay,
-										toDo.content,
-										toDo.tag,
-										toDo.color,
-										toDo.isUsingAlarm
-								),
-								toDoInstance.date.min().as("date"),
-								toDoInstance.time.min().as("time"),
-								Projections.constructor(
-										ProfileVo.class,
-										profile.name,
-										profile.imageUrl),
-								toDoInstance.completeTime
-						)
-				)
+	public GetToDoPageDao findAllByCompleteFalseAndToDoIdIn(List<Long> toDoIds, Integer page, Integer size) {
+
+		int offset = (page - 1) * size;
+		int totalCount = jpaQueryFactory.select(toDoInstance.id)
 				.from(toDoInstance)
 				.join(toDoInstance.toDo, toDo)
-				.leftJoin(toDoInstance.completeProfile, profile)
-				.groupBy(toDo)
 				.where(toDo.id.in(toDoIds)
-						.and(profile.isNull()))
-				.fetch();
+						.and(toDoInstance.completeProfile.isNull()))
+				.fetch()
+				.size();
+
+		return new GetToDoPageDao(
+				page,
+				size,
+				totalCount,
+				totalCount % size == 0 ? totalCount/size : totalCount/size + 1,
+				jpaQueryFactory.select(
+								Projections.constructor(
+										ToDoInstanceDao.class,
+										toDoInstance.id,
+										Projections.constructor(
+												ToDoDao.class,
+												toDo.id,
+												toDo.isAllDay,
+												toDo.content,
+												toDo.tag,
+												toDo.color,
+												toDo.isUsingAlarm
+										),
+										toDoInstance.date.min().as("date"),
+										toDoInstance.time.min().as("time"),
+										Projections.constructor(
+												ProfileVo.class,
+												profile.name,
+												profile.imageUrl),
+										toDoInstance.completeTime
+								)
+						)
+						.from(toDoInstance)
+						.join(toDoInstance.toDo, toDo)
+						.leftJoin(toDoInstance.completeProfile, profile)
+						.groupBy(toDo)
+						.where(toDo.id.in(toDoIds)
+								.and(profile.isNull()))
+						.offset(offset)
+						.limit(size)
+						.fetch()
+		);
 	}
 
 	@Override
-	public List<ToDoInstanceVo> findAllByCompleteAndToDoIdIn(List<Long> toDoIds) {
-		return jpaQueryFactory.select(
-						Projections.constructor(
-								ToDoInstanceVo.class,
-								toDoInstance.id,
-								Projections.constructor(
-										ToDoVo.class,
-										toDo.id,
-										toDo.isAllDay,
-										toDo.content,
-										toDo.tag,
-										toDo.color,
-										toDo.isUsingAlarm
-								),
-								toDoInstance.date.min().as("date"),
-								toDoInstance.time.min().as("time"),
-								Projections.constructor(
-										ProfileVo.class,
-										profile.name,
-										profile.imageUrl),
-								toDoInstance.completeTime
-						)
-				)
+	public GetToDoPageDao findAllByCompleteAndToDoIdIn(List<Long> toDoIds, Integer page, Integer size) {
+		int offset = (page - 1) * size;
+		int totalCount = jpaQueryFactory.select(toDoInstance.id)
 				.from(toDoInstance)
 				.join(toDoInstance.toDo, toDo)
-				.leftJoin(toDoInstance.completeProfile, profile)
-				.groupBy(toDo)
 				.where(toDo.id.in(toDoIds)
-						.and(profile.isNotNull()))
-				.fetch();
+						.and(toDoInstance.completeProfile.isNotNull()))
+				.fetch()
+				.size();
+
+		return new GetToDoPageDao(
+				page,
+				size,
+				totalCount,
+				totalCount % size == 0 ? totalCount/size : totalCount/size + 1,
+				jpaQueryFactory.select(
+								Projections.constructor(
+										ToDoInstanceDao.class,
+										toDoInstance.id,
+										Projections.constructor(
+												ToDoDao.class,
+												toDo.id,
+												toDo.isAllDay,
+												toDo.content,
+												toDo.tag,
+												toDo.color,
+												toDo.isUsingAlarm
+										),
+										toDoInstance.date.min().as("date"),
+										toDoInstance.time.min().as("time"),
+										Projections.constructor(
+												ProfileVo.class,
+												profile.name,
+												profile.imageUrl),
+										toDoInstance.completeTime
+								)
+						)
+						.from(toDoInstance)
+						.join(toDoInstance.toDo, toDo)
+						.leftJoin(toDoInstance.completeProfile, profile)
+						.groupBy(toDo)
+						.where(toDo.id.in(toDoIds)
+								.and(profile.isNotNull()))
+						.offset(offset)
+						.limit(size)
+						.fetch()
+		);
 	}
 
 	@Override
-	public List<ToDoInstanceVo> findAllByToDoIdIn(List<Long> toDoIds) {
-		return jpaQueryFactory.select(
-						Projections.constructor(
-								ToDoInstanceVo.class,
-								toDoInstance.id,
-								Projections.constructor(
-										ToDoVo.class,
-										toDo.id,
-										toDo.isAllDay,
-										toDo.content,
-										toDo.tag,
-										toDo.color,
-										toDo.isUsingAlarm
-								),
-								toDoInstance.date.min().as("date"),
-								toDoInstance.time.min().as("time"),
-								Projections.constructor(
-										ProfileVo.class,
-										profile.name,
-										profile.imageUrl),
-								toDoInstance.completeTime
-						)
-				)
+	public GetToDoPageDao findAllByToDoIdIn(List<Long> toDoIds, Integer page, Integer size) {
+		int offset = (page - 1) * size;
+		int totalCount = jpaQueryFactory.select(toDoInstance.id)
 				.from(toDoInstance)
 				.join(toDoInstance.toDo, toDo)
-				.leftJoin(toDoInstance.completeProfile, profile)
-				.groupBy(toDo)
 				.where(toDo.id.in(toDoIds))
-				.fetch();
+				.fetch()
+				.size();
+
+		return new GetToDoPageDao(
+				page,
+				size,
+				totalCount,
+				totalCount % size == 0 ? totalCount/size : totalCount/size + 1,
+				jpaQueryFactory.select(
+								Projections.constructor(
+										ToDoInstanceDao.class,
+										toDoInstance.id,
+										Projections.constructor(
+												ToDoDao.class,
+												toDo.id,
+												toDo.isAllDay,
+												toDo.content,
+												toDo.tag,
+												toDo.color,
+												toDo.isUsingAlarm
+										),
+										toDoInstance.date.min().as("date"),
+										toDoInstance.time.min().as("time"),
+										Projections.constructor(
+												ProfileVo.class,
+												profile.name,
+												profile.imageUrl),
+										toDoInstance.completeTime
+								)
+						)
+						.from(toDoInstance)
+						.join(toDoInstance.toDo, toDo)
+						.leftJoin(toDoInstance.completeProfile, profile)
+						.groupBy(toDo)
+						.where(toDo.id.in(toDoIds))
+						.offset(offset)
+						.limit(size)
+						.fetch()
+		);
 	}
 }

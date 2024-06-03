@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 public record ToDoPatchRequest(
+        Long profileId,
         @NotNull
         List<Long> petIds,
         Tag tag,

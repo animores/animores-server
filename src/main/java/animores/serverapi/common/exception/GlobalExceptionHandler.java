@@ -1,6 +1,7 @@
 package animores.serverapi.common.exception;
 
 import animores.serverapi.common.Response;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @RestControllerAdvice
@@ -19,9 +21,19 @@ public class GlobalExceptionHandler {
         return Response.error(e.getCode());
     }
 
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<Response<Void>> handleNoSuchElementException(NoSuchElementException e) {
+        return ResponseEntity.badRequest().body(Response.error(e.getMessage()));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Response<Void> handleValidationException(MethodArgumentNotValidException e) {
-        return Response.error(e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
+    public ResponseEntity<Response<Void>> handleValidationException(MethodArgumentNotValidException e) {
+        return ResponseEntity.badRequest().body(Response.error(e.getBindingResult().getAllErrors().get(0).getDefaultMessage()));
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Response<Void>> handleConstraintViolationException(ConstraintViolationException e) {
+        return ResponseEntity.badRequest().body(Response.error(e.getMessage()));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
