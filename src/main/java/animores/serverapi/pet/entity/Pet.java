@@ -3,6 +3,7 @@ package animores.serverapi.pet.entity;
 import animores.serverapi.account.domain.Account;
 import animores.serverapi.common.BaseEntity;
 import animores.serverapi.pet.dto.request.PetCreateRequest;
+import animores.serverapi.pet.dto.request.PetUpdateRequest;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -31,25 +32,34 @@ public class Pet extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Breed breed;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private PetImage image;
+
     private String name;
 
     private LocalDate birthday;
 
     private int gender;
+    private Float weight;
 
-    public static Pet createFromRequest(Account account, PetCreateRequest request, Breed breed) {
+    public static Pet createFromRequest(Account account, PetCreateRequest request, Breed breed, PetImage image) {
         return Pet.builder()
                 .account(account)
                 .breed(breed)
+                .image(image)
                 .name(request.name())
                 .birthday(request.birthday())
+                .weight(request.weight())
+                .gender(request.gender() == null ? 0 : request.gender())
                 .build();
     }
 
-    public void update(PetCreateRequest request, Breed breed) {
+    public void update(PetUpdateRequest request, Breed breed, PetImage image) {
         this.breed = breed;
-        this.name = request.name();
-        this.birthday = request.birthday();
-        this.gender = request.gender();
+        this.image = image;
+        if(request.name() != null) { this.name = request.name(); }
+        if(request.birthday() != null) { this.birthday = request.birthday(); }
+        if(request.gender() != null) { this.gender = request.gender(); }
+        if(request.weight() != null) { this.weight = request.weight(); }
     }
 }
