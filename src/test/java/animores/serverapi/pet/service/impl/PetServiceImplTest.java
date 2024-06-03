@@ -12,8 +12,10 @@ import animores.serverapi.pet.dto.response.PetCreateResponse;
 import animores.serverapi.pet.dto.response.SpeciesResponse;
 import animores.serverapi.pet.entity.Breed;
 import animores.serverapi.pet.entity.Pet;
+import animores.serverapi.pet.entity.PetImage;
 import animores.serverapi.pet.entity.Species;
 import animores.serverapi.pet.repository.BreedRepository;
+import animores.serverapi.pet.repository.PetImageRepository;
 import animores.serverapi.pet.repository.PetRepository;
 import animores.serverapi.pet.repository.SpeciesRepository;
 import org.junit.jupiter.api.Test;
@@ -28,7 +30,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,11 +47,17 @@ class PetServiceImplTest {
     @Mock
     private PetRepository petRepository;
 
+    @Mock
+    private PetImageRepository petImageRepository;
+
     private static final Long PET_ID = 1L;
     private static final Long BREED_ID = 2L;
-    private static final String BREED_NAME = "breed";
     private static final Long SPECIES_ID = 3L;
     private static final Long ACCOUNT_ID = 4L;
+    private static final Long PET_IMAGE_ID = 5L;
+    private static final String BREED_NAME = "breed";
+    private static final String PET_NAME = "pet";
+
 
     @Test
     void checkAccountPetsReturnsAllPetsWhenPetIdsIsEmpty() {
@@ -108,7 +115,7 @@ class PetServiceImplTest {
         Account account = new Account();
         PetCreateRequest request = new PetCreateRequest(
                 BREED_ID,
-                1L,
+                PET_IMAGE_ID,
                 "name",
                 0,
                 LocalDate.of(2021, 1, 1),
@@ -116,10 +123,14 @@ class PetServiceImplTest {
         );
 
         when(breedRepository.findById(request.breedId())).thenReturn(Optional.of(new TestBreed(BREED_ID, BREED_NAME)));
-        given(petRepository.save(any())).willReturn(new TestPet(PET_ID));
+        when(petImageRepository.getReferenceById(request.imageId())).thenReturn(new TestPetImage(PET_IMAGE_ID));
+        when(petRepository.save(any())).thenReturn(new TestPet(PET_ID,PET_NAME));
 
         PetCreateResponse result = petService.createPet(account, request);
+
+        assertNotNull(result);
         assertEquals(PET_ID, result.id());
+        assertEquals(PET_NAME, result.name());
     }
 
     @Test
@@ -138,7 +149,7 @@ class PetServiceImplTest {
 
     @Test
     void getPetReturnsPetDetail() {
-        when(petRepository.findById(PET_ID)).thenReturn(Optional.of(new TestPet(PET_ID, new TestBreed(BREED_ID, BREED_NAME))));
+        when(petRepository.findById(PET_ID)).thenReturn(Optional.of(new TestPet(PET_ID, new TestBreed(BREED_ID, BREED_NAME), new TestPetImage(PET_IMAGE_ID))));
         GetPetDetailResponse result = petService.getPet(PET_ID);
         assertNotNull(result);
     }
@@ -147,14 +158,16 @@ class PetServiceImplTest {
     void updatePetReturnsUpdatedPet() {
         PetUpdateRequest request = new PetUpdateRequest(
                 BREED_ID,
-                1L,
+                PET_IMAGE_ID,
                 "name",
                 0,
                 LocalDate.of(2021, 1, 1),
                 1.5f
         );
+
         when(petRepository.findById(PET_ID)).thenReturn(Optional.of(new TestPet(PET_ID)));
-        when(breedRepository.getReferenceById(BREED_ID)).thenReturn(new TestBreed(BREED_ID,BREED_NAME));
+        when(breedRepository.findById(BREED_ID)).thenReturn(Optional.of(new TestBreed(BREED_ID,BREED_NAME)));
+        when(petImageRepository.findById(PET_IMAGE_ID)).thenReturn(Optional.of(new TestPetImage(PET_IMAGE_ID)));
         PetCreateResponse result = petService.updatePet(PET_ID, request);
 
         assertNotNull(result);
@@ -183,8 +196,18 @@ class PetServiceImplTest {
             super(id, null, null, null, null,null, 0, null);
         }
 
-        public TestPet (Long id, Breed breed) {
-            super(id, null, breed, null, null, null, 0, null);
+        public TestPet (Long id, Breed breed, PetImage image) {
+            super(id, null, breed, image, null, null, 0, null);
+        }
+
+        public TestPet(Long id, String name) {
+            super(id, null, null, null, name, null, 0, null);
+        }
+    }
+
+    private static class TestPetImage extends PetImage {
+        public TestPetImage(Long id) {
+            super(id, null, null);
         }
     }
 }
