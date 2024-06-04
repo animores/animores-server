@@ -2,18 +2,16 @@ package animores.serverapi.profile.domain;
 
 import animores.serverapi.account.domain.Account;
 import animores.serverapi.common.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
+
+import static animores.serverapi.common.S3Path.PROFILE_IMAGE_PATH;
 
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Builder
 public class Profile extends BaseEntity {
@@ -35,16 +33,23 @@ public class Profile extends BaseEntity {
     private String imageUrl;
 
     private String pushToken;
+    private LocalDateTime deletedAt;
 
-    // 생성, 수정, 삭제 생략
+    private static final String DEFAULT_PROFILE_IMAGE_URL = PROFILE_IMAGE_PATH + "default_profile.png";
 
-
-    public Profile(Long id, Account account, String name, String imageUrl, String pushToken) {
-        this.id = id;
-        this.account = account;
-        this.name = name;
-        this.imageUrl = imageUrl;
-        this.pushToken = pushToken;
+    public String getImageUrl() {
+        return this.imageUrl == null ? DEFAULT_PROFILE_IMAGE_URL : this.imageUrl;
     }
 
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void delete() {
+        this.deletedAt = LocalDateTime.now();
+    }
 }

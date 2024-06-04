@@ -4,7 +4,7 @@ import animores.serverapi.account.domain.Account;
 import animores.serverapi.pet.entity.Pet;
 import animores.serverapi.pet.repository.PetRepository;
 import animores.serverapi.profile.domain.Profile;
-import animores.serverapi.profile.domain.vo.ProfileVo;
+import animores.serverapi.profile.dao.ProfileVo;
 import animores.serverapi.profile.repository.ProfileRepository;
 import animores.serverapi.to_do.dao.GetToDoPageDao;
 import animores.serverapi.to_do.dao.ToDoDao;
@@ -394,17 +394,17 @@ class ToDoServiceImplTest {
 
     static class TestProfile extends Profile {
         public TestProfile(String imageUrl) {
-            super(null, null, null, imageUrl,null);
+            super(null, null, null, imageUrl,null, null);
         }
 
         public TestProfile(Long id, String imageUrl) {
-            super(id, null, null,  imageUrl,null);
+            super(id, null, null,  imageUrl,null, null);
         }
     }
 
     static class TestPet extends Pet {
         public TestPet(Long id, String name) {
-            super(id, null, null, name, null, 0);
+            super(id, null, null, null, name, null, 0, null);
         }
     }
 

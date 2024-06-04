@@ -38,13 +38,11 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 @Service
@@ -151,7 +149,11 @@ public class DiaryServiceImpl implements DiaryService {
         if (mediaListToDelete.isEmpty()) {
             throw new CustomException(ExceptionCode.NOT_FOUND_DIARY_MEDIA);
         }
-        s3Service.removeFilesFromS3(generateKeysForS3Deletion(mediaListToDelete));
+        s3Service.removeFilesFromS3(
+            mediaListToDelete.stream()
+                .map(DiaryMedia::getUrl)
+                .toList()
+        );
         diaryMediaRepository.deleteAll(mediaListToDelete);
 
         List<PutObjectRequest> putObjectRequests = s3Service.uploadFilesToS3(files, DIARY_PATH);
@@ -173,7 +175,11 @@ public class DiaryServiceImpl implements DiaryService {
         if (mediaListToDelete.isEmpty()) {
             throw new CustomException(ExceptionCode.NOT_FOUND_DIARY_MEDIA);
         }
-        s3Service.removeFilesFromS3(generateKeysForS3Deletion(mediaListToDelete));
+        s3Service.removeFilesFromS3(
+            mediaListToDelete.stream()
+                .map(DiaryMedia::getUrl)
+                .toList()
+        );
         diaryMediaRepository.deleteAll(mediaListToDelete);
 
         reorderDiaryMedia(diary.getId(), DiaryMediaType.I);
@@ -244,11 +250,9 @@ public class DiaryServiceImpl implements DiaryService {
     private List<DiaryMedia> createDiaryMedias(Diary diary,
         List<PutObjectRequest> putObjectRequests) {
         return IntStream.range(0, putObjectRequests.size())
-            .mapToObj(i -> {
-                return DiaryMedia.create(diary, putObjectRequests.get(i).key(), i,
-                    DiaryMediaType.checkType(putObjectRequests.get(i).contentType()));
-            })
-            .collect(Collectors.toList());
+            .mapToObj(i -> DiaryMedia.create(diary, putObjectRequests.get(i).key(), i,
+                DiaryMediaType.checkType(putObjectRequests.get(i).contentType())))
+            .toList();
     }
 
     public void reorderDiaryMedia(Long diaryId, DiaryMediaType type) {
@@ -258,13 +262,5 @@ public class DiaryServiceImpl implements DiaryService {
         for (int i = 0; i < mediaList.size(); i++) {
             mediaList.get(i).updateMediaOrder(i);
         }
-    }
-
-    private List<ObjectIdentifier> generateKeysForS3Deletion(List<DiaryMedia> mediaList) {
-        return mediaList.stream()
-            .map(media -> ObjectIdentifier.builder()
-                .key(media.getUrl())
-                .build())
-            .collect(Collectors.toList());
     }
 }
