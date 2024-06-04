@@ -133,7 +133,7 @@ public class DiaryReplyServiceImplTest {
     private static class TestProfile extends Profile {
 
         public TestProfile(Long id) {
-            super(id, null, null, null, null);
+            super(id, null, null, null, null, null);
         }
     }
 
