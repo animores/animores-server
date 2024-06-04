@@ -29,8 +29,8 @@ public class DiaryReplyServiceImplTest {
 
     private static final Long PROFILE_ID_1 = 1L;
     private static final Long PROFILE_ID_2 = 2L;
-    private static final Long DIARY_COMMENT_ID = 1L;
-    private static final Long DIARY_REPLY_ID = 1L;
+    private static final Long DIARY_COMMENT_ID = 3L;
+    private static final Long DIARY_REPLY_ID = 4L;
     private static final String REPLY_CONTENT = "대댓글";
     private static final String UPDATED_CONTENT = "수정될 댓글";
 
