@@ -82,9 +82,9 @@ public class DiaryReplyServiceImplTest {
             diaryReplyService.removeDiaryReply(null, DIARY_REPLY_ID, removeRequest);
         });
 
-        assertEquals(ExceptionCode.NOT_FOUND_PROFILE, addException.getCode());
-        assertEquals(ExceptionCode.NOT_FOUND_PROFILE, editException.getCode());
-        assertEquals(ExceptionCode.NOT_FOUND_PROFILE, removeException.getCode());
+        assertEquals(ExceptionCode.INVALID_PROFILE, addException.getCode());
+        assertEquals(ExceptionCode.INVALID_PROFILE, editException.getCode());
+        assertEquals(ExceptionCode.INVALID_PROFILE, removeException.getCode());
     }
 
     @Test

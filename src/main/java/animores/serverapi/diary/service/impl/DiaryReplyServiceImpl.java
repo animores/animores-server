@@ -61,7 +61,7 @@ public class DiaryReplyServiceImpl implements DiaryReplyService {
 
     private Profile findProfileById(Long id) {
         return profileRepository.findById(id)
-            .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_PROFILE));
+            .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_PROFILE));
     }
 
     public DiaryComment findDiaryComment(Long id) {
