@@ -52,6 +52,7 @@ public class DiaryCustomRepositoryImpl implements DiaryCustomRepository {
                                 diaryMedia.mediaOrder, diaryMedia.type).skipNulls()
                         ),
                         createLikeYnExpression(diary.id, profileId),
+                        diary.comments.size(),
                         diary.createdAt,
                         diary.profile.id,
                         diary.profile.name,
