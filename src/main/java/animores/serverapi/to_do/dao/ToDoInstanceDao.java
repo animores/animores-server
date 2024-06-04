@@ -1,6 +1,6 @@
 package animores.serverapi.to_do.dao;
 
-import animores.serverapi.profile.domain.vo.ProfileVo;
+import animores.serverapi.profile.dao.ProfileVo;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
