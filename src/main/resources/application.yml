@@ -34,6 +34,8 @@ spring:
         static: ${s3_region}
       stack:
         auto: false
+      sqs:
+        mail-queue: PetEmail
 
   jwt:
     secret-key: ${jwt_secret_key}

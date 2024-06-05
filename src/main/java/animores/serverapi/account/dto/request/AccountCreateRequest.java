@@ -1,4 +1,4 @@
-package animores.serverapi.account.request;
+package animores.serverapi.account.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;

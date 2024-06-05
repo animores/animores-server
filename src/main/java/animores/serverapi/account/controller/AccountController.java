@@ -2,11 +2,11 @@ package animores.serverapi.account.controller;
 
 
 import animores.serverapi.account.domain.Account;
-import animores.serverapi.account.request.SignInRequest;
-import animores.serverapi.account.request.SignOutRequest;
-import animores.serverapi.account.request.SignUpRequest;
-import animores.serverapi.account.response.SignInResponse;
-import animores.serverapi.account.response.SignUpResponse;
+import animores.serverapi.account.dto.request.SignInRequest;
+import animores.serverapi.account.dto.request.SignOutRequest;
+import animores.serverapi.account.dto.request.SignUpRequest;
+import animores.serverapi.account.dto.response.SignInResponse;
+import animores.serverapi.account.dto.response.SignUpResponse;
 import animores.serverapi.account.service.AccountService;
 import animores.serverapi.account.service.EmailAuthService;
 import animores.serverapi.common.Response;

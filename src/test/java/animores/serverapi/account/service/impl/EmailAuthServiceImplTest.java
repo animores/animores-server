@@ -9,10 +9,8 @@ import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.Transport;
 import jakarta.mail.internet.InternetAddress;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.aggregator.ArgumentAccessException;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -23,7 +21,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class GoogleEmailAuthServiceImplTest {
+class EmailAuthServiceImplTest {
 
     @Mock
     private Message message;
@@ -35,7 +33,7 @@ class GoogleEmailAuthServiceImplTest {
     private ValidMailRepository validMailRepository;
 
     @InjectMocks
-    private GoogleEmailAuthServiceImpl googleEmailAuthService;
+    private EmailAuthServiceImpl googleEmailAuthService;
 
     @Test
     void sendEmailSuccessfully() throws MessagingException {

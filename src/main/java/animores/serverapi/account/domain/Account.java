@@ -1,6 +1,6 @@
 package animores.serverapi.account.domain;
 
-import animores.serverapi.account.request.SignUpRequest;
+import animores.serverapi.account.dto.request.SignUpRequest;
 import animores.serverapi.account.type.Role;
 import animores.serverapi.common.BaseEntity;
 import jakarta.persistence.*;
