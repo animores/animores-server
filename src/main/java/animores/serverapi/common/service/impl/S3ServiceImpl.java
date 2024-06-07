@@ -47,7 +47,11 @@ public class S3ServiceImpl implements S3Service {
         log.info("File uploaded to S3: {}", putObjectRequest.key());
     }
 
-    public void removeFilesFromS3(List<ObjectIdentifier> keys) {
+    public void removeFilesFromS3(List<String> urls) {
+        List<ObjectIdentifier> keys = urls.stream()
+            .map(url -> ObjectIdentifier.builder().key(url).build())
+            .toList();
+
         DeleteObjectsRequest deleteObjectsRequest = DeleteObjectsRequest.builder()
             .bucket(bucketName)
             .delete(b -> b.objects(keys))

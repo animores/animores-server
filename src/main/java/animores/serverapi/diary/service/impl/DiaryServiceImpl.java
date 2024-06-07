@@ -139,7 +139,11 @@ public class DiaryServiceImpl implements DiaryService {
         if (mediaListToDelete.isEmpty()) {
             throw new CustomException(ExceptionCode.NOT_FOUND_DIARY_MEDIA);
         }
-        s3Service.removeFilesFromS3(generateKeysForS3Deletion(mediaListToDelete));
+        s3Service.removeFilesFromS3(
+                mediaListToDelete.stream()
+                        .map(DiaryMedia::getUrl)
+                        .toList()
+        );
         diaryMediaRepository.deleteAll(mediaListToDelete);
 
         List<String> fileNames = files.stream()
@@ -164,7 +168,11 @@ public class DiaryServiceImpl implements DiaryService {
         if (mediaListToDelete.isEmpty()) {
             throw new CustomException(ExceptionCode.NOT_FOUND_DIARY_MEDIA);
         }
-        s3Service.removeFilesFromS3(generateKeysForS3Deletion(mediaListToDelete));
+        s3Service.removeFilesFromS3(
+                mediaListToDelete.stream()
+                        .map(DiaryMedia::getUrl)
+                        .toList()
+        );
         diaryMediaRepository.deleteAll(mediaListToDelete);
 
         reorderDiaryMedia(diary.getId(), DiaryMediaType.I);

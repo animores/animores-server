@@ -1,4 +1,4 @@
-package animores.serverapi.profile.domain.vo;
+package animores.serverapi.profile.dao;
 
 import animores.serverapi.profile.domain.Profile;
 
