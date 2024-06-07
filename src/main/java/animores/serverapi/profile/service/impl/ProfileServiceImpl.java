@@ -15,10 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import static animores.serverapi.common.S3Path.PROFILE_IMAGE_PATH;
 
@@ -51,7 +51,9 @@ public class ProfileServiceImpl implements ProfileService {
         if(profileImage != null) {
             try {
                 checkContentType(profileImage);
-                imageUrl = s3Service.uploadFileToS3(profileImage, PROFILE_IMAGE_PATH).key();
+                String fileName = UUID.randomUUID().toString();
+                s3Service.uploadFileToS3(profileImage, PROFILE_IMAGE_PATH, fileName);
+                imageUrl = PROFILE_IMAGE_PATH + fileName;
             } catch (Exception e) {
                 log.error("Failed to upload profile image: {}", e.getMessage());
             }
@@ -90,8 +92,9 @@ public class ProfileServiceImpl implements ProfileService {
                 checkContentType(profileImage);
                 try {
                     s3Service.removeFilesFromS3(List.of(profile.getImageUrl()));
-                    PutObjectRequest putObjectRequest = s3Service.uploadFileToS3(profileImage, PROFILE_IMAGE_PATH);
-                    profile.setImageUrl(putObjectRequest.key());
+                    String fileName = UUID.randomUUID().toString();
+                    s3Service.uploadFileToS3(profileImage, PROFILE_IMAGE_PATH, fileName);
+                    profile.setImageUrl(fileName);
                 } catch (Exception e) {
                     log.error("Failed to update profile image: {}", e.getMessage());
                 }
