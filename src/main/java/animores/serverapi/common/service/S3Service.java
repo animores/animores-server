@@ -1,5 +1,6 @@
 package animores.serverapi.common.service;
 
+import java.util.concurrent.CompletableFuture;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
@@ -15,4 +16,5 @@ public interface S3Service {
 
     void removeFilesFromS3(List<String> urls);
 
+    CompletableFuture<Void> uploadFilesToS3_temp(List<MultipartFile> file, List<String> urls);
 }

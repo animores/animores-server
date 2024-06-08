@@ -1,25 +1,36 @@
 package animores.serverapi.common.service.impl;
 
+import animores.serverapi.common.exception.CustomException;
+import animores.serverapi.common.exception.ExceptionCode;
 import animores.serverapi.common.service.S3Service;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.async.AsyncRequestBody;
 import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectsRequest;
 import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class S3ServiceImpl implements S3Service {
 
     private final S3Client s3Client;
+    private final S3AsyncClient s3AsyncClient;
 
     @Value("${spring.cloud.aws.s3.bucket}")
     private String bucketName;
@@ -59,6 +70,31 @@ public class S3ServiceImpl implements S3Service {
             .build();
 
         s3Client.deleteObjects(deleteObjectsRequest);
+    }
+
+    @Override
+    public CompletableFuture<Void> uploadFilesToS3_temp(List<MultipartFile> files,
+        List<String> keys) {
+        List<CompletableFuture<PutObjectResponse>> futures = IntStream.range(0, files.size())
+            .mapToObj(i -> uploadFileToS3_temp(files.get(i), keys.get(i)))
+            .toList();
+
+        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+    }
+
+    private CompletableFuture<PutObjectResponse> uploadFileToS3_temp(MultipartFile file,
+        String key) {
+        try {
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(key)
+                .build();
+            return s3AsyncClient.putObject(putObjectRequest,
+                AsyncRequestBody.fromByteBuffer(ByteBuffer.wrap(file.getBytes())));
+        } catch (Exception e) {
+            log.error("Failed to upload file to S3: {}", e.getMessage());
+            throw new CustomException(ExceptionCode.S3_UPLOAD_FAILED);
+        }
     }
 
 }
