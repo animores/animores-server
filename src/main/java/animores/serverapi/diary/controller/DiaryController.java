@@ -10,6 +10,7 @@ import animores.serverapi.diary.dto.AddDiaryRequest;
 import animores.serverapi.diary.dto.CancelDiaryLikeRequest;
 import animores.serverapi.diary.dto.EditDiaryContentRequest;
 import animores.serverapi.diary.dto.EditDiaryMediaRequest;
+import animores.serverapi.diary.dto.GetAllDiaryCommentResponse;
 import animores.serverapi.diary.dto.GetAllDiaryResponse;
 import animores.serverapi.diary.dto.GetCalendarDiaryResponse;
 import animores.serverapi.diary.dto.RemoveDiaryRequest;
@@ -157,5 +158,20 @@ public class DiaryController {
         Account account = accountService.getAccountFromContext();
         diaryService.cancelDiaryLike(account, diaryId, request);
         return Response.success(null);
+    }
+
+    @PreAuthorize("hasAuthority('USER')")
+    @SecurityRequirement(name = "Authorization")
+    @UserInfo
+    @GetMapping("{diaryId}/comments")
+    @Operation(summary = "댓글 목록 조회", description = "일지에 대한 댓글 목록을 조회합니다.")
+    public GetAllDiaryCommentResponse getAllDiaryComment(
+        @PathVariable @Parameter(description = "일지 아이디", required = true) Long diaryId,
+        @RequestParam("profileId") @Parameter(description = "프로필 아이디", required = true, example = "1") Long profileId,
+        @RequestParam("page") @Parameter(description = "페이지 번호 (1부터 시작)", required = true, example = "1") int page,
+        @RequestParam("size") @Parameter(description = "페이지별 개수", required = true, example = "15") int size
+    ) {
+        Account account = accountService.getAccountFromContext();
+        return diaryService.getAllDiaryComment(account, diaryId, profileId, page, size);
     }
 }

@@ -1,18 +1,35 @@
 package animores.serverapi.diary.service.impl;
 
+import static animores.serverapi.common.S3Path.DIARY_PATH;
+
 import animores.serverapi.account.domain.Account;
 import animores.serverapi.common.exception.CustomException;
 import animores.serverapi.common.exception.ExceptionCode;
 import animores.serverapi.common.service.AuthorizationService;
 import animores.serverapi.common.service.S3Service;
+import animores.serverapi.diary.dao.GetAllDiaryCommentDao;
 import animores.serverapi.diary.dao.GetAllDiaryDao;
 import animores.serverapi.diary.dao.GetCalendarDiaryDao;
-import animores.serverapi.diary.dto.*;
+import animores.serverapi.diary.dto.AddDiaryLikeRequest;
+import animores.serverapi.diary.dto.AddDiaryMediaRequest;
+import animores.serverapi.diary.dto.AddDiaryRequest;
+import animores.serverapi.diary.dto.CancelDiaryLikeRequest;
+import animores.serverapi.diary.dto.EditDiaryContentRequest;
+import animores.serverapi.diary.dto.EditDiaryMediaRequest;
+import animores.serverapi.diary.dto.GetAllDiaryCommentResponse;
+import animores.serverapi.diary.dto.GetAllDiaryResponse;
+import animores.serverapi.diary.dto.GetCalendarDiaryResponse;
+import animores.serverapi.diary.dto.RemoveDiaryRequest;
 import animores.serverapi.diary.entity.Diary;
 import animores.serverapi.diary.entity.DiaryLike;
 import animores.serverapi.diary.entity.DiaryMedia;
 import animores.serverapi.diary.entity.DiaryMediaType;
-import animores.serverapi.diary.repository.*;
+import animores.serverapi.diary.repository.DiaryCommentCustomRepository;
+import animores.serverapi.diary.repository.DiaryCustomRepository;
+import animores.serverapi.diary.repository.DiaryLikeRepository;
+import animores.serverapi.diary.repository.DiaryMediaCustomRepository;
+import animores.serverapi.diary.repository.DiaryMediaRepository;
+import animores.serverapi.diary.repository.DiaryRepository;
 import animores.serverapi.diary.service.DiaryService;
 import animores.serverapi.profile.domain.Profile;
 import animores.serverapi.profile.repository.ProfileRepository;
@@ -29,8 +46,11 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.IntStream;
-
-import static animores.serverapi.common.S3Path.DIARY_PATH;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 @Service
 @RequiredArgsConstructor
@@ -45,6 +65,7 @@ public class DiaryServiceImpl implements DiaryService {
     private final DiaryMediaRepository diaryMediaRepository;
     private final DiaryMediaCustomRepository diaryMediaCustomRepository;
     private final DiaryLikeRepository diaryLikeRepository;
+    private final DiaryCommentCustomRepository diaryCommentCustomRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -140,9 +161,9 @@ public class DiaryServiceImpl implements DiaryService {
             throw new CustomException(ExceptionCode.NOT_FOUND_DIARY_MEDIA);
         }
         s3Service.removeFilesFromS3(
-                mediaListToDelete.stream()
-                        .map(DiaryMedia::getUrl)
-                        .toList()
+            mediaListToDelete.stream()
+                .map(DiaryMedia::getUrl)
+                .toList()
         );
         diaryMediaRepository.deleteAll(mediaListToDelete);
 
@@ -169,9 +190,9 @@ public class DiaryServiceImpl implements DiaryService {
             throw new CustomException(ExceptionCode.NOT_FOUND_DIARY_MEDIA);
         }
         s3Service.removeFilesFromS3(
-                mediaListToDelete.stream()
-                        .map(DiaryMedia::getUrl)
-                        .toList()
+            mediaListToDelete.stream()
+                .map(DiaryMedia::getUrl)
+                .toList()
         );
         diaryMediaRepository.deleteAll(mediaListToDelete);
 
@@ -216,6 +237,20 @@ public class DiaryServiceImpl implements DiaryService {
         diaryLikeRepository.delete(diaryLikeToDelete);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public GetAllDiaryCommentResponse getAllDiaryComment(Account account, Long diaryId,
+        Long profileId, int page, int size) {
+        Profile profile = findProfileById(profileId);
+        authorizationService.validateProfileAccess(account, profile);
+
+        List<GetAllDiaryCommentDao> comments = diaryCommentCustomRepository.getAllDiaryComment(
+            profileId, page, size);
+        Long totalCount = diaryCommentCustomRepository.getAllDiaryCommentCount(diaryId);
+
+        return new GetAllDiaryCommentResponse(totalCount, comments);
+    }
+
     private Profile findProfileById(Long id) {
         return profileRepository.findById(id)
             .orElseThrow(() -> new NoSuchElementException("Profile not found with id: " + id));
@@ -243,11 +278,4 @@ public class DiaryServiceImpl implements DiaryService {
         }
     }
 
-    private List<ObjectIdentifier> generateKeysForS3Deletion(List<DiaryMedia> mediaList) {
-        return mediaList.stream()
-            .map(media -> ObjectIdentifier.builder()
-                .key(media.getUrl())
-                .build())
-            .toList();
-    }
 }

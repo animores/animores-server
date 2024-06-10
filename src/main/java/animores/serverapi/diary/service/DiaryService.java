@@ -7,6 +7,7 @@ import animores.serverapi.diary.dto.AddDiaryRequest;
 import animores.serverapi.diary.dto.CancelDiaryLikeRequest;
 import animores.serverapi.diary.dto.EditDiaryContentRequest;
 import animores.serverapi.diary.dto.EditDiaryMediaRequest;
+import animores.serverapi.diary.dto.GetAllDiaryCommentResponse;
 import animores.serverapi.diary.dto.GetAllDiaryResponse;
 import animores.serverapi.diary.dto.GetCalendarDiaryResponse;
 import animores.serverapi.diary.dto.RemoveDiaryRequest;
@@ -39,5 +40,8 @@ public interface DiaryService {
     void addDiaryLike(Account account, Long diaryId, AddDiaryLikeRequest request);
 
     void cancelDiaryLike(Account account, Long diaryId, CancelDiaryLikeRequest request);
+
+    GetAllDiaryCommentResponse getAllDiaryComment(Account account, Long diaryId, Long profileId,
+        int page, int size);
 
 }
