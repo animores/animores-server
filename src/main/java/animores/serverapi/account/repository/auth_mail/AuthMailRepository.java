@@ -1,6 +1,6 @@
 package animores.serverapi.account.repository.auth_mail;
 
-import animores.serverapi.account.domain.auth_mail.AuthMail;
+import animores.serverapi.account.entity.auth_mail.AuthMail;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,6 +1,6 @@
 package animores.serverapi.pet.service.impl;
 
-import animores.serverapi.account.domain.Account;
+import animores.serverapi.account.entity.Account;
 import animores.serverapi.common.exception.CustomException;
 import animores.serverapi.common.exception.ExceptionCode;
 import animores.serverapi.pet.dao.PetDao;

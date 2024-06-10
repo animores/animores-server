@@ -1,6 +1,6 @@
 package animores.serverapi.account.service.impl;
 
-import animores.serverapi.account.domain.Account;
+import animores.serverapi.account.entity.Account;
 import animores.serverapi.account.repository.AccountRepository;
 import animores.serverapi.account.dto.request.SignInRequest;
 import animores.serverapi.account.dto.request.SignOutRequest;

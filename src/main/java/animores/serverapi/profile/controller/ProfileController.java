@@ -1,6 +1,6 @@
 package animores.serverapi.profile.controller;
 
-import animores.serverapi.account.domain.Account;
+import animores.serverapi.account.entity.Account;
 import animores.serverapi.account.service.AccountService;
 import animores.serverapi.common.Response;
 import animores.serverapi.common.aop.UserInfo;
@@ -9,11 +9,9 @@ import animores.serverapi.profile.dto.request.ProfileUpdateRequest;
 import animores.serverapi.profile.dto.response.ProfileResponse;
 import animores.serverapi.profile.service.ProfileService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;

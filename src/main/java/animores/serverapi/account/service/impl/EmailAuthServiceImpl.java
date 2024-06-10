@@ -1,8 +1,8 @@
 package animores.serverapi.account.service.impl;
 
 
-import animores.serverapi.account.domain.auth_mail.AuthMail;
-import animores.serverapi.account.domain.auth_mail.ValidMail;
+import animores.serverapi.account.entity.auth_mail.AuthMail;
+import animores.serverapi.account.entity.auth_mail.ValidMail;
 import animores.serverapi.account.dto.request.EmailQueueBody;
 import animores.serverapi.account.repository.auth_mail.AuthMailRepository;
 import animores.serverapi.account.repository.auth_mail.ValidMailRepository;
@@ -63,9 +63,9 @@ public class EmailAuthServiceImpl implements EmailAuthService {
         );
 
         String codeToMatch = authMail.getCode();
-        authMailRepository.deleteById(email);
 
         if (codeToMatch.equals(code)) {
+            authMailRepository.deleteById(email);
             validMailRepository.save(new ValidMail(email));
             return true;
         }

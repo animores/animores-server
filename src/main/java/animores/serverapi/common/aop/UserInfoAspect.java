@@ -1,6 +1,6 @@
 package animores.serverapi.common.aop;
 
-import animores.serverapi.account.domain.Account;
+import animores.serverapi.account.entity.Account;
 import animores.serverapi.account.repository.AccountRepository;
 import animores.serverapi.util.RequestConstants;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
 package animores.serverapi.profile.dao;
 
-import animores.serverapi.profile.domain.Profile;
+import animores.serverapi.profile.entity.Profile;
 
 public record ProfileVo(
         String name,

@@ -14,7 +14,7 @@ import animores.serverapi.diary.dto.RemoveDiaryReplyRequest;
 import animores.serverapi.diary.entity.DiaryReply;
 import animores.serverapi.diary.repository.DiaryCommentRepository;
 import animores.serverapi.diary.repository.DiaryReplyRepository;
-import animores.serverapi.profile.domain.Profile;
+import animores.serverapi.profile.entity.Profile;
 import animores.serverapi.profile.repository.ProfileRepository;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;

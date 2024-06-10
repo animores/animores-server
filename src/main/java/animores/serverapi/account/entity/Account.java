@@ -1,4 +1,4 @@
-package animores.serverapi.account.domain;
+package animores.serverapi.account.entity;
 
 import animores.serverapi.account.dto.request.SignUpRequest;
 import animores.serverapi.account.type.Role;

@@ -1,6 +1,6 @@
-package animores.serverapi.profile.domain;
+package animores.serverapi.profile.entity;
 
-import animores.serverapi.account.domain.Account;
+import animores.serverapi.account.entity.Account;
 import animores.serverapi.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;

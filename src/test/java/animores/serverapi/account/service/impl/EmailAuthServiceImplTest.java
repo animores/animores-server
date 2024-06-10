@@ -1,7 +1,7 @@
 package animores.serverapi.account.service.impl;
 
-import animores.serverapi.account.domain.auth_mail.AuthMail;
-import animores.serverapi.account.domain.auth_mail.ValidMail;
+import animores.serverapi.account.entity.auth_mail.AuthMail;
+import animores.serverapi.account.entity.auth_mail.ValidMail;
 import animores.serverapi.account.repository.auth_mail.AuthMailRepository;
 import animores.serverapi.account.repository.auth_mail.ValidMailRepository;
 import animores.serverapi.common.exception.CustomException;

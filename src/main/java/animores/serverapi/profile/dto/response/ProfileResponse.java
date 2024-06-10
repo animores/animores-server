@@ -1,6 +1,6 @@
 package animores.serverapi.profile.dto.response;
 
-import animores.serverapi.profile.domain.Profile;
+import animores.serverapi.profile.entity.Profile;
 
 public record ProfileResponse(
         Long id,

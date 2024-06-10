@@ -1,6 +1,6 @@
 package animores.serverapi.diary.controller;
 
-import animores.serverapi.account.domain.Account;
+import animores.serverapi.account.entity.Account;
 import animores.serverapi.account.service.AccountService;
 import animores.serverapi.common.Response;
 import animores.serverapi.common.aop.UserInfo;

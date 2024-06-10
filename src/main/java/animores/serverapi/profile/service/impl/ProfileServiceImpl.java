@@ -1,10 +1,10 @@
 package animores.serverapi.profile.service.impl;
 
-import animores.serverapi.account.domain.Account;
+import animores.serverapi.account.entity.Account;
 import animores.serverapi.common.exception.CustomException;
 import animores.serverapi.common.exception.ExceptionCode;
 import animores.serverapi.common.service.S3Service;
-import animores.serverapi.profile.domain.Profile;
+import animores.serverapi.profile.entity.Profile;
 import animores.serverapi.profile.dto.request.ProfileCreateRequest;
 import animores.serverapi.profile.dto.request.ProfileUpdateRequest;
 import animores.serverapi.profile.dto.response.ProfileResponse;
