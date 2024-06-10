@@ -1,15 +1,15 @@
 package animores.serverapi.account.service.impl;
 
 
+import animores.serverapi.account.dto.request.EmailQueueBody;
 import animores.serverapi.account.entity.auth_mail.AuthMail;
 import animores.serverapi.account.entity.auth_mail.ValidMail;
-import animores.serverapi.account.dto.request.EmailQueueBody;
 import animores.serverapi.account.repository.auth_mail.AuthMailRepository;
 import animores.serverapi.account.repository.auth_mail.ValidMailRepository;
 import animores.serverapi.account.service.EmailAuthService;
 import animores.serverapi.common.exception.CustomException;
 import animores.serverapi.common.exception.ExceptionCode;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.aws.messaging.core.QueueMessagingTemplate;
 import org.springframework.messaging.MessageHeaders;
@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Service
 public class EmailAuthServiceImpl implements EmailAuthService {
     private final QueueMessagingTemplate sqsTemplate;
