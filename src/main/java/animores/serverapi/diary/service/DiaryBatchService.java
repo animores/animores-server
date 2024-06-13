@@ -6,4 +6,6 @@ public interface DiaryBatchService {
     void insertDiaryCommentBatch(Integer count, Long diaryId);
 
     void insertDiaryLikeBatch(Integer count, Long accountId);
+
+    void insertDiaryMediaBatch(Integer count, Long accountId, Long maxDiaryId);
 }

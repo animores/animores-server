@@ -1,9 +1,7 @@
 package animores.serverapi.diary.service.impl;
 
 import animores.serverapi.account.repository.AccountRepository;
-import animores.serverapi.diary.entity.Diary;
-import animores.serverapi.diary.entity.DiaryComment;
-import animores.serverapi.diary.entity.DiaryLike;
+import animores.serverapi.diary.entity.*;
 import animores.serverapi.diary.repository.DiaryRepository;
 import animores.serverapi.diary.service.DiaryBatchService;
 import animores.serverapi.profile.domain.Profile;
@@ -48,7 +46,7 @@ public class DiaryBatchServiceImpl implements DiaryBatchService {
 
     @Override
     public void insertDiaryBatch(Integer count, Long accountId) {
-        try{
+        try {
             jobLauncher.run(
                     new JobBuilder("diaryBatchInsertJob", jobRepository)
                             .incrementer(new RunIdIncrementer())
@@ -114,7 +112,7 @@ public class DiaryBatchServiceImpl implements DiaryBatchService {
 
     @Override
     public void insertDiaryCommentBatch(Integer count, Long diaryId) {
-        try{
+        try {
             jobLauncher.run(
                     new JobBuilder("diaryCommentBatchInsertJob", jobRepository)
                             .incrementer(new RunIdIncrementer())
@@ -182,6 +180,7 @@ public class DiaryBatchServiceImpl implements DiaryBatchService {
         itemWriter.setEntityManagerFactory(entityManagerFactory);
         return itemWriter;
     }
+
     // TODO: 다이어리 좋아요의 경우 중복 처리를 어떻게 해줄 지에 대한 고민이 필요함
     @Override
     public void insertDiaryLikeBatch(Integer count, Long accountId) {
@@ -228,6 +227,61 @@ public class DiaryBatchServiceImpl implements DiaryBatchService {
 
     private JpaItemWriter<DiaryLike> diaryLikeItemWriter() {
         JpaItemWriter<DiaryLike> itemWriter = new JpaItemWriter<>();
+        itemWriter.setEntityManagerFactory(entityManagerFactory);
+        return itemWriter;
+    }
+
+    @Override
+    public void insertDiaryMediaBatch(Integer count, Long accountId, Long maxDiaryId) {
+        try {
+            jobLauncher.run(
+                    new JobBuilder("diaryMediaBatchInsertJob", jobRepository)
+                            .incrementer(new RunIdIncrementer())
+                            .start(diaryMediaBatchInsertStep(count, accountId, maxDiaryId))
+                            .build()
+                    , new JobParametersBuilder()
+                            .addLong("time", System.currentTimeMillis())
+                            .toJobParameters());
+        } catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException |
+                 JobParametersInvalidException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Step diaryMediaBatchInsertStep(Integer count, Long accountId, Long maxDiaryId) {
+        return new StepBuilder("diaryMediaBatchInsertStep", jobRepository)
+                .<Diary, Diary>chunk(100, transactionManager)
+                .reader(new JpaPagingItemReaderBuilder<Diary>()
+                        .name("diaryMediaBatchInsertReader")
+                        .entityManagerFactory(entityManagerFactory)
+                        .queryString("SELECT d FROM Diary d WHERE d.account.id = :accountId and d.id <= :maxDiaryId order by d.id desc")
+                        .parameterValues(Map.of("accountId", accountId, "maxDiaryId", maxDiaryId))
+                        .pageSize(100)
+                        .maxItemCount(count / 4)
+                        .build())
+                .processor(diaryMediaItemProcessor())
+                .writer(diaryMediaItemWriter())
+                .build();
+    }
+
+    private ItemProcessor<Diary,Diary> diaryMediaItemProcessor() {
+        return item -> {
+            for (int i = 0; i < 4; i++) {
+                item.getMedia().add(
+                        DiaryMedia.create(
+                                item,
+                                UUID.randomUUID().toString(),
+                                i,
+                                DiaryMediaType.values()[random.nextInt(DiaryMediaType.values().length)]
+                        )
+                );
+            }
+            return item;
+        };
+    }
+
+    private JpaItemWriter <Diary> diaryMediaItemWriter() {
+        JpaItemWriter<Diary> itemWriter = new JpaItemWriter<>();
         itemWriter.setEntityManagerFactory(entityManagerFactory);
         return itemWriter;
     }

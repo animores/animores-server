@@ -52,4 +52,23 @@ public class DiaryBatchController {
         diaryBatchService.insertDiaryLikeBatch(count, accountId);
         return Response.success(null);
     }
+
+    @Operation(summary = "일지 미디어 배치 생성", description = """
+            일지 미디어를 배치로 생성합니다. 입력 받은 계정 id 의 diary 들에 더미 미디어를 추가합니다.
+            이 때, 각 diary 에는 4개의 미디어가 추가됩니다.
+            maxDiaryId 부터 그 이하의 id 를 가지고 있는 diary 들에 미디어를 추가합니다.
+            """)
+    @PostMapping("/media")
+    public Response<Void> insertDiaryMediaBatch(@RequestParam
+                                                @Parameter(description = "배치 개수", required = true, example = "100")
+                                                Integer count,
+                                                @RequestParam
+                                                @Parameter(description = "계정 id", required = true, example = "1")
+                                                Long accountId,
+                                                @RequestParam
+                                                @Parameter(description = "일지 id", required = true, example = "1")
+                                                Long maxDiaryId) {
+        diaryBatchService.insertDiaryMediaBatch(count, accountId, maxDiaryId);
+        return Response.success(null);
+    }
 }
