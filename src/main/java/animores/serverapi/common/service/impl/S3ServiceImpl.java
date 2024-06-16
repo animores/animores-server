@@ -8,7 +8,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +21,6 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectsRequest;
 import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 @Service
 @Slf4j
@@ -73,23 +71,20 @@ public class S3ServiceImpl implements S3Service {
     }
 
     @Override
-    public CompletableFuture<Void> uploadFilesToS3_temp(List<MultipartFile> files,
+    public void uploadFilesToS3_temp(List<MultipartFile> files,
         List<String> keys) {
-        List<CompletableFuture<PutObjectResponse>> futures = IntStream.range(0, files.size())
-            .mapToObj(i -> uploadFileToS3_temp(files.get(i), keys.get(i)))
-            .toList();
-
-        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+        IntStream.range(0, files.size())
+            .forEach(i -> uploadFileToS3_temp(files.get(i), keys.get(i)));
     }
 
-    private CompletableFuture<PutObjectResponse> uploadFileToS3_temp(MultipartFile file,
+    private void uploadFileToS3_temp(MultipartFile file,
         String key) {
         try {
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(key)
                 .build();
-            return s3AsyncClient.putObject(putObjectRequest,
+            s3AsyncClient.putObject(putObjectRequest,
                 AsyncRequestBody.fromByteBuffer(ByteBuffer.wrap(file.getBytes())));
         } catch (Exception e) {
             log.error("Failed to upload file to S3: {}", e.getMessage());

@@ -39,7 +39,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
@@ -107,7 +106,7 @@ public class DiaryServiceImpl implements DiaryService {
             List<DiaryMedia> diaryMedias = createDiaryMedias_temp(diary, files);
             List<String> keys = extractUrlsFromDiaryMedias(diaryMedias);
 
-            CompletableFuture<Void> result = s3Service.uploadFilesToS3_temp(files, keys);
+            s3Service.uploadFilesToS3_temp(files, keys);
 
             diaryMediaRepository.saveAll(diaryMedias);
         }
