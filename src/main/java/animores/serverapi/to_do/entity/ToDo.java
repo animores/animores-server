@@ -32,6 +32,8 @@ public class ToDo extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @PrimaryKeyJoinColumn(name = "create_profile_id")
     private Profile createProfile;
+    @OneToMany(mappedBy = "toDo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ToDoInstance> toDoInstances;
     private LocalDate date;
     private LocalTime time;
     private boolean isAllDay;

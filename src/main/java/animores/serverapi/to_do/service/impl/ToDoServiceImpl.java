@@ -8,6 +8,8 @@ import animores.serverapi.pet.repository.PetRepository;
 import animores.serverapi.profile.domain.Profile;
 import animores.serverapi.profile.repository.ProfileRepository;
 import animores.serverapi.to_do.dao.GetToDoPageDao;
+import animores.serverapi.to_do.dao.ToDoDao;
+import animores.serverapi.to_do.dao.ToDoInstanceDao;
 import animores.serverapi.to_do.dto.request.ToDoCreateRequest;
 import animores.serverapi.to_do.dto.request.ToDoPatchRequest;
 import animores.serverapi.to_do.dto.response.PetResponse;
@@ -60,23 +62,16 @@ public class ToDoServiceImpl implements ToDoService {
     @Override
     @Transactional(readOnly = true)
     public ToDoPageResponse getTodayToDo(Boolean done, List<Pet> pets, Integer page, Integer size) {
-        List<Long> petIds = pets.stream().map(Pet::getId).toList();
-        List<PetToDoRelationship> relationships = petToDoRelationshipRepository.findAllByPet_IdIn(petIds);
-        //to do id를 key로 하고, 그 to do 에 해당하는 petResonseList를 value로 하는 map
-        Map<Long, List<PetResponse>> toDoIdPetResponseMap = relationships.stream()
+        GetToDoPageDao pageDao = toDoInstanceRepository.findAllByToDoInstanceTodayAndDoneAndPetListInPets(done,
+                pets.stream().map(Pet::getId).toList(),
+                page,
+                size);
+
+        List<Long> toDoIdList = pageDao.toDoInstanceList().stream().map(ToDoInstanceDao::toDo).map(ToDoDao::id).toList();
+        Map<Long, List<PetResponse>> toDoIdPetResponseMap = petToDoRelationshipRepository.findAllByToDo_IdIn(toDoIdList).stream()
                 .collect(Collectors.groupingBy(petToDoRelationship -> petToDoRelationship.getToDo().getId(),
                         Collectors.mapping(petToDoRelationship -> new PetResponse(petToDoRelationship.getPet().getId(),
                                 petToDoRelationship.getPet().getName()), Collectors.toList())));
-
-        GetToDoPageDao pageDao;
-
-        if (done == null) {
-            pageDao = toDoInstanceRepository.findAllByTodayToDoIdIn(toDoIdPetResponseMap.keySet().stream().toList(), page, size);
-        } else if (done.equals(Boolean.TRUE)) {
-            pageDao = toDoInstanceRepository.findAllByCompleteAndTodayToDoIdIn(toDoIdPetResponseMap.keySet().stream().toList(), page, size);
-        } else {
-            pageDao = toDoInstanceRepository.findAllByCompleteFalseAndTodayToDoIdIn(toDoIdPetResponseMap.keySet().stream().toList(), page, size);
-        }
 
         return ToDoPageResponse.fromGetToDoPageDaoAndToDoPetMap(pageDao, toDoIdPetResponseMap);
     }
@@ -84,22 +79,16 @@ public class ToDoServiceImpl implements ToDoService {
     @Override
     @Transactional(readOnly = true)
     public ToDoPageResponse getAllToDo(Boolean done, List<Pet> pets, Integer page, Integer size) {
-        List<Long> petIds = pets.stream().map(Pet::getId).toList();
-        List<PetToDoRelationship> relationships = petToDoRelationshipRepository.findAllByPet_IdIn(petIds);
-        //to do id를 key로 하고, 그 to do 에 해당하는 petResonseList를 value로 하는 map
-        Map<Long, List<PetResponse>> toDoIdPetResponseMap = relationships.stream()
+        GetToDoPageDao pageDao = toDoInstanceRepository.findAllByToDoInstanceDoneAndPetListInPets(done,
+                pets.stream().map(Pet::getId).toList(),
+                page,
+                size);
+
+        List<Long> toDoIdList = pageDao.toDoInstanceList().stream().map(ToDoInstanceDao::toDo).map(ToDoDao::id).toList();
+        Map<Long, List<PetResponse>> toDoIdPetResponseMap = petToDoRelationshipRepository.findAllByToDo_IdIn(toDoIdList).stream()
                 .collect(Collectors.groupingBy(petToDoRelationship -> petToDoRelationship.getToDo().getId(),
                         Collectors.mapping(petToDoRelationship -> new PetResponse(petToDoRelationship.getPet().getId(),
                                 petToDoRelationship.getPet().getName()), Collectors.toList())));
-
-        GetToDoPageDao pageDao;
-        if (done == null) {
-            pageDao = toDoInstanceRepository.findAllByToDoIdIn(toDoIdPetResponseMap.keySet().stream().toList(), page, size);
-        } else if (done.equals(Boolean.TRUE)) {
-            pageDao = toDoInstanceRepository.findAllByCompleteAndToDoIdIn(toDoIdPetResponseMap.keySet().stream().toList(), page, size);
-        } else {
-            pageDao = toDoInstanceRepository.findAllByCompleteFalseAndToDoIdIn(toDoIdPetResponseMap.keySet().stream().toList(), page, size);
-        }
 
         return ToDoPageResponse.fromGetToDoPageDaoAndToDoPetMap(pageDao, toDoIdPetResponseMap);
 
