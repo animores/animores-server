@@ -77,7 +77,7 @@ public class AccountController {
 
     @GetMapping("/check-nickname/{nickname}")
     @Operation(summary = "닉네임 중복 체크", description = "닉네임 중복을 체크합니다.")
-    public Response<Boolean> isDuplicatedNickname(@PathVariable @Size(min = 2, max = 8) String nickname) {
+    public Response<Boolean> isDuplicatedNickname(@PathVariable @Size(min = 3, max = 20) String nickname) {
         return Response.success(accountService.isDuplicatedNickname(nickname));
     }
 
