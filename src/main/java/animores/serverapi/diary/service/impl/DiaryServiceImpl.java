@@ -38,14 +38,18 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class DiaryServiceImpl implements DiaryService {
 
@@ -88,19 +92,22 @@ public class DiaryServiceImpl implements DiaryService {
 
     @Override
     @Transactional
-    public void addDiary(Account account, AddDiaryRequest request, List<MultipartFile> files)
-        throws IOException {
+    public void addDiary(Account account, AddDiaryRequest request, List<MultipartFile> files) {
         Profile profile = findProfileById(request.profileId());
         authorizationService.validateProfileAccess(account, profile);
 
-        // files에서 "files"만 넘어오고 파일은 안담겨서 넘어왔을 경우 에러 처리 필요
+        if (files == null || files.isEmpty()) {
+            throw new CustomException(ExceptionCode.EMPTY_FILE);
+        }
 
         Diary diary = diaryRepository.save(Diary.create(account, profile, request.content()));
 
         if (files != null) {
-            List<PutObjectRequest> putObjectRequests = s3Service.uploadFilesToS3(files, DIARY_PATH);
+            List<DiaryMedia> diaryMedias = createDiaryMedias_temp(diary, files);
+            List<String> keys = extractUrlsFromDiaryMedias(diaryMedias);
 
-            List<DiaryMedia> diaryMedias = createDiaryMedias(diary, putObjectRequests);
+            s3Service.uploadFilesToS3_temp(files, keys);
+
             diaryMediaRepository.saveAll(diaryMedias);
         }
 
@@ -253,6 +260,19 @@ public class DiaryServiceImpl implements DiaryService {
             .mapToObj(i -> DiaryMedia.create(diary, putObjectRequests.get(i).key(), i,
                 DiaryMediaType.checkType(putObjectRequests.get(i).contentType())))
             .toList();
+    }
+
+    private List<DiaryMedia> createDiaryMedias_temp(Diary diary, List<MultipartFile> files) {
+        return IntStream.range(0, files.size())
+            .mapToObj(i -> DiaryMedia.create(diary, DIARY_PATH + UUID.randomUUID(), i,
+                DiaryMediaType.checkType(files.get(i).getContentType())))
+            .toList();
+    }
+
+    private List<String> extractUrlsFromDiaryMedias(List<DiaryMedia> diaryMedias) {
+        return diaryMedias.stream()
+            .map(DiaryMedia::getUrl)
+            .collect(Collectors.toList());
     }
 
     public void reorderDiaryMedia(Long diaryId, DiaryMediaType type) {
