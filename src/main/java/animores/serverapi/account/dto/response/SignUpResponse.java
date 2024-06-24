@@ -1,6 +1,6 @@
-package animores.serverapi.account.response;
+package animores.serverapi.account.dto.response;
 
-import animores.serverapi.account.domain.Account;
+import animores.serverapi.account.entity.Account;
 
 public record SignUpResponse(
 

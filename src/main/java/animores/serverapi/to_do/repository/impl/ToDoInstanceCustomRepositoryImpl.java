@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 
-import static animores.serverapi.profile.domain.QProfile.profile;
+import static animores.serverapi.profile.entity.QProfile.profile;
 import static animores.serverapi.to_do.entity.QToDo.toDo;
 import static animores.serverapi.to_do.entity.QToDoInstance.toDoInstance;
 

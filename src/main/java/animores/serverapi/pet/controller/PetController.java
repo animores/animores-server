@@ -1,7 +1,7 @@
 package animores.serverapi.pet.controller;
 
 import animores.serverapi.common.aop.UserInfo;
-import animores.serverapi.account.domain.Account;
+import animores.serverapi.account.entity.Account;
 import animores.serverapi.account.service.AccountService;
 import animores.serverapi.common.Response;
 import animores.serverapi.pet.dto.PetDto;
@@ -10,9 +10,7 @@ import animores.serverapi.pet.dto.request.PetUpdateRequest;
 import animores.serverapi.pet.dto.response.*;
 import animores.serverapi.pet.service.PetService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
