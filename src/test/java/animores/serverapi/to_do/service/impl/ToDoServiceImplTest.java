@@ -112,10 +112,13 @@ class ToDoServiceImplTest {
         );
         toDo1.setPetToDoRelationships(relationships);
 
-        given(petToDoRelationshipRepository.findAllByPet_IdIn(List.of(PET_1_ID, PET_2_ID)))
+        given(petToDoRelationshipRepository.findAllByToDo_IdIn(List.of(1L)))
                 .willReturn(relationships);
 
-        given(toDoInstanceRepository.findAllByCompleteAndTodayToDoIdIn(List.of(1L),1,5))
+        given(toDoInstanceRepository.findAllByToDoInstanceTodayAndDoneAndPetListInPets(true,
+                List.of(PET_1_ID, PET_2_ID),
+                1,
+                5))
                 .willReturn(
                     new GetToDoPageDao(
                             1,
@@ -166,10 +169,10 @@ class ToDoServiceImplTest {
         );
         toDo1.setPetToDoRelationships(relationships);
 
-        given(petToDoRelationshipRepository.findAllByPet_IdIn(List.of(PET_1_ID, PET_2_ID)))
+        given(petToDoRelationshipRepository.findAllByToDo_IdIn(List.of(1L)))
                 .willReturn(relationships);
 
-        given(toDoInstanceRepository.findAllByCompleteFalseAndTodayToDoIdIn(List.of(1L),1,5))
+        given(toDoInstanceRepository.findAllByToDoInstanceTodayAndDoneAndPetListInPets(false, List.of(PET_1_ID, PET_2_ID),1,5))
                 .willReturn(
                         new GetToDoPageDao(
                                 1,
@@ -223,10 +226,10 @@ class ToDoServiceImplTest {
         toDo2.setPetToDoRelationships(List.of(relationship2));
         toDo3.setPetToDoRelationships(List.of(relationship3));
 
-        given(petToDoRelationshipRepository.findAllByPet_IdIn(List.of(PET_1_ID, PET_2_ID)))
+        given(petToDoRelationshipRepository.findAllByToDo_IdIn(List.of(1L, 2L, 3L)))
                 .willReturn(List.of(relationship1, relationship2, relationship3));
 
-        given(toDoInstanceRepository.findAllByCompleteFalseAndToDoIdIn(List.of(1L,2L,3L),1,5))
+        given(toDoInstanceRepository.findAllByToDoInstanceDoneAndPetListInPets(false, List.of(PET_1_ID,PET_2_ID),1,5))
                 .willReturn(
                         new GetToDoPageDao(
                                 1,
@@ -423,6 +426,7 @@ class ToDoServiceImplTest {
                     relationships,
                     null,
                     new TestProfile(PROFILE_ID, "아빠 사진1"),
+                    null,
                     date,
                     time,
                     isAllDay,
