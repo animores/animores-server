@@ -1,9 +1,9 @@
 package animores.serverapi.to_do.service.impl;
 
-import animores.serverapi.account.domain.Account;
+import animores.serverapi.account.entity.Account;
 import animores.serverapi.pet.entity.Pet;
 import animores.serverapi.pet.repository.PetRepository;
-import animores.serverapi.profile.domain.Profile;
+import animores.serverapi.profile.entity.Profile;
 import animores.serverapi.profile.dao.ProfileVo;
 import animores.serverapi.profile.repository.ProfileRepository;
 import animores.serverapi.to_do.dao.GetToDoPageDao;

@@ -1,7 +1,7 @@
 package animores.serverapi.to_do.controller;
 
 import animores.serverapi.common.aop.UserInfo;
-import animores.serverapi.account.domain.Account;
+import animores.serverapi.account.entity.Account;
 import animores.serverapi.account.service.AccountService;
 import animores.serverapi.common.Response;
 import animores.serverapi.pet.entity.Pet;
@@ -12,9 +12,7 @@ import animores.serverapi.to_do.dto.response.ToDoDetailResponse;
 import animores.serverapi.to_do.dto.response.ToDoPageResponse;
 import animores.serverapi.to_do.service.ToDoService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

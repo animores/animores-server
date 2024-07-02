@@ -1,6 +1,6 @@
 package animores.serverapi.to_do.service;
 
-import animores.serverapi.account.domain.Account;
+import animores.serverapi.account.entity.Account;
 import animores.serverapi.pet.entity.Pet;
 import animores.serverapi.to_do.dto.request.ToDoCreateRequest;
 import animores.serverapi.to_do.dto.request.ToDoPatchRequest;

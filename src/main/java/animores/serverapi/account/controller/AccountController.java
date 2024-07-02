@@ -1,12 +1,12 @@
 package animores.serverapi.account.controller;
 
 
-import animores.serverapi.account.domain.Account;
-import animores.serverapi.account.request.SignInRequest;
-import animores.serverapi.account.request.SignOutRequest;
-import animores.serverapi.account.request.SignUpRequest;
-import animores.serverapi.account.response.SignInResponse;
-import animores.serverapi.account.response.SignUpResponse;
+import animores.serverapi.account.entity.Account;
+import animores.serverapi.account.dto.request.SignInRequest;
+import animores.serverapi.account.dto.request.SignOutRequest;
+import animores.serverapi.account.dto.request.SignUpRequest;
+import animores.serverapi.account.dto.response.SignInResponse;
+import animores.serverapi.account.dto.response.SignUpResponse;
 import animores.serverapi.account.service.AccountService;
 import animores.serverapi.account.service.EmailAuthService;
 import animores.serverapi.common.Response;
@@ -77,7 +77,7 @@ public class AccountController {
 
     @GetMapping("/check-nickname/{nickname}")
     @Operation(summary = "닉네임 중복 체크", description = "닉네임 중복을 체크합니다.")
-    public Response<Boolean> isDuplicatedNickname(@PathVariable @Size(min = 2, max = 8) String nickname) {
+    public Response<Boolean> isDuplicatedNickname(@PathVariable @Size(min = 3, max = 20) String nickname) {
         return Response.success(accountService.isDuplicatedNickname(nickname));
     }
 

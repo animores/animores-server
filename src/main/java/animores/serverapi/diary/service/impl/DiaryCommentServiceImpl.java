@@ -73,7 +73,8 @@ public class DiaryCommentServiceImpl implements DiaryCommentService {
     }
 
     @Override
-    public GetAllDiaryReplyResponse getAllDiaryReply(Account account, Long commentId, Long profileId, int page,
+    public GetAllDiaryReplyResponse getAllDiaryReply(Account account, Long commentId,
+        Long profileId, int page,
         int size) {
         Profile profile = findProfileById(profileId);
         validateProfileAccess(account, profile);

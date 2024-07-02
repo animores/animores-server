@@ -1,12 +1,10 @@
 package animores.serverapi.common.service.impl;
 
 import animores.serverapi.common.service.S3Service;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -15,6 +13,10 @@ import software.amazon.awssdk.services.s3.model.DeleteObjectsRequest;
 import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+import java.io.IOException;
+import java.util.List;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class S3ServiceImpl implements S3Service {
@@ -24,28 +26,26 @@ public class S3ServiceImpl implements S3Service {
     @Value("${spring.cloud.aws.s3.bucket}")
     private String bucketName;
 
-    public List<PutObjectRequest> uploadFilesToS3(List<MultipartFile> files, String path)
+    @Async
+    public void uploadFilesToS3(List<MultipartFile> files, String path, List<String> fileNames)
         throws IOException {
-        List<PutObjectRequest> putObjectRequests = new ArrayList<>();
 
-        for (MultipartFile file : files) {
-            putObjectRequests.add(uploadFileToS3(file, path));
+        for (int i = 0; i < files.size(); i++) {
+            uploadFileToS3(files.get(i), path, fileNames.get(i));
         }
-
-        return putObjectRequests;
+        log.info("All files uploaded to S3");
     }
 
-    public PutObjectRequest uploadFileToS3(MultipartFile file, String path) throws IOException {
+    public void uploadFileToS3(MultipartFile file, String path, String fileName) throws IOException {
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
             .bucket(bucketName)
             .contentType(file.getContentType())
             .contentLength(file.getSize())
-            .key(path + UUID.randomUUID())
+            .key(path + fileName + resolveExtension(file.getContentType()))
             .build();
         RequestBody requestBody = RequestBody.fromBytes(file.getBytes());
         s3Client.putObject(putObjectRequest, requestBody);
-
-        return putObjectRequest;
+        log.info("File uploaded to S3: {}", putObjectRequest.key());
     }
 
     public void removeFilesFromS3(List<String> urls) {
@@ -61,4 +61,12 @@ public class S3ServiceImpl implements S3Service {
         s3Client.deleteObjects(deleteObjectsRequest);
     }
 
+    private String resolveExtension(String contentType) {
+        return switch (contentType) {
+            case "image/jpeg" -> ".jpg";
+            case "image/png" -> ".png";
+            case "video/mp4" -> ".mp4";
+            default -> throw new IllegalArgumentException("Unsupported file type: " + contentType);
+        };
+    }
 }

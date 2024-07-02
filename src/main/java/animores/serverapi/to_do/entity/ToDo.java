@@ -1,9 +1,9 @@
 package animores.serverapi.to_do.entity;
 
-import animores.serverapi.account.domain.Account;
+import animores.serverapi.account.entity.Account;
 import animores.serverapi.common.BaseEntity;
 import animores.serverapi.pet.type.Tag;
-import animores.serverapi.profile.domain.Profile;
+import animores.serverapi.profile.entity.Profile;
 import animores.serverapi.to_do.dto.RepeatUnit;
 import animores.serverapi.to_do.dto.WeekDay;
 import animores.serverapi.to_do.dto.request.ToDoCreateRequest;

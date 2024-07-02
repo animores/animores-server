@@ -1,6 +1,5 @@
 package animores.serverapi.diary.repository;
 
-import animores.serverapi.account.domain.Account;
 import animores.serverapi.diary.entity.Diary;
 import java.util.List;
 import org.springframework.data.jpa.repository.EntityGraph;

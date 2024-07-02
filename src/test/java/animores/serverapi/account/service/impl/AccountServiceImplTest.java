@@ -1,12 +1,12 @@
 package animores.serverapi.account.service.impl;
 
-import animores.serverapi.account.domain.Account;
+import animores.serverapi.account.entity.Account;
 import animores.serverapi.account.repository.AccountRepository;
-import animores.serverapi.account.request.SignInRequest;
-import animores.serverapi.account.request.SignOutRequest;
-import animores.serverapi.account.request.SignUpRequest;
-import animores.serverapi.account.response.SignInResponse;
-import animores.serverapi.account.response.SignUpResponse;
+import animores.serverapi.account.dto.request.SignInRequest;
+import animores.serverapi.account.dto.request.SignOutRequest;
+import animores.serverapi.account.dto.request.SignUpRequest;
+import animores.serverapi.account.dto.response.SignInResponse;
+import animores.serverapi.account.dto.response.SignUpResponse;
 import animores.serverapi.common.exception.CustomException;
 import animores.serverapi.common.exception.ExceptionCode;
 import animores.serverapi.security.*;

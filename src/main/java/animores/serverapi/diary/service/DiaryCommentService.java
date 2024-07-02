@@ -1,6 +1,6 @@
 package animores.serverapi.diary.service;
 
-import animores.serverapi.account.domain.Account;
+import animores.serverapi.account.entity.Account;
 import animores.serverapi.diary.dto.AddDiaryCommentRequest;
 import animores.serverapi.diary.dto.EditDiaryCommentRequest;
 import animores.serverapi.diary.dto.GetAllDiaryReplyResponse;

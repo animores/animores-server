@@ -2,7 +2,7 @@ package animores.serverapi.diary.service.impl;
 
 import static animores.serverapi.common.S3Path.DIARY_PATH;
 
-import animores.serverapi.account.domain.Account;
+import animores.serverapi.account.entity.Account;
 import animores.serverapi.common.exception.CustomException;
 import animores.serverapi.common.exception.ExceptionCode;
 import animores.serverapi.common.service.AuthorizationService;
@@ -31,19 +31,20 @@ import animores.serverapi.diary.repository.DiaryMediaCustomRepository;
 import animores.serverapi.diary.repository.DiaryMediaRepository;
 import animores.serverapi.diary.repository.DiaryRepository;
 import animores.serverapi.diary.service.DiaryService;
-import animores.serverapi.profile.domain.Profile;
+import animores.serverapi.profile.entity.Profile;
 import animores.serverapi.profile.repository.ProfileRepository;
 import com.querydsl.core.QueryResults;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.UUID;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -98,9 +99,12 @@ public class DiaryServiceImpl implements DiaryService {
         Diary diary = diaryRepository.save(Diary.create(account, profile, request.content()));
 
         if (files != null) {
-            List<PutObjectRequest> putObjectRequests = s3Service.uploadFilesToS3(files, DIARY_PATH);
+            List<String> fileNames = files.stream()
+                .map(file -> UUID.randomUUID().toString())
+                .toList();
 
-            List<DiaryMedia> diaryMedias = createDiaryMedias(diary, putObjectRequests);
+            s3Service.uploadFilesToS3(files, DIARY_PATH, fileNames);
+            List<DiaryMedia> diaryMedias = createDiaryMedias(diary, fileNames, files);
             diaryMediaRepository.saveAll(diaryMedias);
         }
 
@@ -128,10 +132,11 @@ public class DiaryServiceImpl implements DiaryService {
         authorizationService.validateProfileAccess(account, profile);
         authorizationService.validateDiaryAccess(diary, profile);
 
-        List<PutObjectRequest> putObjectRequests = s3Service.uploadFilesToS3(files, DIARY_PATH);
-
-        diaryMediaRepository.saveAll(createDiaryMedias(diary, putObjectRequests));
-
+        List<String> fileNames = files.stream()
+            .map(file -> UUID.randomUUID().toString())
+            .toList();
+        s3Service.uploadFilesToS3(files, DIARY_PATH, fileNames);
+        diaryMediaRepository.saveAll(createDiaryMedias(diary, fileNames, files));
         reorderDiaryMedia(diary.getId(), DiaryMediaType.I);
     }
 
@@ -156,9 +161,12 @@ public class DiaryServiceImpl implements DiaryService {
         );
         diaryMediaRepository.deleteAll(mediaListToDelete);
 
-        List<PutObjectRequest> putObjectRequests = s3Service.uploadFilesToS3(files, DIARY_PATH);
-        diaryMediaRepository.saveAll(createDiaryMedias(diary, putObjectRequests));
+        List<String> fileNames = files.stream()
+            .map(file -> UUID.randomUUID().toString())
+            .toList();
 
+        s3Service.uploadFilesToS3(files, DIARY_PATH, fileNames);
+        diaryMediaRepository.saveAll(createDiaryMedias(diary, fileNames, files));
         reorderDiaryMedia(diary.getId(), DiaryMediaType.I);
     }
 
@@ -248,11 +256,11 @@ public class DiaryServiceImpl implements DiaryService {
     }
 
     private List<DiaryMedia> createDiaryMedias(Diary diary,
-        List<PutObjectRequest> putObjectRequests) {
-        return IntStream.range(0, putObjectRequests.size())
-            .mapToObj(i -> DiaryMedia.create(diary, putObjectRequests.get(i).key(), i,
-                DiaryMediaType.checkType(putObjectRequests.get(i).contentType())))
-            .toList();
+        List<String> fileNames, List<MultipartFile> fileList) {
+        return IntStream.range(0, fileNames.size())
+            .mapToObj(i -> DiaryMedia.create(diary, DIARY_PATH + fileNames.get(i), i,
+                    DiaryMediaType.checkType(fileList.get(i).getContentType()))
+            ).toList();
     }
 
     public void reorderDiaryMedia(Long diaryId, DiaryMediaType type) {
@@ -263,4 +271,5 @@ public class DiaryServiceImpl implements DiaryService {
             mediaList.get(i).updateMediaOrder(i);
         }
     }
+
 }

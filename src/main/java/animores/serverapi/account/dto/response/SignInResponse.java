@@ -1,4 +1,4 @@
-package animores.serverapi.account.response;
+package animores.serverapi.account.dto.response;
 
 import java.time.LocalDateTime;
 

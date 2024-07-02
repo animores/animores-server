@@ -1,4 +1,4 @@
-package animores.serverapi.account.domain.auth_mail;
+package animores.serverapi.account.entity.auth_mail;
 
 import org.springframework.data.annotation.Id;
 import lombok.AllArgsConstructor;
