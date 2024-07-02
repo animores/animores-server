@@ -1,7 +1,7 @@
 package animores.serverapi.profile.service.impl;
 
 import animores.serverapi.account.repository.AccountRepository;
-import animores.serverapi.profile.domain.Profile;
+import animores.serverapi.profile.entity.Profile;
 import animores.serverapi.profile.service.ProfileBatchService;
 import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;

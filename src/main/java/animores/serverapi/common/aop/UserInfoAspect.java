@@ -18,7 +18,7 @@ public class UserInfoAspect {
 
     private final AccountRepository accountRepository;
 
-    private static final Long DEFAULT_ACCOUNT_ID = 13L;
+    private static final Long DEFAULT_ACCOUNT_ID = 1L;
     @Pointcut("@annotation(UserInfo)")
     public void callAt(){
 

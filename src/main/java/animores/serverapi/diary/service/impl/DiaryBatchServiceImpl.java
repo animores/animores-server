@@ -4,7 +4,7 @@ import animores.serverapi.account.repository.AccountRepository;
 import animores.serverapi.diary.entity.*;
 import animores.serverapi.diary.repository.DiaryRepository;
 import animores.serverapi.diary.service.DiaryBatchService;
-import animores.serverapi.profile.domain.Profile;
+import animores.serverapi.profile.entity.Profile;
 import animores.serverapi.profile.repository.ProfileRepository;
 import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;

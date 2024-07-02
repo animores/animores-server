@@ -1,6 +1,6 @@
 package animores.serverapi.diary.service.impl;
 
-import animores.serverapi.account.domain.Account;
+import animores.serverapi.account.entity.Account;
 import animores.serverapi.common.exception.CustomException;
 import animores.serverapi.common.exception.ExceptionCode;
 import animores.serverapi.common.service.AuthorizationService;
@@ -16,7 +16,7 @@ import animores.serverapi.diary.repository.DiaryCommentRepository;
 import animores.serverapi.diary.repository.DiaryReplyRepository;
 import animores.serverapi.diary.repository.DiaryRepository;
 import animores.serverapi.diary.service.DiaryCommentService;
-import animores.serverapi.profile.domain.Profile;
+import animores.serverapi.profile.entity.Profile;
 import animores.serverapi.profile.repository.ProfileRepository;
 import java.util.List;
 import java.util.NoSuchElementException;
