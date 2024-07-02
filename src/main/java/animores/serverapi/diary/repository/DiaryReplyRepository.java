@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 public interface DiaryReplyRepository extends JpaRepository<DiaryReply, Long> {
 
     Optional<DiaryReply> findByIdAndDeletedDtIsNull(Long id);
+
+    Integer countByDiaryCommentIdAndDeletedDtIsNull(Long commentId);
 }

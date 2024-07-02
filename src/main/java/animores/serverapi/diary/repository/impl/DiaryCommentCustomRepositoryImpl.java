@@ -1,9 +1,11 @@
 package animores.serverapi.diary.repository.impl;
 
 import static animores.serverapi.diary.entity.QDiaryComment.diaryComment;
+import static animores.serverapi.diary.entity.QDiaryReply.diaryReply;
 import static animores.serverapi.profile.entity.QProfile.profile;
 
 import animores.serverapi.diary.dao.GetAllDiaryCommentDao;
+import animores.serverapi.diary.dao.GetAllDiaryReplyDao;
 import animores.serverapi.diary.repository.DiaryCommentCustomRepository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -20,6 +22,7 @@ public class DiaryCommentCustomRepositoryImpl implements DiaryCommentCustomRepos
     @Override
     public List<GetAllDiaryCommentDao> getAllDiaryComment(Long diaryId,
         int page, int size) {
+
         return jpaQueryFactory.select(
                 Projections.fields(GetAllDiaryCommentDao.class,
                     diaryComment.id.as("commentId"),
@@ -27,14 +30,40 @@ public class DiaryCommentCustomRepositoryImpl implements DiaryCommentCustomRepos
                     diaryComment.createdAt,
                     profile.id.as("profileId"),
                     profile.name,
-                    profile.imageUrl
+                    profile.imageUrl,
+                    diaryReply.count().as("replyCount")
                 )
             )
             .from(diaryComment)
             .leftJoin(profile)
             .on(profile.id.eq(diaryComment.profile.id))
+            .leftJoin(diaryReply)
+            .on(diaryComment.id.eq(diaryReply.diaryComment.id).and(diaryReply.deletedDt.isNull()))
             .where(diaryComment.diary.id.eq(diaryId))
+            .groupBy(diaryComment.id)
             .orderBy(diaryComment.id.desc())
+            .offset((long) (page - 1) * size)
+            .limit(size)
+            .fetch();
+    }
+
+    @Override
+    public List<GetAllDiaryReplyDao> getAllDiaryReply(Long commentId, int page, int size) {
+        return jpaQueryFactory.select(
+                Projections.fields(GetAllDiaryReplyDao.class,
+                    diaryComment.id.as("replyId"),
+                    diaryComment.content,
+                    diaryComment.createdAt,
+                    profile.id.as("profileId"),
+                    profile.name,
+                    profile.imageUrl
+                )
+            )
+            .from(diaryReply)
+            .leftJoin(profile)
+            .on(profile.id.eq(diaryReply.profile.id))
+            .where(diaryReply.diaryComment.id.eq(commentId))
+            .orderBy(diaryReply.id.desc())
             .offset((long) (page - 1) * size)
             .limit(size)
             .fetch();
