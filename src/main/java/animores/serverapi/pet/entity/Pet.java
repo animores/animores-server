@@ -1,6 +1,6 @@
 package animores.serverapi.pet.entity;
 
-import animores.serverapi.account.domain.Account;
+import animores.serverapi.account.entity.Account;
 import animores.serverapi.common.BaseEntity;
 import animores.serverapi.pet.dto.request.PetCreateRequest;
 import animores.serverapi.pet.dto.request.PetUpdateRequest;
@@ -11,8 +11,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDate;
-
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 
 @Entity
@@ -42,24 +45,33 @@ public class Pet extends BaseEntity {
     private int gender;
     private Float weight;
 
-    public static Pet createFromRequest(Account account, PetCreateRequest request, Breed breed, PetImage image) {
+    public static Pet createFromRequest(Account account, PetCreateRequest request, Breed breed,
+        PetImage image) {
         return Pet.builder()
-                .account(account)
-                .breed(breed)
-                .image(image)
-                .name(request.name())
-                .birthday(request.birthday())
-                .weight(request.weight())
-                .gender(request.gender() == null ? 0 : request.gender())
-                .build();
+            .account(account)
+            .breed(breed)
+            .image(image)
+            .name(request.name())
+            .birthday(request.birthday())
+            .weight(request.weight())
+            .gender(request.gender() == null ? 0 : request.gender())
+            .build();
     }
 
     public void update(PetUpdateRequest request, Breed breed, PetImage image) {
         this.breed = breed;
         this.image = image;
-        if(request.name() != null) { this.name = request.name(); }
-        if(request.birthday() != null) { this.birthday = request.birthday(); }
-        if(request.gender() != null) { this.gender = request.gender(); }
-        if(request.weight() != null) { this.weight = request.weight(); }
+        if (request.name() != null) {
+            this.name = request.name();
+        }
+        if (request.birthday() != null) {
+            this.birthday = request.birthday();
+        }
+        if (request.gender() != null) {
+            this.gender = request.gender();
+        }
+        if (request.weight() != null) {
+            this.weight = request.weight();
+        }
     }
 }

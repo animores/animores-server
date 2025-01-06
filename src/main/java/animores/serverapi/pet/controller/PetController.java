@@ -1,21 +1,30 @@
 package animores.serverapi.pet.controller;
 
-import animores.serverapi.common.aop.UserInfo;
-import animores.serverapi.account.domain.Account;
+import animores.serverapi.account.entity.Account;
 import animores.serverapi.account.service.AccountService;
 import animores.serverapi.common.Response;
+import animores.serverapi.common.aop.UserInfo;
 import animores.serverapi.pet.dto.PetDto;
 import animores.serverapi.pet.dto.request.PetCreateRequest;
 import animores.serverapi.pet.dto.request.PetUpdateRequest;
-import animores.serverapi.pet.dto.response.*;
+import animores.serverapi.pet.dto.response.BreedResponse;
+import animores.serverapi.pet.dto.response.GetPetDetailResponse;
+import animores.serverapi.pet.dto.response.PetCreateResponse;
+import animores.serverapi.pet.dto.response.PetImageResponse;
+import animores.serverapi.pet.dto.response.SpeciesResponse;
 import animores.serverapi.pet.service.PetService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
@@ -43,8 +52,6 @@ public class PetController {
         return Response.success(petService.getPetImages(speciesId));
     }
 
-//    @PreAuthorize("hasAuthority('USER')")
-//    @SecurityRequirement(name = "Authorization")
     @UserInfo
     @PostMapping("")
     @Operation(summary = "펫 생성", description = "펫을 생성합니다.")
@@ -53,8 +60,6 @@ public class PetController {
         return Response.success(petService.createPet(account, request));
     }
 
-//    @PreAuthorize("hasAuthority('USER')")
-//    @SecurityRequirement(name = "Authorization")
     @UserInfo
     @GetMapping("")
     @Operation(summary = "펫 List", description = "해당 계정의 펫을 가져옵니다.")
@@ -63,8 +68,6 @@ public class PetController {
         return Response.success(petService.getPets(account));
     }
 
-//    @PreAuthorize("hasAuthority('USER')")
-//    @SecurityRequirement(name = "Authorization")
     @UserInfo
     @GetMapping("/{petId}")
     @Operation(summary = "펫 조회", description = "id 로 해당 펫을 조회합니다.")
@@ -74,19 +77,16 @@ public class PetController {
         return Response.success(petService.getPet(petId));
     }
 
-//    @PreAuthorize("hasAuthority('USER')")
-//    @SecurityRequirement(name = "Authorization")
     @UserInfo
     @PutMapping("/{petId}")
     @Operation(summary = "펫 수정", description = "id 로 해당 펫을 수정합니다.")
-    public Response<PetCreateResponse> updatePet(@PathVariable Long petId, @RequestBody PetUpdateRequest request) {
+    public Response<PetCreateResponse> updatePet(@PathVariable Long petId,
+        @RequestBody PetUpdateRequest request) {
         Account account = accountService.getAccountFromContext();
         petService.checkAccountPets(account.getId(), List.of(petId));
         return Response.success(petService.updatePet(petId, request));
     }
 
-//    @PreAuthorize("hasAuthority('USER')")
-//    @SecurityRequirement(name = "Authorization")
     @UserInfo
     @DeleteMapping("/{petId}")
     @Operation(summary = "펫 삭제", description = "id 로 해당 펫을 삭제합니다.")

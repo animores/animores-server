@@ -1,6 +1,6 @@
 package animores.serverapi.diary.controller;
 
-import animores.serverapi.account.domain.Account;
+import animores.serverapi.account.entity.Account;
 import animores.serverapi.account.service.AccountService;
 import animores.serverapi.common.Response;
 import animores.serverapi.common.aop.UserInfo;
@@ -17,13 +17,11 @@ import animores.serverapi.diary.dto.RemoveDiaryRequest;
 import animores.serverapi.diary.service.DiaryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -160,8 +158,6 @@ public class DiaryController {
         return Response.success(null);
     }
 
-    @PreAuthorize("hasAuthority('USER')")
-    @SecurityRequirement(name = "Authorization")
     @UserInfo
     @GetMapping("{diaryId}/comments")
     @Operation(summary = "댓글 목록 조회", description = "일지에 대한 댓글 목록을 조회합니다.")

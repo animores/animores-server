@@ -25,7 +25,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class DiaryReplyServiceImplTest {
+class DiaryReplyServiceImplTest {
 
     private static final Long PROFILE_ID_1 = 1L;
     private static final Long PROFILE_ID_2 = 2L;

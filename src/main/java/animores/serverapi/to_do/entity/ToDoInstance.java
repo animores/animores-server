@@ -2,12 +2,22 @@ package animores.serverapi.to_do.entity;
 
 import animores.serverapi.common.BaseEntity;
 import animores.serverapi.profile.domain.Profile;
-import jakarta.persistence.*;
-import lombok.*;
-
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Builder
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
@@ -31,10 +41,10 @@ public class ToDoInstance extends BaseEntity {
 
     public static ToDoInstance fromToDo(ToDo toDo) {
         return ToDoInstance.builder()
-                .toDo(toDo)
-                .date(toDo.getDate())
-                .time(toDo.getTime())
-                .build();
+            .toDo(toDo)
+            .date(toDo.getDate())
+            .time(toDo.getTime())
+            .build();
     }
 
     public void setComplete(Profile profile) {

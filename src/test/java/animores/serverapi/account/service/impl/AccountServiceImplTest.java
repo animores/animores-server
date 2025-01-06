@@ -1,16 +1,38 @@
 package animores.serverapi.account.service.impl;
 
-import animores.serverapi.account.domain.Account;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import animores.serverapi.account.dto.request.SignInRequest;
+import animores.serverapi.account.dto.request.SignOutRequest;
+import animores.serverapi.account.dto.request.SignUpRequest;
+import animores.serverapi.account.dto.response.SignInResponse;
+import animores.serverapi.account.dto.response.SignUpResponse;
+import animores.serverapi.account.entity.Account;
 import animores.serverapi.account.repository.AccountRepository;
-import animores.serverapi.account.request.SignInRequest;
-import animores.serverapi.account.request.SignOutRequest;
-import animores.serverapi.account.request.SignUpRequest;
-import animores.serverapi.account.response.SignInResponse;
-import animores.serverapi.account.response.SignUpResponse;
 import animores.serverapi.common.exception.CustomException;
 import animores.serverapi.common.exception.ExceptionCode;
-import animores.serverapi.security.*;
+import animores.serverapi.security.BlackListToken;
+import animores.serverapi.security.BlacklistTokenRepository;
+import animores.serverapi.security.RefreshRequest;
+import animores.serverapi.security.RefreshToken;
+import animores.serverapi.security.RefreshTokenRepository;
+import animores.serverapi.security.TokenProvider;
 import animores.serverapi.util.RequestConstants;
+import java.util.ArrayList;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,16 +44,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
-import java.util.ArrayList;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 class AccountServiceImplTest {
+
     @Mock
     private AccountRepository accountRepository;
     @Mock
@@ -52,7 +67,7 @@ class AccountServiceImplTest {
 
     @Test
     void signUpSuccessfully() {
-        SignUpRequest request = new SignUpRequest(EMAIL, PASSWORD, "nickname",false);
+        SignUpRequest request = new SignUpRequest(EMAIL, PASSWORD, "nickname", false);
         when(accountRepository.save(any(Account.class))).thenReturn(new Account());
         SignUpResponse response = accountService.signUp(request);
 
@@ -91,7 +106,8 @@ class AccountServiceImplTest {
             throw new AssertionError("테스트 실패");
         } catch (Exception e) {
             assertTrue(e instanceof CustomException);
-            assertEquals(ExceptionCode.PASSWORD_MISMATCH.name(), ((CustomException) e).getCode().name());
+            assertEquals(ExceptionCode.PASSWORD_MISMATCH.name(),
+                ((CustomException) e).getCode().name());
         }
     }
 
@@ -116,7 +132,7 @@ class AccountServiceImplTest {
         User user = new User("1", "password", new ArrayList<>());
 
         given(blacklistTokenRepository.save(any(BlackListToken.class)))
-                .willReturn(new BlackListToken("accessToken", 1L));
+            .willReturn(new BlackListToken("accessToken", 1L));
         doNothing().when(refreshTokenRepository).deleteById(anyString());
 
         assertDoesNotThrow(() -> accountService.signOut(request, "accessToken", user));
@@ -126,12 +142,13 @@ class AccountServiceImplTest {
     void refreshSuccessfully() {
         RefreshRequest request = new RefreshRequest(REFRESH_TOKEN);
 
-        when(refreshTokenRepository.findById(anyString())).thenReturn(Optional.of(new RefreshToken(REFRESH_TOKEN, ACCOUNT_ID)));
+        when(refreshTokenRepository.findById(anyString())).thenReturn(
+            Optional.of(new RefreshToken(REFRESH_TOKEN, ACCOUNT_ID)));
         when(accountRepository.findById(anyLong())).thenReturn(Optional.of(new Account()));
         when(tokenProvider.createToken(any(), any())).thenReturn("token");
         when(tokenProvider.getExpirationHours()).thenReturn(1);
 
-        SignInResponse response = accountService.refresh(request, 1L);
+        SignInResponse response = accountService.refresh(request);
 
         assertNotNull(response);
         verify(refreshTokenRepository, times(1)).findById(anyString());
@@ -143,11 +160,12 @@ class AccountServiceImplTest {
         RefreshRequest request = new RefreshRequest(REFRESH_TOKEN);
         when(refreshTokenRepository.findById(anyString())).thenReturn(Optional.empty());
         try {
-            accountService.refresh(request, 1L);
+            accountService.refresh(request);
             throw new AssertionError("테스트 실패");
         } catch (Exception e) {
             assertTrue(e instanceof CustomException);
-            assertEquals(ExceptionCode.INVALID_REFRESH_TOKEN.name(), ((CustomException) e).getCode().name());
+            assertEquals(ExceptionCode.INVALID_REFRESH_TOKEN.name(),
+                ((CustomException) e).getCode().name());
         }
     }
 
@@ -174,15 +192,17 @@ class AccountServiceImplTest {
 
     @Test
     void getAccountFromContext() {
-        try (MockedStatic<RequestContextHolder> requestContextHolder = mockStatic(RequestContextHolder.class)) {
+        try (MockedStatic<RequestContextHolder> requestContextHolder = mockStatic(
+            RequestContextHolder.class)) {
             // given
             RequestAttributes requestAttributes = mock(RequestAttributes.class);
             requestContextHolder.when(RequestContextHolder::getRequestAttributes)
-                    .thenReturn(requestAttributes);
+                .thenReturn(requestAttributes);
 
             Account account = new TestAccount(1L);
-            given(requestAttributes.getAttribute(RequestConstants.ACCOUNT_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST))
-                    .willReturn(account);
+            given(requestAttributes.getAttribute(RequestConstants.ACCOUNT_ATTRIBUTE,
+                RequestAttributes.SCOPE_REQUEST))
+                .willReturn(account);
             // when
             Account result = accountService.getAccountFromContext();
             // then
@@ -190,13 +210,14 @@ class AccountServiceImplTest {
         }
     }
 
-        class TestAccount extends Account {
-            public TestAccount(Long id) {
-                super(id, null, null, null, null, false);
-            }
+    class TestAccount extends Account {
 
-            public TestAccount(Long id, String password) {
-                super(id, null, null, password, null, false);
-            }
+        public TestAccount(Long id) {
+            super(id, null, null, null, null, false);
+        }
+
+        public TestAccount(Long id, String password) {
+            super(id, null, null, password, null, false);
         }
     }
+}

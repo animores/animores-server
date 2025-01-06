@@ -5,5 +5,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BlacklistTokenRepository extends CrudRepository<BlackListToken, String> {
+
 }
 

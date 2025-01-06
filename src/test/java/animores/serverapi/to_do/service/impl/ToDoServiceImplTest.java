@@ -1,10 +1,20 @@
 package animores.serverapi.to_do.service.impl;
 
-import animores.serverapi.account.domain.Account;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import animores.serverapi.account.entity.Account;
 import animores.serverapi.pet.entity.Pet;
 import animores.serverapi.pet.repository.PetRepository;
-import animores.serverapi.profile.domain.Profile;
 import animores.serverapi.profile.dao.ProfileVo;
+import animores.serverapi.profile.domain.Profile;
 import animores.serverapi.profile.repository.ProfileRepository;
 import animores.serverapi.to_do.dao.GetToDoPageDao;
 import animores.serverapi.to_do.dao.ToDoDao;
@@ -18,6 +28,11 @@ import animores.serverapi.to_do.entity.ToDo;
 import animores.serverapi.to_do.repository.PetToDoRelationshipRepository;
 import animores.serverapi.to_do.repository.ToDoInstanceRepository;
 import animores.serverapi.to_do.repository.ToDoRepository;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -25,18 +40,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 class ToDoServiceImplTest {
+
     @Mock
     private ProfileRepository profileRepository;
     @Mock
@@ -71,19 +77,20 @@ class ToDoServiceImplTest {
         when(toDoRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
         ToDoCreateRequest request = new ToDoCreateRequest(
-                PROFILE_ID,
-                List.of(PET_1_ID, PET_2_ID),
-                "test",
-                null,
-                null,
-                null,
-                true,
-                null,
-                false,
-                null
+            PROFILE_ID,
+            List.of(PET_1_ID, PET_2_ID),
+            "test",
+            null,
+            null,
+            null,
+            true,
+            null,
+            false,
+            null
         );
         ArgumentCaptor<ToDo> toDoArgumentCaptor = ArgumentCaptor.forClass(ToDo.class);
-        ArgumentCaptor<List<PetToDoRelationship>> petToDoRelationshipArgumentCaptor = ArgumentCaptor.forClass(List.class);
+        ArgumentCaptor<List<PetToDoRelationship>> petToDoRelationshipArgumentCaptor = ArgumentCaptor.forClass(
+            List.class);
 
         //when
         serviceUnderTest.createToDo(account, request);
@@ -93,7 +100,8 @@ class ToDoServiceImplTest {
         ToDo toDo = toDoArgumentCaptor.getValue();
         assertEquals("test", toDo.getContent());
 
-        verify(petToDoRelationshipRepository, times(1)).saveAll(petToDoRelationshipArgumentCaptor.capture());
+        verify(petToDoRelationshipRepository, times(1)).saveAll(
+            petToDoRelationshipArgumentCaptor.capture());
         List<PetToDoRelationship> petToDoRelationships = petToDoRelationshipArgumentCaptor.getValue();
         assertEquals(2, petToDoRelationships.size());
 
@@ -105,35 +113,35 @@ class ToDoServiceImplTest {
         Pet pet1 = new TestPet(PET_1_ID, "두부");
         Pet pet2 = new TestPet(PET_2_ID, "호동이");
 
-        TestToDo toDo1 = new TestToDo(1L, null,"산책", LocalDate.now(), LocalTime.of(11, 0), false, "red", true, null);
+        TestToDo toDo1 = new TestToDo(1L, null, "산책", LocalDate.now(), LocalTime.of(11, 0), false,
+            "red", true, null);
         var relationships = List.of(
-                new PetToDoRelationship(pet1, toDo1),
-                new PetToDoRelationship(pet2, toDo1)
+            new PetToDoRelationship(pet1, toDo1),
+            new PetToDoRelationship(pet2, toDo1)
         );
         toDo1.setPetToDoRelationships(relationships);
 
         given(petToDoRelationshipRepository.findAllByPet_IdIn(List.of(PET_1_ID, PET_2_ID)))
-                .willReturn(relationships);
+            .willReturn(relationships);
 
-        given(toDoInstanceRepository.findAllByCompleteAndTodayToDoIdIn(List.of(1L),1,5))
-                .willReturn(
-                    new GetToDoPageDao(
-                            1,
-                            5,
-                            1,
-                            1,
-                            List.of(
-                                    new ToDoInstanceDao(
-                                            1L,
-                                            ToDoDao.fromToDo(toDo1),
-                                            LocalDate.now(),
-                                            LocalTime.of(11, 0),
-                                            ProfileVo.fromProfile(new TestProfile("아빠 사진1")),
-                                            LocalDateTime.of(LocalDate.now(), LocalTime.of(11, 1, 1))
-                                    ))
-                    )
-                        );
-
+        given(toDoInstanceRepository.findAllByCompleteAndTodayToDoIdIn(List.of(1L), 1, 5))
+            .willReturn(
+                new GetToDoPageDao(
+                    1,
+                    5,
+                    1,
+                    1,
+                    List.of(
+                        new ToDoInstanceDao(
+                            1L,
+                            ToDoDao.fromToDo(toDo1),
+                            LocalDate.now(),
+                            LocalTime.of(11, 0),
+                            ProfileVo.fromProfile(new TestProfile("아빠 사진1")),
+                            LocalDateTime.of(LocalDate.now(), LocalTime.of(11, 1, 1))
+                        ))
+                )
+            );
 
         // when
         var result = serviceUnderTest.getTodayToDo(true, List.of(pet1, pet2), 1, 5);
@@ -150,7 +158,8 @@ class ToDoServiceImplTest {
         assertTrue(result.toDoList().get(0).isUsingAlarm());
         assertEquals("red", result.toDoList().get(0).color());
         assertEquals("아빠 사진1", result.toDoList().get(0).completeProfileImage());
-        assertEquals(LocalDateTime.of(LocalDate.now(), LocalTime.of(11,1,1)), result.toDoList().get(0).completeDateTime());
+        assertEquals(LocalDateTime.of(LocalDate.now(), LocalTime.of(11, 1, 1)),
+            result.toDoList().get(0).completeDateTime());
     }
 
     @Test
@@ -159,35 +168,35 @@ class ToDoServiceImplTest {
         Pet pet1 = new TestPet(PET_1_ID, "두부");
         Pet pet2 = new TestPet(PET_2_ID, "호동이");
 
-        TestToDo toDo1 = new TestToDo(1L, null,"산책", LocalDate.now(), LocalTime.of(11, 0), false, "red", true, null);
+        TestToDo toDo1 = new TestToDo(1L, null, "산책", LocalDate.now(), LocalTime.of(11, 0), false,
+            "red", true, null);
         var relationships = List.of(
-                new PetToDoRelationship(pet1, toDo1),
-                new PetToDoRelationship(pet2, toDo1)
+            new PetToDoRelationship(pet1, toDo1),
+            new PetToDoRelationship(pet2, toDo1)
         );
         toDo1.setPetToDoRelationships(relationships);
 
         given(petToDoRelationshipRepository.findAllByPet_IdIn(List.of(PET_1_ID, PET_2_ID)))
-                .willReturn(relationships);
+            .willReturn(relationships);
 
-        given(toDoInstanceRepository.findAllByCompleteFalseAndTodayToDoIdIn(List.of(1L),1,5))
-                .willReturn(
-                        new GetToDoPageDao(
-                                1,
-                                5,
-                                1,
-                                1,
-                                List.of(
-                                        new ToDoInstanceDao(
-                                                1L,
-                                                ToDoDao.fromToDo(toDo1),
-                                                LocalDate.now(),
-                                                LocalTime.of(11, 0),
-                                                null,
-                                                null
-                                        ))
-                        )
-                );
-
+        given(toDoInstanceRepository.findAllByCompleteFalseAndTodayToDoIdIn(List.of(1L), 1, 5))
+            .willReturn(
+                new GetToDoPageDao(
+                    1,
+                    5,
+                    1,
+                    1,
+                    List.of(
+                        new ToDoInstanceDao(
+                            1L,
+                            ToDoDao.fromToDo(toDo1),
+                            LocalDate.now(),
+                            LocalTime.of(11, 0),
+                            null,
+                            null
+                        ))
+                )
+            );
 
         // when
         ToDoPageResponse result = serviceUnderTest.getTodayToDo(false, List.of(pet1, pet2), 1, 5);
@@ -211,11 +220,14 @@ class ToDoServiceImplTest {
         Pet pet1 = new TestPet(PET_1_ID, "두부");
         Pet pet2 = new TestPet(PET_2_ID, "호동이");
 
-        TestToDo toDo1 = new TestToDo(1L, null,"산책", LocalDate.now(), LocalTime.of(11, 0), false, "red", true, null);
-        TestToDo toDo2 = new TestToDo(2L, null,"약", LocalDate.now(), LocalTime.of(13, 0), false, "yellow", true, null);
-        TestToDo toDo3 = new TestToDo(3L, null,"유치원 가는 날", LocalDate.now(), null, true, "blue", false, null);
+        TestToDo toDo1 = new TestToDo(1L, null, "산책", LocalDate.now(), LocalTime.of(11, 0), false,
+            "red", true, null);
+        TestToDo toDo2 = new TestToDo(2L, null, "약", LocalDate.now(), LocalTime.of(13, 0), false,
+            "yellow", true, null);
+        TestToDo toDo3 = new TestToDo(3L, null, "유치원 가는 날", LocalDate.now(), null, true, "blue",
+            false, null);
 
-        var relationship1 =new PetToDoRelationship(pet1, toDo1);
+        var relationship1 = new PetToDoRelationship(pet1, toDo1);
         var relationship2 = new PetToDoRelationship(pet2, toDo2);
         var relationship3 = new PetToDoRelationship(pet2, toDo3);
 
@@ -224,44 +236,44 @@ class ToDoServiceImplTest {
         toDo3.setPetToDoRelationships(List.of(relationship3));
 
         given(petToDoRelationshipRepository.findAllByPet_IdIn(List.of(PET_1_ID, PET_2_ID)))
-                .willReturn(List.of(relationship1, relationship2, relationship3));
+            .willReturn(List.of(relationship1, relationship2, relationship3));
 
-        given(toDoInstanceRepository.findAllByCompleteFalseAndToDoIdIn(List.of(1L,2L,3L),1,5))
-                .willReturn(
-                        new GetToDoPageDao(
-                                1,
-                                5,
-                                3,
-                                1,
-                                List.of(
-                                new ToDoInstanceDao(
-                                        1L,
-                                        ToDoDao.fromToDo(toDo1),
-                                        LocalDate.now(),
-                                        LocalTime.of(11, 0),
-                                        null,
-                                        null
-                                ),
-                                new ToDoInstanceDao(
-                                        2L,
-                                        ToDoDao.fromToDo(toDo2),
-                                        LocalDate.now(),
-                                        LocalTime.of(13, 0),
-                                        null,
-                                        null
-                                ),
-                                new ToDoInstanceDao(
-                                        3L,
-                                        ToDoDao.fromToDo(toDo3),
-                                        LocalDate.now(),
-                                        null,
-                                        null,
-                                        null
-                                )
-                        )));
+        given(toDoInstanceRepository.findAllByCompleteFalseAndToDoIdIn(List.of(1L, 2L, 3L), 1, 5))
+            .willReturn(
+                new GetToDoPageDao(
+                    1,
+                    5,
+                    3,
+                    1,
+                    List.of(
+                        new ToDoInstanceDao(
+                            1L,
+                            ToDoDao.fromToDo(toDo1),
+                            LocalDate.now(),
+                            LocalTime.of(11, 0),
+                            null,
+                            null
+                        ),
+                        new ToDoInstanceDao(
+                            2L,
+                            ToDoDao.fromToDo(toDo2),
+                            LocalDate.now(),
+                            LocalTime.of(13, 0),
+                            null,
+                            null
+                        ),
+                        new ToDoInstanceDao(
+                            3L,
+                            ToDoDao.fromToDo(toDo3),
+                            LocalDate.now(),
+                            null,
+                            null,
+                            null
+                        )
+                    )));
 
         // when
-        ToDoPageResponse result = serviceUnderTest.getAllToDo(false, List.of(pet1,pet2), 1, 5);
+        ToDoPageResponse result = serviceUnderTest.getAllToDo(false, List.of(pet1, pet2), 1, 5);
 
         // then
         assertEquals(3, result.toDoList().size());
@@ -301,17 +313,16 @@ class ToDoServiceImplTest {
     void getToDoById() {
         // given
 
-        given(toDoRepository.findByIdAndAccount_Id(1L,ACCOUNT_ID))
-                .willReturn(Optional.of(new TestToDo(1L,
-                        List.of(new PetToDoRelationship(new TestPet(PET_1_ID, "두부"), null)),
-                        "산책",
-                        LocalDate.now(),
-                        LocalTime.of(11, 0),
-                        false,
-                        "red",
-                        true,
-                        null)));
-
+        given(toDoRepository.findByIdAndAccount_Id(1L, ACCOUNT_ID))
+            .willReturn(Optional.of(new TestToDo(1L,
+                List.of(new PetToDoRelationship(new TestPet(PET_1_ID, "두부"), null)),
+                "산책",
+                LocalDate.now(),
+                LocalTime.of(11, 0),
+                false,
+                "red",
+                true,
+                null)));
 
         // when
         var result = serviceUnderTest.getToDoById(1L, 1L);
@@ -330,28 +341,28 @@ class ToDoServiceImplTest {
     @Test
     void updateToDoById() {
         // given
-        given(toDoRepository.findByIdAndAccount_Id(1L,ACCOUNT_ID))
-                .willReturn(java.util.Optional.of(
-                        new TestToDo(1L,
-                                    List.of(new PetToDoRelationship(new TestPet(PET_1_ID, "두부"), null)),
-                                    "산책",
-                                    LocalDate.now(),
-                                    LocalTime.of(11, 0),
-                                    false,
-                                    "red",
-                                    true,
-                                    null)));
+        given(toDoRepository.findByIdAndAccount_Id(1L, ACCOUNT_ID))
+            .willReturn(Optional.of(
+                new TestToDo(1L,
+                    List.of(new PetToDoRelationship(new TestPet(PET_1_ID, "두부"), null)),
+                    "산책",
+                    LocalDate.now(),
+                    LocalTime.of(11, 0),
+                    false,
+                    "red",
+                    true,
+                    null)));
 
         ToDoPatchRequest request = new ToDoPatchRequest(
-                PROFILE_ID,
-                List.of(PET_1_ID),
-                null,
-                "산책가즈아",
-                null,
-                null,
-                false,
-                null,
-                false);
+            PROFILE_ID,
+            List.of(PET_1_ID),
+            null,
+            "산책가즈아",
+            null,
+            null,
+            false,
+            null,
+            false);
         // when
         var result = serviceUnderTest.updateToDoById(1L, request, ACCOUNT_ID);
 
@@ -370,15 +381,15 @@ class ToDoServiceImplTest {
     void deleteToDoById() {
         // given
         given(toDoRepository.findById(1L))
-                .willReturn(Optional.of(new TestToDo(1L,
-                        List.of(new PetToDoRelationship(new TestPet(PET_1_ID, "두부"), null)),
-                        "산책",
-                        LocalDate.now(),
-                        LocalTime.of(11, 0),
-                        false,
-                        "red",
-                        true,
-                        null)));
+            .willReturn(Optional.of(new TestToDo(1L,
+                List.of(new PetToDoRelationship(new TestPet(PET_1_ID, "두부"), null)),
+                "산책",
+                LocalDate.now(),
+                LocalTime.of(11, 0),
+                false,
+                "red",
+                true,
+                null)));
         // when
         serviceUnderTest.deleteToDoById(1L, PROFILE_ID);
 
@@ -387,52 +398,56 @@ class ToDoServiceImplTest {
     }
 
     static class TestAccount extends Account {
+
         public TestAccount(Long id) {
             super(id, null, null, null, null, false);
         }
     }
 
     static class TestProfile extends Profile {
+
         public TestProfile(String imageUrl) {
-            super(null, null, null, imageUrl,null, null);
+            super(null, null, null, imageUrl, null, null);
         }
 
         public TestProfile(Long id, String imageUrl) {
-            super(id, null, null,  imageUrl,null, null);
+            super(id, null, null, imageUrl, null, null);
         }
     }
 
     static class TestPet extends Pet {
+
         public TestPet(Long id, String name) {
             super(id, null, null, null, name, null, 0, null);
         }
     }
 
     static class TestToDo extends ToDo {
+
         public TestToDo(Long id,
-                        List<PetToDoRelationship> relationships,
-                        String content,
-                        LocalDate date,
-                        LocalTime time,
-                        boolean isAllDay,
-                        String color,
-                        boolean isUsingAlarm,
-                        Repeat repeat) {
+            List<PetToDoRelationship> relationships,
+            String content,
+            LocalDate date,
+            LocalTime time,
+            boolean isAllDay,
+            String color,
+            boolean isUsingAlarm,
+            Repeat repeat) {
 
             super(id,
-                    relationships,
-                    null,
-                    new TestProfile(PROFILE_ID, "아빠 사진1"),
-                    date,
-                    time,
-                    isAllDay,
-                    content,
-                    null,
-                    color,
-                    isUsingAlarm,
-                    repeat == null ? null : repeat.unit(),
-                    repeat == null ? null : repeat.interval(),
-                    repeat == null ? null : repeat.weekDays());
+                relationships,
+                null,
+                new TestProfile(PROFILE_ID, "아빠 사진1"),
+                date,
+                time,
+                isAllDay,
+                content,
+                null,
+                color,
+                isUsingAlarm,
+                repeat == null ? null : repeat.unit(),
+                repeat == null ? null : repeat.interval(),
+                repeat == null ? null : repeat.weekDays());
         }
 
         public void setPetToDoRelationships(List<PetToDoRelationship> petToDoRelationships) {

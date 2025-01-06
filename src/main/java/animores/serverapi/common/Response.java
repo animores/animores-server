@@ -14,11 +14,23 @@ public class Response<T> {
     @JsonInclude(Include.NON_NULL)
     private final ErrorResponse error;
 
+    private Response(boolean success, T data, ErrorResponse error) {
+        this.success = success;
+        this.data = data;
+        this.error = error;
+    }
+
+    private Response() {
+        this.success = false;
+        this.data = null;
+        this.error = null;
+    }
+
     private Response(boolean success, T data, ExceptionCode exceptionCode) {
         this.success = success;
         this.data = data;
         this.error = exceptionCode == null ?
-                null : new ErrorResponse(exceptionCode.name(), exceptionCode.getMessage());
+            null : new ErrorResponse(exceptionCode.name(), exceptionCode.getMessage());
     }
 
     private Response(boolean success, String message) {
@@ -28,7 +40,7 @@ public class Response<T> {
     }
 
     public static <T> Response<T> success(T data) {
-        return new Response<>(true, data, null);
+        return new Response<>(true, data, (ExceptionCode) null);
     }
 
     public static Response<Void> error(ExceptionCode exceptionCode) {
@@ -40,5 +52,6 @@ public class Response<T> {
     }
 
     private record ErrorResponse(@JsonInclude(Include.NON_NULL) String code, String message) {
+
     }
 }

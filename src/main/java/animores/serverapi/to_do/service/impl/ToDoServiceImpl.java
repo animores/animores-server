@@ -1,6 +1,6 @@
 package animores.serverapi.to_do.service.impl;
 
-import animores.serverapi.account.domain.Account;
+import animores.serverapi.account.entity.Account;
 import animores.serverapi.common.exception.CustomException;
 import animores.serverapi.common.exception.ExceptionCode;
 import animores.serverapi.pet.entity.Pet;
@@ -20,20 +20,20 @@ import animores.serverapi.to_do.repository.PetToDoRelationshipRepository;
 import animores.serverapi.to_do.repository.ToDoInstanceRepository;
 import animores.serverapi.to_do.repository.ToDoRepository;
 import animores.serverapi.to_do.service.ToDoService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @RequiredArgsConstructor
 @Service
 public class ToDoServiceImpl implements ToDoService {
+
     private final ProfileRepository profileRepository;
     private final ToDoRepository toDoRepository;
     private final PetRepository petRepository;
@@ -43,6 +43,7 @@ public class ToDoServiceImpl implements ToDoService {
     @Override
     @Transactional
     public void createToDo(Account account, ToDoCreateRequest request) {
+        request.validate();
         Profile createProfile = profileRepository.getReferenceById(request.profileId());
         ToDo toDo = ToDo.fromRequest(request, account, createProfile);
         toDo = toDoRepository.save(toDo);
@@ -61,21 +62,27 @@ public class ToDoServiceImpl implements ToDoService {
     @Transactional(readOnly = true)
     public ToDoPageResponse getTodayToDo(Boolean done, List<Pet> pets, Integer page, Integer size) {
         List<Long> petIds = pets.stream().map(Pet::getId).toList();
-        List<PetToDoRelationship> relationships = petToDoRelationshipRepository.findAllByPet_IdIn(petIds);
+        List<PetToDoRelationship> relationships = petToDoRelationshipRepository.findAllByPet_IdIn(
+            petIds);
         //to do id를 key로 하고, 그 to do 에 해당하는 petResonseList를 value로 하는 map
         Map<Long, List<PetResponse>> toDoIdPetResponseMap = relationships.stream()
-                .collect(Collectors.groupingBy(petToDoRelationship -> petToDoRelationship.getToDo().getId(),
-                        Collectors.mapping(petToDoRelationship -> new PetResponse(petToDoRelationship.getPet().getId(),
-                                petToDoRelationship.getPet().getName()), Collectors.toList())));
+            .collect(
+                Collectors.groupingBy(petToDoRelationship -> petToDoRelationship.getToDo().getId(),
+                    Collectors.mapping(
+                        petToDoRelationship -> new PetResponse(petToDoRelationship.getPet().getId(),
+                            petToDoRelationship.getPet().getName()), Collectors.toList())));
 
         GetToDoPageDao pageDao;
 
         if (done == null) {
-            pageDao = toDoInstanceRepository.findAllByTodayToDoIdIn(toDoIdPetResponseMap.keySet().stream().toList(), page, size);
+            pageDao = toDoInstanceRepository.findAllByTodayToDoIdIn(
+                toDoIdPetResponseMap.keySet().stream().toList(), page, size);
         } else if (done.equals(Boolean.TRUE)) {
-            pageDao = toDoInstanceRepository.findAllByCompleteAndTodayToDoIdIn(toDoIdPetResponseMap.keySet().stream().toList(), page, size);
+            pageDao = toDoInstanceRepository.findAllByCompleteAndTodayToDoIdIn(
+                toDoIdPetResponseMap.keySet().stream().toList(), page, size);
         } else {
-            pageDao = toDoInstanceRepository.findAllByCompleteFalseAndTodayToDoIdIn(toDoIdPetResponseMap.keySet().stream().toList(), page, size);
+            pageDao = toDoInstanceRepository.findAllByCompleteFalseAndTodayToDoIdIn(
+                toDoIdPetResponseMap.keySet().stream().toList(), page, size);
         }
 
         return ToDoPageResponse.fromGetToDoPageDaoAndToDoPetMap(pageDao, toDoIdPetResponseMap);
@@ -85,20 +92,26 @@ public class ToDoServiceImpl implements ToDoService {
     @Transactional(readOnly = true)
     public ToDoPageResponse getAllToDo(Boolean done, List<Pet> pets, Integer page, Integer size) {
         List<Long> petIds = pets.stream().map(Pet::getId).toList();
-        List<PetToDoRelationship> relationships = petToDoRelationshipRepository.findAllByPet_IdIn(petIds);
+        List<PetToDoRelationship> relationships = petToDoRelationshipRepository.findAllByPet_IdIn(
+            petIds);
         //to do id를 key로 하고, 그 to do 에 해당하는 petResonseList를 value로 하는 map
         Map<Long, List<PetResponse>> toDoIdPetResponseMap = relationships.stream()
-                .collect(Collectors.groupingBy(petToDoRelationship -> petToDoRelationship.getToDo().getId(),
-                        Collectors.mapping(petToDoRelationship -> new PetResponse(petToDoRelationship.getPet().getId(),
-                                petToDoRelationship.getPet().getName()), Collectors.toList())));
+            .collect(
+                Collectors.groupingBy(petToDoRelationship -> petToDoRelationship.getToDo().getId(),
+                    Collectors.mapping(
+                        petToDoRelationship -> new PetResponse(petToDoRelationship.getPet().getId(),
+                            petToDoRelationship.getPet().getName()), Collectors.toList())));
 
         GetToDoPageDao pageDao;
         if (done == null) {
-            pageDao = toDoInstanceRepository.findAllByToDoIdIn(toDoIdPetResponseMap.keySet().stream().toList(), page, size);
+            pageDao = toDoInstanceRepository.findAllByToDoIdIn(
+                toDoIdPetResponseMap.keySet().stream().toList(), page, size);
         } else if (done.equals(Boolean.TRUE)) {
-            pageDao = toDoInstanceRepository.findAllByCompleteAndToDoIdIn(toDoIdPetResponseMap.keySet().stream().toList(), page, size);
+            pageDao = toDoInstanceRepository.findAllByCompleteAndToDoIdIn(
+                toDoIdPetResponseMap.keySet().stream().toList(), page, size);
         } else {
-            pageDao = toDoInstanceRepository.findAllByCompleteFalseAndToDoIdIn(toDoIdPetResponseMap.keySet().stream().toList(), page, size);
+            pageDao = toDoInstanceRepository.findAllByCompleteFalseAndToDoIdIn(
+                toDoIdPetResponseMap.keySet().stream().toList(), page, size);
         }
 
         return ToDoPageResponse.fromGetToDoPageDaoAndToDoPetMap(pageDao, toDoIdPetResponseMap);
@@ -108,14 +121,16 @@ public class ToDoServiceImpl implements ToDoService {
     @Override
     @Transactional(readOnly = true)
     public ToDoDetailResponse getToDoById(Long id, Long accountId) {
-        ToDo toDo = toDoRepository.findByIdAndAccount_Id(id, accountId).orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_TO_DO));
+        ToDo toDo = toDoRepository.findByIdAndAccount_Id(id, accountId)
+            .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_TO_DO));
         return ToDoDetailResponse.fromToDo(toDo);
     }
 
     @Override
     @Transactional
     public ToDoDetailResponse updateToDoById(Long id, ToDoPatchRequest request, Long accountId) {
-        ToDo toDo = toDoRepository.findByIdAndAccount_Id(id, accountId).orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_TO_DO));
+        ToDo toDo = toDoRepository.findByIdAndAccount_Id(id, accountId)
+            .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_TO_DO));
 
         if (!toDo.getCreateProfile().getId().equals(request.profileId())) {
             throw new CustomException(ExceptionCode.INAPPROPRIATE_PROFILE_ACCESS);
@@ -123,24 +138,25 @@ public class ToDoServiceImpl implements ToDoService {
 
         if (!request.petIds().isEmpty()) {
             Set<Long> petIds = toDo.getPetToDoRelationships().stream()
-                    .map(PetToDoRelationship::getPet)
-                    .map(Pet::getId)
-                    .collect(Collectors.toSet());
+                .map(PetToDoRelationship::getPet)
+                .map(Pet::getId)
+                .collect(Collectors.toSet());
 
             List<Long> petIdsToDelete = petIds.stream().
-                    filter(petId -> !request.petIds().contains(petId))
-                    .toList();
+                filter(petId -> !request.petIds().contains(petId))
+                .toList();
 
-            petToDoRelationshipRepository.deleteAllByToDo_IdAndPet_IdIn(toDo.getId(), petIdsToDelete);
+            petToDoRelationshipRepository.deleteAllByToDo_IdAndPet_IdIn(toDo.getId(),
+                petIdsToDelete);
 
             List<Long> petIdsToAdd = request.petIds().stream()
-                    .filter(petId -> !petIds.contains(petId))
-                    .toList();
+                .filter(petId -> !petIds.contains(petId))
+                .toList();
 
             petToDoRelationshipRepository.saveAll(petIdsToAdd.stream()
-                    .map(petRepository::getReferenceById)
-                    .map(pet -> new PetToDoRelationship(pet, toDo))
-                    .toList());
+                .map(petRepository::getReferenceById)
+                .map(pet -> new PetToDoRelationship(pet, toDo))
+                .toList());
 
         }
 
@@ -152,7 +168,7 @@ public class ToDoServiceImpl implements ToDoService {
     @Transactional
     public void deleteToDoById(Long id, Long profileId) {
         ToDo todo = toDoRepository.findById(id)
-                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_TO_DO));
+            .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_TO_DO));
 
         if (!todo.getCreateProfile().getId().equals(profileId)) {
             throw new CustomException(ExceptionCode.INAPPROPRIATE_PROFILE_ACCESS);
@@ -163,8 +179,9 @@ public class ToDoServiceImpl implements ToDoService {
     @Override
     @Transactional
     public void checkToDo(Long toDoId, Long accountId) {
-        ToDoInstance toDoInstance = toDoInstanceRepository.findByToDo_IdAndCompleteProfileIsNull(toDoId)
-                .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_TO_DO));
+        ToDoInstance toDoInstance = toDoInstanceRepository.findByToDo_IdAndCompleteProfileIsNull(
+                toDoId)
+            .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_TO_DO));
 
         Profile completeProfile = profileRepository.getReferenceById(2L);
         toDoInstance.setComplete(completeProfile);

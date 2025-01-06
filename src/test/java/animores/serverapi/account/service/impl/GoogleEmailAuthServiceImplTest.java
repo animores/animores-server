@@ -1,7 +1,7 @@
 package animores.serverapi.account.service.impl;
 
-import animores.serverapi.account.domain.auth_mail.AuthMail;
-import animores.serverapi.account.domain.auth_mail.ValidMail;
+import animores.serverapi.account.entity.auth_mail.AuthMail;
+import animores.serverapi.account.entity.auth_mail.ValidMail;
 import animores.serverapi.account.repository.auth_mail.AuthMailRepository;
 import animores.serverapi.account.repository.auth_mail.ValidMailRepository;
 import animores.serverapi.common.exception.CustomException;
@@ -9,10 +9,8 @@ import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.Transport;
 import jakarta.mail.internet.InternetAddress;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.aggregator.ArgumentAccessException;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 

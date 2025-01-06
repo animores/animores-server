@@ -1,6 +1,6 @@
 package animores.serverapi.diary.service.impl;
 
-import animores.serverapi.account.domain.Account;
+import animores.serverapi.account.entity.Account;
 import animores.serverapi.common.exception.CustomException;
 import animores.serverapi.common.exception.ExceptionCode;
 import animores.serverapi.common.service.AuthorizationService;
@@ -22,9 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class DiaryReplyServiceImpl implements DiaryReplyService {
 
-    private final AuthorizationService authorizationService;
-
     private final ProfileRepository profileRepository;
+    private final AuthorizationService authorizationService;
     private final DiaryCommentRepository diaryCommentRepository;
     private final DiaryReplyRepository diaryReplyRepository;
 
