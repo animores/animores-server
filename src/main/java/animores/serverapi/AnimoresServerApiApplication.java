@@ -7,11 +7,11 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
+@ServletComponentScan
 @EnableBatchProcessing
 @EnableAspectJAutoProxy
-@ServletComponentScan
-@SpringBootApplication
 @EnableJpaAuditing
+@SpringBootApplication
 public class AnimoresServerApiApplication {
 
     public static void main(String[] args) {

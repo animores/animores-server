@@ -6,10 +6,10 @@ import animores.serverapi.to_do.dto.request.ToDoCreateRequest;
 import animores.serverapi.to_do.dto.request.ToDoPatchRequest;
 import animores.serverapi.to_do.dto.response.ToDoDetailResponse;
 import animores.serverapi.to_do.dto.response.ToDoPageResponse;
-
 import java.util.List;
 
 public interface ToDoService {
+
     void createToDo(Account account, ToDoCreateRequest request);
 
     ToDoPageResponse getTodayToDo(Boolean done, List<Pet> pets, Integer page, Integer size);

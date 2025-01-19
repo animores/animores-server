@@ -1,7 +1,6 @@
 package animores.serverapi.diary.controller;
 
 import animores.serverapi.account.entity.Account;
-import animores.serverapi.account.repository.AccountRepository;
 import animores.serverapi.account.service.AccountService;
 import animores.serverapi.common.Response;
 import animores.serverapi.common.aop.UserInfo;
@@ -20,13 +19,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+//@PreAuthorize("hasAuthority('USER')")
+//@SecurityRequirement(name = "Authorization")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/diary-reply")
 public class DiaryReplyController {
 
     private final AccountService accountService;
-    private final AccountRepository accountRetService;
     private final DiaryReplyService diaryReplyService;
 
     @UserInfo
@@ -61,5 +61,4 @@ public class DiaryReplyController {
         return Response.success(null);
 
     }
-
 }

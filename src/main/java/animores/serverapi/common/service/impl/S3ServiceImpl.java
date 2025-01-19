@@ -1,6 +1,8 @@
 package animores.serverapi.common.service.impl;
 
 import animores.serverapi.common.service.S3Service;
+import java.io.IOException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,9 +14,6 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectsRequest;
 import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-
-import java.io.IOException;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -36,7 +35,8 @@ public class S3ServiceImpl implements S3Service {
         log.info("All files uploaded to S3");
     }
 
-    public void uploadFileToS3(MultipartFile file, String path, String fileName) throws IOException {
+    public void uploadFileToS3(MultipartFile file, String path, String fileName)
+        throws IOException {
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
             .bucket(bucketName)
             .contentType(file.getContentType())

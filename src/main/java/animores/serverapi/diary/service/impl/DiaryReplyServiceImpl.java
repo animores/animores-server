@@ -22,9 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class DiaryReplyServiceImpl implements DiaryReplyService {
 
-    private final AuthorizationService authorizationService;
-
     private final ProfileRepository profileRepository;
+    private final AuthorizationService authorizationService;
     private final DiaryCommentRepository diaryCommentRepository;
     private final DiaryReplyRepository diaryReplyRepository;
 

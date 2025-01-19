@@ -1,5 +1,14 @@
 package animores.serverapi.pet.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import animores.serverapi.account.entity.Account;
 import animores.serverapi.common.exception.CustomException;
 import animores.serverapi.pet.dao.PetDao;
@@ -18,19 +27,15 @@ import animores.serverapi.pet.repository.BreedRepository;
 import animores.serverapi.pet.repository.PetImageRepository;
 import animores.serverapi.pet.repository.PetRepository;
 import animores.serverapi.pet.repository.SpeciesRepository;
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PetServiceImplTest {
@@ -61,7 +66,8 @@ class PetServiceImplTest {
 
     @Test
     void checkAccountPetsReturnsAllPetsWhenPetIdsIsEmpty() {
-        when(petRepository.findAllByAccount_id(ACCOUNT_ID)).thenReturn(Collections.singletonList(new TestPet(PET_ID)));
+        when(petRepository.findAllByAccount_id(ACCOUNT_ID)).thenReturn(
+            Collections.singletonList(new TestPet(PET_ID)));
         List<Pet> result = petService.checkAccountPets(ACCOUNT_ID, Collections.emptyList());
         assertFalse(result.isEmpty());
     }
@@ -69,9 +75,11 @@ class PetServiceImplTest {
     @Test
     void checkAccountPetsReturnsFilteredPetsWhenPetIdsIsNotEmpty() {
         Pet pet = new TestPet(PET_ID);
-        when(petRepository.findAllByAccount_id(ACCOUNT_ID)).thenReturn(Collections.singletonList(pet));
+        when(petRepository.findAllByAccount_id(ACCOUNT_ID)).thenReturn(
+            Collections.singletonList(pet));
 
-        List<Pet> result = petService.checkAccountPets(ACCOUNT_ID, Collections.singletonList(PET_ID));
+        List<Pet> result = petService.checkAccountPets(ACCOUNT_ID,
+            Collections.singletonList(PET_ID));
 
         assertFalse(result.isEmpty());
         assertEquals(1L, result.get(0).getId());
@@ -80,7 +88,8 @@ class PetServiceImplTest {
     @Test
     void checkAccountPetsThrowsExceptionWhenPetIdsAreInvalid() {
         Pet pet = new TestPet(PET_ID);
-        when(petRepository.findAllByAccount_id(ACCOUNT_ID)).thenReturn(Collections.singletonList(pet));
+        when(petRepository.findAllByAccount_id(ACCOUNT_ID)).thenReturn(
+            Collections.singletonList(pet));
 
         try {
             petService.checkAccountPets(ACCOUNT_ID, Collections.singletonList(2L));
@@ -103,7 +112,8 @@ class PetServiceImplTest {
 
     @Test
     void getBreedsOfSpeciesReturnsAllBreeds() {
-        when(breedRepository.findAllBySpecies_Id(SPECIES_ID)).thenReturn(Collections.singletonList(new TestBreed(BREED_ID, BREED_NAME)));
+        when(breedRepository.findAllBySpecies_Id(SPECIES_ID)).thenReturn(
+            Collections.singletonList(new TestBreed(BREED_ID, BREED_NAME)));
 
         List<BreedResponse> result = petService.getBreedsOfSpecies(SPECIES_ID);
 
@@ -114,17 +124,19 @@ class PetServiceImplTest {
     void createPetReturnsCreatedPet() {
         Account account = new Account();
         PetCreateRequest request = new PetCreateRequest(
-                BREED_ID,
-                PET_IMAGE_ID,
-                "name",
-                0,
-                LocalDate.of(2021, 1, 1),
-                1.5f
+            BREED_ID,
+            PET_IMAGE_ID,
+            "name",
+            0,
+            LocalDate.of(2021, 1, 1),
+            1.5f
         );
 
-        when(breedRepository.findById(request.breedId())).thenReturn(Optional.of(new TestBreed(BREED_ID, BREED_NAME)));
-        when(petImageRepository.getReferenceById(request.imageId())).thenReturn(new TestPetImage(PET_IMAGE_ID));
-        when(petRepository.save(any())).thenReturn(new TestPet(PET_ID,PET_NAME));
+        when(breedRepository.findById(request.breedId())).thenReturn(
+            Optional.of(new TestBreed(BREED_ID, BREED_NAME)));
+        when(petImageRepository.getReferenceById(request.imageId())).thenReturn(
+            new TestPetImage(PET_IMAGE_ID));
+        when(petRepository.save(any())).thenReturn(new TestPet(PET_ID, PET_NAME));
 
         PetCreateResponse result = petService.createPet(account, request);
 
@@ -137,7 +149,7 @@ class PetServiceImplTest {
     void getPetsReturnsAllPetsOfAccount() {
         Account account = new TestAccount(ACCOUNT_ID);
         when(petRepository.findAllByAccount_IdWithImages(account.getId()))
-                .thenReturn(Collections.singletonList(new PetDao(PET_ID, "뽀삐", "image.jpg")));
+            .thenReturn(Collections.singletonList(new PetDao(PET_ID, "뽀삐", "image.jpg")));
 
         List<PetDto> result = petService.getPets(account);
 
@@ -149,7 +161,9 @@ class PetServiceImplTest {
 
     @Test
     void getPetReturnsPetDetail() {
-        when(petRepository.findById(PET_ID)).thenReturn(Optional.of(new TestPet(PET_ID, new TestBreed(BREED_ID, BREED_NAME), new TestPetImage(PET_IMAGE_ID))));
+        when(petRepository.findById(PET_ID)).thenReturn(Optional.of(
+            new TestPet(PET_ID, new TestBreed(BREED_ID, BREED_NAME),
+                new TestPetImage(PET_IMAGE_ID))));
         GetPetDetailResponse result = petService.getPet(PET_ID);
         assertNotNull(result);
     }
@@ -157,17 +171,19 @@ class PetServiceImplTest {
     @Test
     void updatePetReturnsUpdatedPet() {
         PetUpdateRequest request = new PetUpdateRequest(
-                BREED_ID,
-                PET_IMAGE_ID,
-                "name",
-                0,
-                LocalDate.of(2021, 1, 1),
-                1.5f
+            BREED_ID,
+            PET_IMAGE_ID,
+            "name",
+            0,
+            LocalDate.of(2021, 1, 1),
+            1.5f
         );
 
         when(petRepository.findById(PET_ID)).thenReturn(Optional.of(new TestPet(PET_ID)));
-        when(breedRepository.findById(BREED_ID)).thenReturn(Optional.of(new TestBreed(BREED_ID,BREED_NAME)));
-        when(petImageRepository.findById(PET_IMAGE_ID)).thenReturn(Optional.of(new TestPetImage(PET_IMAGE_ID)));
+        when(breedRepository.findById(BREED_ID)).thenReturn(
+            Optional.of(new TestBreed(BREED_ID, BREED_NAME)));
+        when(petImageRepository.findById(PET_IMAGE_ID)).thenReturn(
+            Optional.of(new TestPetImage(PET_IMAGE_ID)));
         PetCreateResponse result = petService.updatePet(PET_ID, request);
 
         assertNotNull(result);
@@ -180,23 +196,26 @@ class PetServiceImplTest {
     }
 
     private static class TestAccount extends Account {
+
         public TestAccount(Long id) {
             super(id, null, null, null, null, false);
         }
     }
 
     private static class TestBreed extends Breed {
+
         public TestBreed(Long id, String name) {
             super(id, null, name);
         }
     }
 
     private static class TestPet extends Pet {
+
         public TestPet(Long id) {
-            super(id, null, null, null, null,null, 0, null);
+            super(id, null, null, null, null, null, 0, null);
         }
 
-        public TestPet (Long id, Breed breed, PetImage image) {
+        public TestPet(Long id, Breed breed, PetImage image) {
             super(id, null, breed, image, null, null, 0, null);
         }
 
@@ -206,6 +225,7 @@ class PetServiceImplTest {
     }
 
     private static class TestPetImage extends PetImage {
+
         public TestPetImage(Long id) {
             super(id, null, null);
         }

@@ -4,13 +4,14 @@ import java.time.LocalDateTime;
 
 public record SignInResponse(
 
-        Long userId,
+    Long userId,
 
-        String accessToken,
+    String accessToken,
 
-        LocalDateTime expirationHours,
+    LocalDateTime expirationHours,
 
-        String refreshToken
+    String refreshToken
 
 ) {
+
 }

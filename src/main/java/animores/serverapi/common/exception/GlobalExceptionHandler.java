@@ -2,15 +2,14 @@ package animores.serverapi.common.exception;
 
 import animores.serverapi.common.Response;
 import jakarta.validation.ConstraintViolationException;
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.NoSuchElementException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.sql.SQLIntegrityConstraintViolationException;
-import java.util.NoSuchElementException;
 
 @Slf4j
 @RestControllerAdvice
@@ -27,22 +26,27 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Response<Void>> handleValidationException(MethodArgumentNotValidException e) {
-        return ResponseEntity.badRequest().body(Response.error(e.getBindingResult().getAllErrors().get(0).getDefaultMessage()));
+    public ResponseEntity<Response<Void>> handleValidationException(
+        MethodArgumentNotValidException e) {
+        return ResponseEntity.badRequest()
+            .body(Response.error(e.getBindingResult().getAllErrors().get(0).getDefaultMessage()));
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<Response<Void>> handleConstraintViolationException(ConstraintViolationException e) {
+    public ResponseEntity<Response<Void>> handleConstraintViolationException(
+        ConstraintViolationException e) {
         return ResponseEntity.badRequest().body(Response.error(e.getMessage()));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public Response<Void> handleIllegalArgumentException(IllegalArgumentException e) {
-        return Response.error(e.getMessage());
+    public ResponseEntity<Response<Void>> handleIllegalArgumentException(
+        IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body(Response.error(e.getMessage()));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<Response<Void>> handleSQLIntegrityConstraintViolationException(SQLIntegrityConstraintViolationException e) {
+    public ResponseEntity<Response<Void>> handleSQLIntegrityConstraintViolationException(
+        SQLIntegrityConstraintViolationException e) {
         return ResponseEntity.badRequest().body(Response.error("중복된 값이 존재합니다."));
     }
 

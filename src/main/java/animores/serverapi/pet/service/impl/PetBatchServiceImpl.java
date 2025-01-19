@@ -6,6 +6,8 @@ import animores.serverapi.pet.repository.BreedRepository;
 import animores.serverapi.pet.repository.PetImageRepository;
 import animores.serverapi.pet.service.PetBatchService;
 import jakarta.persistence.EntityManagerFactory;
+import java.time.LocalDate;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.JobParametersInvalidException;
@@ -24,9 +26,6 @@ import org.springframework.batch.item.database.JpaItemWriter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import java.time.LocalDate;
-import java.util.UUID;
-
 @Service
 @RequiredArgsConstructor
 public class PetBatchServiceImpl implements PetBatchService {
@@ -41,16 +40,17 @@ public class PetBatchServiceImpl implements PetBatchService {
 
     @Override
     public void insertPetBatch(Integer count, Integer accountStartId) {
-        try{
+        try {
             jobLauncher.run(
-                    new JobBuilder("petBatchInsertJob", jobRepository)
-                            .incrementer(new RunIdIncrementer())
-                            .start(petBatchInsertStep(count, accountStartId))
-                            .build()
-                    , new JobParametersBuilder()
-                            .addLong("time", System.currentTimeMillis())
-                            .toJobParameters());
-        } catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException |
+                new JobBuilder("petBatchInsertJob", jobRepository)
+                    .incrementer(new RunIdIncrementer())
+                    .start(petBatchInsertStep(count, accountStartId))
+                    .build()
+                , new JobParametersBuilder()
+                    .addLong("time", System.currentTimeMillis())
+                    .toJobParameters());
+        } catch (JobExecutionAlreadyRunningException | JobRestartException |
+                 JobInstanceAlreadyCompleteException |
                  JobParametersInvalidException e) {
             e.printStackTrace();
         }
@@ -58,14 +58,17 @@ public class PetBatchServiceImpl implements PetBatchService {
 
     private Step petBatchInsertStep(Integer count, Integer accountStartId) {
         return new StepBuilder("petBatchInsertStep", jobRepository)
-                .<Pet, Pet>chunk(100, transactionManager)
-                .reader(new PetBatchServiceImpl.PetBatchInsertFactory(count, accountStartId, accountRepository, breedRepository, petImageRepository))
-                .processor(itemProcessor())
-                .writer(itemWriter())
-                .build();
+            .<Pet, Pet>chunk(100, transactionManager)
+            .reader(
+                new PetBatchInsertFactory(count, accountStartId, accountRepository, breedRepository,
+                    petImageRepository))
+            .processor(itemProcessor())
+            .writer(itemWriter())
+            .build();
     }
 
     private static class PetBatchInsertFactory implements ItemReader<Pet> {
+
         private int currentIdx = 0;
         private final int accountStartId;
         private final int count;
@@ -74,10 +77,10 @@ public class PetBatchServiceImpl implements PetBatchService {
         private final PetImageRepository petImageRepository;
 
         public PetBatchInsertFactory(Integer count,
-                                     Integer accountStartId,
-                                     AccountRepository accountRepository,
-                                     BreedRepository breedRepository,
-                                     PetImageRepository petImageRepository) {
+            Integer accountStartId,
+            AccountRepository accountRepository,
+            BreedRepository breedRepository,
+            PetImageRepository petImageRepository) {
             this.count = count;
             this.accountRepository = accountRepository;
             this.accountStartId = accountStartId;
@@ -91,13 +94,14 @@ public class PetBatchServiceImpl implements PetBatchService {
                 currentIdx++;
                 String randomString = UUID.randomUUID().toString();
                 return Pet.builder()
-                        .name(randomString.substring(0,10))
-                        .account(accountRepository.getReferenceById((long)(currentIdx/3 + accountStartId)))
-                        .breed(breedRepository.getReferenceById(1L))
-                        .birthday(LocalDate.of(2021, 1, 1))
-                        .image(petImageRepository.getReferenceById(1L))
-                        .gender(currentIdx % 2)
-                        .build();
+                    .name(randomString.substring(0, 10))
+                    .account(accountRepository.getReferenceById(
+                        (long) (currentIdx / 3 + accountStartId)))
+                    .breed(breedRepository.getReferenceById(1L))
+                    .birthday(LocalDate.of(2021, 1, 1))
+                    .image(petImageRepository.getReferenceById(1L))
+                    .gender(currentIdx % 2)
+                    .build();
             } else {
                 return null;
             }

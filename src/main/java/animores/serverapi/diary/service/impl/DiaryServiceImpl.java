@@ -31,29 +31,27 @@ import animores.serverapi.diary.repository.DiaryMediaCustomRepository;
 import animores.serverapi.diary.repository.DiaryMediaRepository;
 import animores.serverapi.diary.repository.DiaryRepository;
 import animores.serverapi.diary.service.DiaryService;
-import animores.serverapi.profile.entity.Profile;
+import animores.serverapi.profile.domain.Profile;
 import animores.serverapi.profile.repository.ProfileRepository;
 import com.querydsl.core.QueryResults;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.IntStream;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
 public class DiaryServiceImpl implements DiaryService {
 
     private final S3Service s3Service;
-    private final AuthorizationService authorizationService;
-
     private final ProfileRepository profileRepository;
+    private final AuthorizationService authorizationService;
     private final DiaryRepository diaryRepository;
     private final DiaryCustomRepository diaryCustomRepository;
     private final DiaryMediaRepository diaryMediaRepository;
@@ -239,7 +237,7 @@ public class DiaryServiceImpl implements DiaryService {
         authorizationService.validateProfileAccess(account, profile);
 
         List<GetAllDiaryCommentDao> comments = diaryCommentCustomRepository.getAllDiaryComment(
-            profileId, page, size);
+            diaryId, page, size);
         Long totalCount = diaryCommentCustomRepository.getAllDiaryCommentCount(diaryId);
 
         return new GetAllDiaryCommentResponse(totalCount, comments);
@@ -259,7 +257,7 @@ public class DiaryServiceImpl implements DiaryService {
         List<String> fileNames, List<MultipartFile> fileList) {
         return IntStream.range(0, fileNames.size())
             .mapToObj(i -> DiaryMedia.create(diary, DIARY_PATH + fileNames.get(i), i,
-                    DiaryMediaType.checkType(fileList.get(i).getContentType()))
+                DiaryMediaType.checkType(fileList.get(i).getContentType()))
             ).toList();
     }
 

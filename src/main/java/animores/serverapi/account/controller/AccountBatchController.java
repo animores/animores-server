@@ -20,8 +20,8 @@ public class AccountBatchController {
     @PostMapping("/")
     @Operation(summary = "계정 배치 생성", description = "계정을 배치로 생성합니다.")
     public Response<Void> insertAccountBatch(@RequestParam
-                                             @Parameter(description = "배치 개수", required = true, example = "100")
-                                             Integer count) {
+    @Parameter(description = "배치 개수", required = true, example = "100")
+    Integer count) {
         accountBatchService.insertAccountBatch(count);
         return Response.success(null);
     }

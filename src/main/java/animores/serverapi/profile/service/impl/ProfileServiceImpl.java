@@ -1,26 +1,25 @@
 package animores.serverapi.profile.service.impl;
 
+import static animores.serverapi.common.S3Path.PROFILE_IMAGE_PATH;
+
 import animores.serverapi.account.entity.Account;
 import animores.serverapi.common.exception.CustomException;
 import animores.serverapi.common.exception.ExceptionCode;
 import animores.serverapi.common.service.S3Service;
-import animores.serverapi.profile.entity.Profile;
+import animores.serverapi.profile.domain.Profile;
 import animores.serverapi.profile.dto.request.ProfileCreateRequest;
 import animores.serverapi.profile.dto.request.ProfileUpdateRequest;
 import animores.serverapi.profile.dto.response.ProfileResponse;
 import animores.serverapi.profile.repository.ProfileRepository;
 import animores.serverapi.profile.service.ProfileService;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-
-import static animores.serverapi.common.S3Path.PROFILE_IMAGE_PATH;
 
 @RequiredArgsConstructor
 @Service
@@ -35,20 +34,23 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     @Transactional(readOnly = true)
     public List<ProfileResponse> getProfiles(Account account) {
-        List<Profile> profiles = profileRepository.findAllByAccountIdAndDeletedAtIsNull(account.getId());
+        List<Profile> profiles = profileRepository.findAllByAccountIdAndDeletedAtIsNull(
+            account.getId());
         return profiles.stream().map(ProfileResponse::fromEntity).toList();
     }
 
     @Override
     @Transactional
-    public void createProfile(Account account, ProfileCreateRequest request, MultipartFile profileImage) {
-        if(profileRepository.countByAccountIdAndDeletedAtIsNull(account.getId()) >= MAX_PROFILE_COUNT) {
+    public void createProfile(Account account, ProfileCreateRequest request,
+        MultipartFile profileImage) {
+        if (profileRepository.countByAccountIdAndDeletedAtIsNull(account.getId())
+            >= MAX_PROFILE_COUNT) {
             throw new CustomException(ExceptionCode.MAX_PROFILE_COUNT);
         }
 
         String imageUrl = null;
 
-        if(profileImage != null) {
+        if (profileImage != null) {
             try {
                 checkContentType(profileImage);
                 String fileName = UUID.randomUUID().toString();
@@ -59,11 +61,7 @@ public class ProfileServiceImpl implements ProfileService {
             }
         }
 
-        Profile profile = Profile.builder()
-                .account(account)
-                .imageUrl(imageUrl)
-                .name(request.name())
-                .build();
+        Profile profile = Profile.create(account, request, imageUrl);
 
         profileRepository.save(profile);
     }
@@ -72,13 +70,14 @@ public class ProfileServiceImpl implements ProfileService {
     @Transactional(readOnly = true)
     public void checkProfile(Account account, Long profileId) {
         profileRepository.findByIdAndAccountIdAndDeletedAtIsNull(profileId, account.getId())
-                .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_PROFILE));
+            .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_PROFILE));
     }
 
     @Override
     @Transactional
     public void updateProfile(ProfileUpdateRequest request, MultipartFile profileImage) {
-        Profile profile = profileRepository.findByIdAndDeletedAtIsNull(request.profileId()).orElseThrow(
+        Profile profile = profileRepository.findByIdAndDeletedAtIsNull(request.profileId())
+            .orElseThrow(
                 () -> new CustomException(ExceptionCode.INVALID_PROFILE));
 
         if (request.name() != null && !request.name().equals(profile.getName())) {
@@ -106,7 +105,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Transactional
     public void deleteProfile(Long profileId) {
         Profile profile = profileRepository.findByIdAndDeletedAtIsNull(profileId).orElseThrow(
-                () -> new CustomException(ExceptionCode.INVALID_PROFILE)
+            () -> new CustomException(ExceptionCode.INVALID_PROFILE)
         );
 
         s3Service.removeFilesFromS3(List.of(profile.getImageUrl()));

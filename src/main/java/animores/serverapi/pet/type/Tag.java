@@ -1,7 +1,6 @@
 package animores.serverapi.pet.type;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -15,7 +14,7 @@ public enum Tag {
     미용;
 
 
-    private static final Map<String,Tag> tagMap =
+    private static final Map<String, Tag> tagMap =
         Stream.of(Tag.values())
             .collect(Collectors.toMap(Tag::name, Function.identity()));
 

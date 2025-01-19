@@ -9,6 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface ProfileRepository extends JpaRepository<Profile, Long> {
+
     List<Profile> findAllByAccountIdAndDeletedAtIsNull(Long id);
 
     Optional<Profile> findByIdAndAccountIdAndDeletedAtIsNull(Long id, Long accountId);

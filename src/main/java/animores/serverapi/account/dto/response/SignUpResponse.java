@@ -4,18 +4,19 @@ import animores.serverapi.account.entity.Account;
 
 public record SignUpResponse(
 
-        Long id,
+    Long id,
 
-        String email,
+    String email,
 
-        String nickname,
+    String nickname,
 
-        boolean isAdPermission
+    Boolean isAdPermission
 
 ) {
 
-        public static SignUpResponse toResponse(Account entity) {
-                return new SignUpResponse(entity.getId(), entity.getEmail(), entity.getPassword(), entity.isAdPermission());
-        }
+    public static SignUpResponse toResponse(Account entity) {
+        return new SignUpResponse(entity.getId(), entity.getEmail(), entity.getPassword(),
+            entity.getIsAdPermission());
+    }
 
 }
