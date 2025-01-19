@@ -2,7 +2,7 @@ package animores.serverapi.diary.entity;
 
 import animores.serverapi.account.entity.Account;
 import animores.serverapi.common.BaseEntity;
-import animores.serverapi.profile.domain.Profile;
+import animores.serverapi.profile.entity.Profile;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

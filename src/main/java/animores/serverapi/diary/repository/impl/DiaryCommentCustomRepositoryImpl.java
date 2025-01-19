@@ -2,7 +2,7 @@ package animores.serverapi.diary.repository.impl;
 
 import static animores.serverapi.diary.entity.QDiaryComment.diaryComment;
 import static animores.serverapi.diary.entity.QDiaryReply.diaryReply;
-import static animores.serverapi.profile.domain.QProfile.profile;
+import static animores.serverapi.profile.entity.QProfile.profile;
 
 import animores.serverapi.diary.dao.GetAllDiaryCommentDao;
 import animores.serverapi.diary.dao.GetAllDiaryReplyDao;

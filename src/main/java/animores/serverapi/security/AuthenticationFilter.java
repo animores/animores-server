@@ -22,7 +22,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @RequiredArgsConstructor
-@Component
+@Component("profileAuthenticationFilter")
 public class AuthenticationFilter extends OncePerRequestFilter {
 
     @Override

@@ -16,7 +16,7 @@ import animores.serverapi.diary.repository.DiaryCommentRepository;
 import animores.serverapi.diary.repository.DiaryReplyRepository;
 import animores.serverapi.diary.repository.DiaryRepository;
 import animores.serverapi.diary.service.DiaryCommentService;
-import animores.serverapi.profile.domain.Profile;
+import animores.serverapi.profile.entity.Profile;
 import animores.serverapi.profile.repository.ProfileRepository;
 import java.util.List;
 import java.util.NoSuchElementException;

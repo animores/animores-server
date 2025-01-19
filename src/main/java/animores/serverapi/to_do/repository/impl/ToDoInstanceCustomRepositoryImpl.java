@@ -1,6 +1,6 @@
 package animores.serverapi.to_do.repository.impl;
 
-import static animores.serverapi.profile.domain.QProfile.profile;
+import static animores.serverapi.profile.entity.QProfile.profile;
 import static animores.serverapi.to_do.entity.QToDo.toDo;
 import static animores.serverapi.to_do.entity.QToDoInstance.toDoInstance;
 

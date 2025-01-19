@@ -1,4 +1,4 @@
-package animores.serverapi.profile.domain;
+package animores.serverapi.profile.entity;
 
 import static animores.serverapi.common.S3Path.PROFILE_IMAGE_PATH;
 

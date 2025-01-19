@@ -1,7 +1,7 @@
 package animores.serverapi.to_do.entity;
 
 import animores.serverapi.common.BaseEntity;
-import animores.serverapi.profile.domain.Profile;
+import animores.serverapi.profile.entity.Profile;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;

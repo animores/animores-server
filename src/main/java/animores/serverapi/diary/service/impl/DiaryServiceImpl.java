@@ -31,7 +31,7 @@ import animores.serverapi.diary.repository.DiaryMediaCustomRepository;
 import animores.serverapi.diary.repository.DiaryMediaRepository;
 import animores.serverapi.diary.repository.DiaryRepository;
 import animores.serverapi.diary.service.DiaryService;
-import animores.serverapi.profile.domain.Profile;
+import animores.serverapi.profile.entity.Profile;
 import animores.serverapi.profile.repository.ProfileRepository;
 import com.querydsl.core.QueryResults;
 import java.io.IOException;
