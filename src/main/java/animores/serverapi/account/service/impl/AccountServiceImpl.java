@@ -59,7 +59,7 @@ public class AccountServiceImpl implements AccountService {
 
 
         // at, rt 생성
-        String accessToken = tokenProvider.createToken(account.getId(), account.getRole());
+        String accessToken = tokenProvider.createToken(account.getEmail());
         String refreshToken = UUID.randomUUID().toString();
         RefreshToken redisRefreshToken = new RefreshToken(refreshToken, account.getId());
         refreshTokenRepository.save(redisRefreshToken);
@@ -85,7 +85,7 @@ public class AccountServiceImpl implements AccountService {
         Account account = accountRepository.findById(refreshToken.getUserId())
             .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_USER));
 
-        String accessToken = tokenProvider.createToken(account.getId(), account.getRole());
+        String accessToken = tokenProvider.createToken(account.getEmail());
 
         return new SignInResponse(account.getId(), accessToken, LocalDateTime.now().plusHours(tokenProvider.getExpirationHours()), refreshToken.getRefreshToken());
     }

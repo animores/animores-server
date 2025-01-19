@@ -8,7 +8,6 @@ import java.lang.annotation.Target;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 @SecurityRequirement(name = "Authorization")
-@PreAuthorize("hasAuthority('USER')")
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
 public @interface UserInfo {

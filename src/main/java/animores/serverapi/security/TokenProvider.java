@@ -1,6 +1,7 @@
 package animores.serverapi.security;
 
 import animores.serverapi.account.type.Role;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.sql.Timestamp;
@@ -30,20 +31,35 @@ public class TokenProvider {
     /**
      * 토큰 생성
      *
-     * @param accountId
-     * @param role
+     * @param email
      * @return
      */
-    public String createToken(Long accountId, Role role) {
+    public String createToken(String email) {
 
         return Jwts.builder()
             .signWith(new SecretKeySpec(secretKey.getBytes(),
                 SignatureAlgorithm.HS512.getJcaName())) // HS512 알고리즘을 사용하여 secretKey를 이용해 서명
-            .setSubject(String.format("%s:%s", accountId, role)) // JWT 토큰 제목
+            .setSubject(email) // JWT 토큰 제목
             .setIssuer(issuer) // JWT 토큰 발급자
             .setIssuedAt(Timestamp.valueOf(LocalDateTime.now())) // JWT 토큰 발급 시간
             .setExpiration(new Date(
                 System.currentTimeMillis() + (long) expirationHours * 3600 * 1000)) // JWT 토큰 만료 시간
             .compact(); // JWT 토큰 생성
+    }
+
+    public String getEmailFromToken(String token) {
+
+        if (token.split(" ").length == 2) {
+            token = token.split(" ")[1];
+        }
+
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(
+                        new SecretKeySpec(secretKey.getBytes(),
+                        SignatureAlgorithm.HS512.getJcaName()))
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getSubject();
     }
 }
