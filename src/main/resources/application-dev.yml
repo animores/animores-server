@@ -1,0 +1,10 @@
+db_host: 192.168.219.101
+db_username: root
+db_password: welcome2024
+s3_access_key: AKIAZQ3DSKF6PR7CYP4F
+s3_secret_key: MWzqhbYmbWm9nK9UeiGagO4JaA
+bucket_name: animores-image
+s3_region: ap-northeast-2
+jwt_secret_key: NiOeyFbN1Gqo10bPgUyTFsRMkJpGLXSvGP04eFqj5B30r5TcrtlSXfQ7TndvYjNvfkEKLqILn0j1SmKODO1Yw3JpBBgI3nVPEahqxeY8qbPSFGyzyEVxnl4AQcrnVneI
+redis_endpoint: localhost
+server_url: http://14.4.247.100:8080
