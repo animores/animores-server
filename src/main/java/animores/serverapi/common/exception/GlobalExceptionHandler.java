@@ -1,7 +1,11 @@
 package animores.serverapi.common.exception;
 
 import animores.serverapi.common.Response;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.SignatureException;
 import jakarta.validation.ConstraintViolationException;
+
+import java.nio.file.AccessDeniedException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.NoSuchElementException;
 import lombok.extern.slf4j.Slf4j;
@@ -50,10 +54,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(Response.error("중복된 값이 존재합니다."));
     }
 
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleException(Exception e) {
-        log.error("unhandled exception", e);
-        return ResponseEntity.internalServerError().body(e.getMessage());
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<Response<Void>> handleJwtException(
+            JwtException e) {
+        return ResponseEntity.status(401).body(Response.error(e.getMessage()));
     }
 }
