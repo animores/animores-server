@@ -1,12 +1,9 @@
 package animores.serverapi.common.aop;
 
-import static animores.serverapi.common.RequestConstants.ACCOUNT_ATTRIBUTE;
-import static animores.serverapi.common.RequestConstants.ACCOUNT_ID;
-
 import animores.serverapi.account.entity.Account;
 import animores.serverapi.account.repository.AccountRepository;
 import animores.serverapi.security.TokenProvider;
-import animores.serverapi.util.RequestConstants;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.HttpHeaders;
@@ -19,6 +16,8 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.nio.file.AccessDeniedException;
+
+import static animores.serverapi.common.RequestConstants.ACCOUNT_ATTRIBUTE;
 
 @Aspect
 @RequiredArgsConstructor
@@ -43,19 +42,19 @@ public class UserInfoAspect {
         }
 
         if (token == null) {
-            throw new AccessDeniedException("Empty token");
+            throw new JwtException("Empty Token");
         }
 
         try {
             String email = tokenProvider.getEmailFromToken(token);
             Account account = accountRepository.findByEmail(email).orElseThrow(() -> new AccessDeniedException("Invalid token"));
             if (account == null || !account.getEmail().equals(email)) {
-                throw new AccessDeniedException("Invalid token");
+                throw new JwtException("Invalid token");
             }
 
             RequestContextHolder.getRequestAttributes().setAttribute(ACCOUNT_ATTRIBUTE, account, RequestAttributes.SCOPE_REQUEST);
         } catch (Exception e) {
-            throw new AccessDeniedException("Token expired");
+            throw new JwtException("Token Expired");
         }
     }
 }
