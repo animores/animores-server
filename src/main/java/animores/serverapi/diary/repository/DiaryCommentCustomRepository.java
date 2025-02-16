@@ -12,5 +12,4 @@ public interface DiaryCommentCustomRepository {
         int size);
 
     Long getAllDiaryCommentCount(Long diaryId);
-
 }
