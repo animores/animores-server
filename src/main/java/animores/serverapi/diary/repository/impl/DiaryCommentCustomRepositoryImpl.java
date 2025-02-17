@@ -38,7 +38,7 @@ public class DiaryCommentCustomRepositoryImpl implements DiaryCommentCustomRepos
             .on(profile.id.eq(diaryComment.profile.id))
             .leftJoin(diaryReply)
             .on(diaryComment.id.eq(diaryReply.diaryComment.id).and(diaryReply.deletedDt.isNull()))
-            .where(diaryComment.diary.id.eq(diaryId))
+            .where(diaryComment.diary.id.eq(diaryId).and(diaryComment.deletedDt.isNull()))
             .groupBy(diaryComment.id)
             .orderBy(diaryComment.id.desc())
             .offset((long) (page - 1) * size)
