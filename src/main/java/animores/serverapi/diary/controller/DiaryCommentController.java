@@ -76,5 +76,4 @@ public class DiaryCommentController {
         Account account = accountService.getAccountFromContext();
         return diaryCommentService.getAllDiaryReply(account, commentId, profileId, page, size);
     }
-
 }
