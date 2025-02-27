@@ -21,6 +21,7 @@ import animores.serverapi.pet.repository.PetImageRepository;
 import animores.serverapi.pet.repository.PetRepository;
 import animores.serverapi.pet.repository.SpeciesRepository;
 import animores.serverapi.pet.service.PetService;
+import animores.serverapi.to_do.repository.PetToDoRelationshipRepository;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,6 +37,7 @@ public class PetServiceImpl implements PetService {
     private final BreedRepository breedRepository;
     private final PetRepository petRepository;
     private final PetImageRepository petImageRepository;
+    private final PetToDoRelationshipRepository petToDoRelationshipRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -129,6 +131,7 @@ public class PetServiceImpl implements PetService {
     @Transactional
     @Override
     public void deletePet(Long petId) {
+        petToDoRelationshipRepository.deleteByPet_Id(petId);
         petRepository.deleteById(petId);
     }
 }
