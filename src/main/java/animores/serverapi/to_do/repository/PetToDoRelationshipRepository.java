@@ -11,4 +11,6 @@ public interface PetToDoRelationshipRepository extends JpaRepository<PetToDoRela
     List<PetToDoRelationship> findAllByPet_IdIn(List<Long> petIds);
 
     void deleteAllByToDo_IdAndPet_IdIn(Long toDoId, List<Long> petIdsToDelete);
+
+    void deleteByPet_Id(Long petId);
 }
