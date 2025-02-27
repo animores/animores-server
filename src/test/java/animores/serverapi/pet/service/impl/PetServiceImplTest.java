@@ -4,10 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import animores.serverapi.account.entity.Account;
 import animores.serverapi.common.exception.CustomException;
@@ -31,6 +28,8 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import animores.serverapi.to_do.repository.PetToDoRelationshipRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -54,6 +53,9 @@ class PetServiceImplTest {
 
     @Mock
     private PetImageRepository petImageRepository;
+
+    @Mock
+    private PetToDoRelationshipRepository petToDoRelationshipRepository;
 
     private static final Long PET_ID = 1L;
     private static final Long BREED_ID = 2L;
@@ -191,6 +193,7 @@ class PetServiceImplTest {
 
     @Test
     void deletePetDeletesPet() {
+        doNothing().when(petToDoRelationshipRepository).deleteByPet_Id(PET_ID);
         petService.deletePet(PET_ID);
         verify(petRepository, times(1)).deleteById(PET_ID);
     }
@@ -205,7 +208,9 @@ class PetServiceImplTest {
     private static class TestBreed extends Breed {
 
         public TestBreed(Long id, String name) {
-            super(id, null, name);
+            super(id, Species.builder()
+                            .id(1L)
+                    .name("dfd").build(), name);
         }
     }
 
