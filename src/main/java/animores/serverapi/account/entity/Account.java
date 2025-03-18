@@ -3,16 +3,10 @@ package animores.serverapi.account.entity;
 import animores.serverapi.account.dto.request.SignUpRequest;
 import animores.serverapi.account.type.Role;
 import animores.serverapi.common.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
 @NoArgsConstructor
@@ -45,12 +39,12 @@ public class Account extends BaseEntity {
         this.isAdPermission = isAdPermission;
     }
 
-    public static Account toEntity(SignUpRequest request, PasswordEncoder encoder) {
+    public static Account toEntity(SignUpRequest request) {
         return new Account(
             null,
             Role.USER,
             request.email(),
-            encoder.encode(request.password()),
+            request.password(),
             request.nickname(),
             false
         );

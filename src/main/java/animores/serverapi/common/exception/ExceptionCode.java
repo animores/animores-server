@@ -8,10 +8,7 @@ import lombok.Getter;
 public enum ExceptionCode {
 
     //계정 관련 에러
-    INVALID_REFRESH_TOKEN("", "해당 refresh token 을 찾을 수 없습니다"),
     INVALID_USER("", "해당 유저를 찾을 수 없습니다"),
-    EXPIRED_AUTH_CODE("", "인증 코드가 만료되었습니다."),
-    NOT_VERIFIED_EMAIL("", "이메일 인증이 되지 않았습니다."),
     PASSWORD_MISMATCH("", "비밀번호가 일치하지 않습니다."),
     PASSWORD_MATCH_BEFORE("", "기존 패스워드와 같습니다."),
     INVALID_PROFILE("", "해당 프로필을 찾을 수 없습니다."),

@@ -16,7 +16,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import animores.serverapi.account.dto.request.SignInRequest;
-import animores.serverapi.account.dto.request.SignOutRequest;
 import animores.serverapi.account.dto.request.SignUpRequest;
 import animores.serverapi.account.dto.response.SignInResponse;
 import animores.serverapi.account.dto.response.SignUpResponse;
