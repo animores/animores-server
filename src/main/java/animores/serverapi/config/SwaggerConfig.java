@@ -27,11 +27,11 @@ public class SwaggerConfig {
         return new OpenAPI()
                 .info(apiInfo())
                 .servers(List.of(server))
-                .components(new Components()
-                        .addSecuritySchemes("Authorization", new SecurityScheme()
-                                .type(SecurityScheme.Type.HTTP)
-                                .scheme("bearer")
-                                .bearerFormat("JWT")));
+                .components((new Components()
+                        .addSecuritySchemes("userId", new SecurityScheme()
+                                .name("userId")
+                                .type(SecurityScheme.Type.APIKEY)
+                                .in(SecurityScheme.In.HEADER))));
     }
 
     private Info apiInfo() {

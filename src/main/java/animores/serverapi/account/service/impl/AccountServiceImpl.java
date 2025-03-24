@@ -3,7 +3,6 @@ package animores.serverapi.account.service.impl;
 import animores.serverapi.account.dto.request.NicknameUpdateRequest;
 import animores.serverapi.account.dto.request.PasswordUpdateRequest;
 import animores.serverapi.account.dto.request.SignInRequest;
-import animores.serverapi.account.dto.request.SignOutRequest;
 import animores.serverapi.account.dto.request.SignUpRequest;
 import animores.serverapi.account.dto.response.AccountInfoDto;
 import animores.serverapi.account.dto.response.SignInResponse;
@@ -13,22 +12,14 @@ import animores.serverapi.account.repository.AccountRepository;
 import animores.serverapi.account.service.AccountService;
 import animores.serverapi.common.exception.CustomException;
 import animores.serverapi.common.exception.ExceptionCode;
-import animores.serverapi.security.BlackListToken;
-import animores.serverapi.security.BlacklistTokenRepository;
-import animores.serverapi.security.RefreshRequest;
-import animores.serverapi.security.RefreshToken;
-import animores.serverapi.security.RefreshTokenRepository;
-import animores.serverapi.security.TokenProvider;
 import animores.serverapi.util.RequestConstants;
-import java.time.LocalDateTime;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
+
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -36,15 +27,11 @@ import org.springframework.web.context.request.RequestContextHolder;
 public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final TokenProvider tokenProvider;
-    private final RefreshTokenRepository refreshTokenRepository;
-    private final BlacklistTokenRepository blacklistTokenRepository;
 
     @Override
     public SignUpResponse signUp(SignUpRequest request) {
         return SignUpResponse.toResponse(
-            accountRepository.save(Account.toEntity(request, passwordEncoder))
+            accountRepository.save(Account.toEntity(request))
         );
     }
 
@@ -53,48 +40,14 @@ public class AccountServiceImpl implements AccountService {
         Account account = accountRepository.findByEmail(request.email())
             .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_USER));
 
-        if (!passwordEncoder.matches(request.password(), account.getPassword())) {
+        if (!request.password().equals(account.getPassword())) {
             throw new CustomException(ExceptionCode.PASSWORD_MISMATCH);// 비밀번호 확인
         }
 
-
-        // at, rt 생성
-        String accessToken = tokenProvider.createToken(account.getEmail());
-        String refreshToken = UUID.randomUUID().toString();
-        RefreshToken redisRefreshToken = new RefreshToken(refreshToken, account.getId());
-        refreshTokenRepository.save(redisRefreshToken);
-
-        return new SignInResponse(account.getId(), accessToken, LocalDateTime.now().plusHours(tokenProvider.getExpirationHours()), refreshToken);
+        return new SignInResponse(account.getId());
     }
 
-    @Override
-    public void signOut(SignOutRequest request, String accessToken, User user) {
-        String refreshToken = request.refreshToken();
-        Long userId = Long.parseLong(user.getUsername());
-
-        // at 블랙리스트에 넣기
-        blacklistTokenRepository.save(new BlackListToken(accessToken, userId));
-        // rt 제거
-        refreshTokenRepository.deleteById(refreshToken);
-    }
-
-    @Override
-    public SignInResponse refresh(RefreshRequest request) {
-        RefreshToken refreshToken = refreshTokenRepository.findById(request.refreshToken())
-            .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_REFRESH_TOKEN));
-        Account account = accountRepository.findById(refreshToken.getUserId())
-            .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_USER));
-
-        String accessToken = tokenProvider.createToken(account.getEmail());
-
-        return new SignInResponse(account.getId(), accessToken, LocalDateTime.now().plusHours(tokenProvider.getExpirationHours()), refreshToken.getRefreshToken());
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public boolean isDuplicatedEmail(String email) {
-        return accountRepository.existsByEmail(email);
-    }
+    // TODO: 로그아웃 나중에 구현
 
     @Override
     @Transactional(readOnly = true)
@@ -102,12 +55,11 @@ public class AccountServiceImpl implements AccountService {
         return accountRepository.existsByNickname(nickname);
     }
 
-
     @Override
     public Account getAccountFromContext() {
         try {
-            return (Account) RequestContextHolder.getRequestAttributes().getAttribute(
-                RequestConstants.ACCOUNT_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
+            return (Account) Objects.requireNonNull(RequestContextHolder.getRequestAttributes()).getAttribute(
+                    RequestConstants.ACCOUNT_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
         } catch (NullPointerException e) {
             throw new CustomException(ExceptionCode.INVALID_USER);
         }
@@ -122,23 +74,20 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void updatePassword(PasswordUpdateRequest request, User user) {
-        Long userId = Long.parseLong(user.getUsername());
+    public void updatePassword(PasswordUpdateRequest request, Long userId) {
         Account account = accountRepository.findById(userId)
             .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_USER));
 
-        // 이전 비밀번호와 같은지 검사
-        if (passwordEncoder.matches(request.password(), account.getPassword())) {
+        // 이전 비밀번호와 같은지 검사 (임시이므로 인코딩 x)
+        if (!request.password().equals(account.getPassword())) {
             throw new CustomException(ExceptionCode.PASSWORD_MATCH_BEFORE);
         }
 
-        String encodedPassword = passwordEncoder.encode(request.password());
-
-        account.update(null, null, encodedPassword, null, null);
+        account.update(null, null, request.password(), null, null);
     }
 
     @Override
-    public void updateNickname(NicknameUpdateRequest request, User user) {
+    public void updateNickname(NicknameUpdateRequest request, Long userId) {
         String nickname = request.nickname();
 
         // 닉네임 중복 검사
@@ -146,7 +95,6 @@ public class AccountServiceImpl implements AccountService {
             throw new CustomException(ExceptionCode.DUPLICATED_NICKNAME);
         }
 
-        Long userId = Long.parseLong(user.getUsername());
         Account account = accountRepository.findById(userId)
             .orElseThrow(() -> new CustomException(ExceptionCode.INVALID_USER));
 
