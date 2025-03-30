@@ -34,7 +34,9 @@ public record ToDoCreateRequest(
     @Schema(description = "알람 사용 여부", example = "true")
     boolean isUsingAlarm,
     @Schema(description = "반복 설정")
-    Repeat repeat
+    Repeat repeat,
+    @Schema(description = " 설명")
+    String description
 ) {
 
     public void validate() {
@@ -58,7 +60,9 @@ public record ToDoCreateRequest(
         @Schema(description = "반복 간격", example = "1")
         Integer interval,
         @Schema(description = "반복 요일 목록, unit이 WEEK일 때만 사용")
-        List<String> weekDays) {
+        List<String> weekDays,
+        @Schema(description = "반복 횟수")
+        int repeatNum) {
 
     }
 }

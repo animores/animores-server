@@ -16,7 +16,8 @@ public record ToDoPatchRequest(
     LocalTime time,
     Boolean isAllDay,
     String color,
-    Boolean isUsingAlarm
+    Boolean isUsingAlarm,
+    String description
 ) {
 
 }

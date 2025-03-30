@@ -86,7 +86,8 @@ class ToDoServiceImplTest {
             true,
             null,
             false,
-            null
+            null,
+                null
         );
         ArgumentCaptor<ToDo> toDoArgumentCaptor = ArgumentCaptor.forClass(ToDo.class);
         ArgumentCaptor<List<PetToDoRelationship>> petToDoRelationshipArgumentCaptor = ArgumentCaptor.forClass(
@@ -447,7 +448,8 @@ class ToDoServiceImplTest {
                 isUsingAlarm,
                 repeat == null ? null : repeat.unit(),
                 repeat == null ? null : repeat.interval(),
-                repeat == null ? null : repeat.weekDays());
+                repeat == null ? null : repeat.weekDays(),
+                null);
         }
 
         public void setPetToDoRelationships(List<PetToDoRelationship> petToDoRelationships) {

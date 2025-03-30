@@ -54,7 +54,7 @@ public class ToDoServiceImpl implements ToDoService {
         }
 
         petToDoRelationshipRepository.saveAll(petToDoRelationships);
-        toDoInstanceRepository.save(ToDoInstance.fromToDo(toDo));
+        toDoInstanceRepository.save(ToDoInstance.fromToDoAndRepeat(toDo,request.repeat()));
     }
 
 
