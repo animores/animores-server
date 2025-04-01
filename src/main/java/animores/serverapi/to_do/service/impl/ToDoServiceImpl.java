@@ -54,7 +54,7 @@ public class ToDoServiceImpl implements ToDoService {
         }
 
         petToDoRelationshipRepository.saveAll(petToDoRelationships);
-        toDoInstanceRepository.save(ToDoInstance.fromToDoAndRepeat(toDo,request.repeat()));
+        toDoInstanceRepository.saveAll(ToDoInstance.fromToDoAndRepeat(toDo,request.repeat()));
     }
 
 
@@ -185,11 +185,5 @@ public class ToDoServiceImpl implements ToDoService {
 
         Profile completeProfile = profileRepository.getReferenceById(2L);
         toDoInstance.setComplete(completeProfile);
-
-        ToDoInstance nextToDoInstance = toDoInstance.getToDo().getNextToDoInstance();
-        if (nextToDoInstance == null) {
-            return;
-        }
-        toDoInstanceRepository.save(nextToDoInstance);
     }
 }

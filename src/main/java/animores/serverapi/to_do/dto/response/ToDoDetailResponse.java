@@ -1,8 +1,9 @@
 package animores.serverapi.to_do.dto.response;
 
 import animores.serverapi.to_do.dto.RepeatUnit;
-import animores.serverapi.to_do.dto.WeekDay;
 import animores.serverapi.to_do.entity.ToDo;
+
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -17,7 +18,7 @@ public record ToDoDetailResponse(
     boolean isUsingAlarm,
     RepeatUnit unit,
     Integer intervalNum,
-    List<WeekDay> weekDays,
+    List<String> weekDays,
     String color
 ) {
 
@@ -32,7 +33,7 @@ public record ToDoDetailResponse(
             toDo.isUsingAlarm(),
             toDo.getUnit(),
             toDo.getIntervalNum(),
-            toDo.getWeekDays(),
+            toDo.getWeekDays().stream().map(DayOfWeek::name).toList(),
             toDo.getColor());
     }
 }

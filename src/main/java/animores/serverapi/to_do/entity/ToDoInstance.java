@@ -1,18 +1,11 @@
 package animores.serverapi.to_do.entity;
 
 import animores.serverapi.common.BaseEntity;
-import animores.serverapi.common.exception.CustomException;
 import animores.serverapi.profile.entity.Profile;
 import animores.serverapi.to_do.dto.RepeatUnit;
 import animores.serverapi.to_do.dto.request.ToDoCreateRequest;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -22,12 +15,6 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.IntStream;
-
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Builder
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
