@@ -1,6 +1,7 @@
 package animores.serverapi.diary.repository.impl;
 
 import static animores.serverapi.diary.entity.QDiary.diary;
+import static animores.serverapi.diary.entity.QDiaryComment.diaryComment;
 import static animores.serverapi.diary.entity.QDiaryLike.diaryLike;
 import static animores.serverapi.diary.entity.QDiaryMedia.diaryMedia;
 import static com.querydsl.core.group.GroupBy.groupBy;
@@ -15,7 +16,9 @@ import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberPath;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -52,7 +55,16 @@ public class DiaryCustomRepositoryImpl implements DiaryCustomRepository {
                                 diaryMedia.mediaOrder, diaryMedia.type).skipNulls()
                         ),
                         createLikeYnExpression(diary.id, profileId),
-                        diary.comments.size(),
+                        Expressions.numberTemplate(Integer.class,
+                            "({0})",
+                            JPAExpressions
+                                .select(diaryComment.count())
+                                .from(diaryComment)
+                                .where(
+                                    diaryComment.diary.id.eq(diary.id)
+                                        .and(diaryComment.deletedDt.isNull())
+                                )
+                        ),
                         diary.createdAt,
                         diary.profile.id,
                         diary.profile.name,
