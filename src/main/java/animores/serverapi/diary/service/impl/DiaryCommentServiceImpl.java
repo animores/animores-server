@@ -81,8 +81,8 @@ public class DiaryCommentServiceImpl implements DiaryCommentService {
 
         Integer totalCount = diaryReplyRepository.countByDiaryCommentIdAndDeletedDtIsNull(
             commentId);
-        List<GetAllDiaryReplyDao> replies = diaryCommentCustomRepository.getAllDiaryReply(
-            profileId, page, size);
+        List<GetAllDiaryReplyDao> replies = diaryCommentCustomRepository.getAllDiaryReply(commentId,
+            page, size);
 
         return new GetAllDiaryReplyResponse(totalCount, replies);
     }
