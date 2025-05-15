@@ -4,6 +4,7 @@ import static animores.serverapi.diary.entity.QDiary.diary;
 import static animores.serverapi.diary.entity.QDiaryComment.diaryComment;
 import static animores.serverapi.diary.entity.QDiaryLike.diaryLike;
 import static animores.serverapi.diary.entity.QDiaryMedia.diaryMedia;
+import static animores.serverapi.diary.entity.QDiaryReply.diaryReply;
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.group.GroupBy.list;
 
@@ -62,6 +63,17 @@ public class DiaryCustomRepositoryImpl implements DiaryCustomRepository {
                                 .from(diaryComment)
                                 .where(
                                     diaryComment.diary.id.eq(diary.id)
+                                        .and(diaryComment.deletedDt.isNull())
+                                )
+                        ),
+                        Expressions.numberTemplate(Integer.class,
+                            "({0})",
+                            JPAExpressions
+                                .select(diaryReply.count())
+                                .from(diaryReply)
+                                .where(
+                                    diaryComment.diary.id.eq(diary.id)
+                                        .and(diaryReply.deletedDt.isNull())
                                         .and(diaryComment.deletedDt.isNull())
                                 )
                         ),
