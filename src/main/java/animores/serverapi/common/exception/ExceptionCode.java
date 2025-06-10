@@ -15,6 +15,7 @@ public enum ExceptionCode {
     UNAUTHORIZED_PROFILE_ACCESS("", "접근 권한이 없는 프로필입니다."),
     MAX_PROFILE_COUNT("", "프로필은 최대 6개까지 등록할 수 있습니다."),
     DUPLICATED_NICKNAME("", "중복된 닉네임 입니다."),
+    INVALID_FIREBASE_TOKEN("", "잘못된 토큰 정보입니다."),
 
     // 이미지 관련 에러
     INVALID_IMAGE_TYPE("", "지원하지 않는 이미지 형식입니다."),
