@@ -8,7 +8,6 @@ public record GetPetDetailResponse(
     String name,
     String imageUrl,
     BreedResponse breed,
-    SpeciesResponse species,
     LocalDate birthday,
     int gender,
     Float weight) {
@@ -19,7 +18,6 @@ public record GetPetDetailResponse(
             pet.getName(),
             pet.getImage().getUrl(),
             BreedResponse.fromEntity(pet.getBreed()),
-            SpeciesResponse.fromEntity(pet.getBreed().getSpecies()),
             pet.getBirthday(),
             pet.getGender(),
             pet.getWeight());
