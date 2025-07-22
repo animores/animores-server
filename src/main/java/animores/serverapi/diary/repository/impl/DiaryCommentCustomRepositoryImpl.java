@@ -50,9 +50,9 @@ public class DiaryCommentCustomRepositoryImpl implements DiaryCommentCustomRepos
     public List<GetAllDiaryReplyDao> getAllDiaryReply(Long commentId, int page, int size) {
         return jpaQueryFactory.select(
                 Projections.fields(GetAllDiaryReplyDao.class,
-                    diaryComment.id.as("replyId"),
-                    diaryComment.content,
-                    diaryComment.createdAt,
+                    diaryReply.id.as("replyId"),
+                    diaryReply.content,
+                    diaryReply.createdAt,
                     profile.id.as("profileId"),
                     profile.name,
                     profile.imageUrl
@@ -61,7 +61,7 @@ public class DiaryCommentCustomRepositoryImpl implements DiaryCommentCustomRepos
             .from(diaryReply)
             .leftJoin(profile)
             .on(profile.id.eq(diaryReply.profile.id))
-            .where(diaryReply.diaryComment.id.eq(commentId))
+            .where(diaryReply.diaryComment.id.eq(commentId).and(diaryReply.deletedDt.isNull()))
             .orderBy(diaryReply.id.desc())
             .offset((long) (page - 1) * size)
             .limit(size)
