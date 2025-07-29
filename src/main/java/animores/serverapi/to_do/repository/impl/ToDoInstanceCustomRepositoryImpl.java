@@ -312,8 +312,8 @@ public class ToDoInstanceCustomRepositoryImpl implements ToDoInstanceCustomRepos
                             toDo.color,
                             toDo.isUsingAlarm
                         ),
-                        toDoInstance.date.min().as("date"),
-                        toDoInstance.time.min().as("time"),
+                        toDoInstance.date.as("date"),
+                        toDoInstance.time.as("time"),
                         Projections.constructor(
                             ProfileVo.class,
                             profile.name,
@@ -324,7 +324,6 @@ public class ToDoInstanceCustomRepositoryImpl implements ToDoInstanceCustomRepos
                 .from(toDoInstance)
                 .join(toDoInstance.toDo, toDo)
                 .leftJoin(toDoInstance.completeProfile, profile)
-                .groupBy(toDo)
                 .where(toDo.id.in(toDoIds))
                 .offset(offset)
                 .limit(size)

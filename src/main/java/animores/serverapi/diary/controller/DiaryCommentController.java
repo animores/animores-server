@@ -68,7 +68,7 @@ public class DiaryCommentController {
     @GetMapping("{commentId}/replies")
     @Operation(summary = "대댓글 목록 조회", description = "일지에 대한 대댓글 목록을 조회합니다.")
     public GetAllDiaryReplyResponse getAllDiaryReply(
-        @PathVariable @Parameter(description = "대댓글 아이디", required = true) Long commentId,
+        @PathVariable @Parameter(description = "댓글 아이디", required = true) Long commentId,
         @RequestParam("profileId") @Parameter(description = "프로필 아이디", required = true, example = "1") Long profileId,
         @RequestParam("page") @Parameter(description = "페이지 번호 (1부터 시작)", required = true, example = "1") int page,
         @RequestParam("size") @Parameter(description = "페이지별 개수", required = true, example = "15") int size
