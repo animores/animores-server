@@ -2,6 +2,7 @@ package animores.serverapi.to_do.service;
 
 import animores.serverapi.account.entity.Account;
 import animores.serverapi.pet.entity.Pet;
+import animores.serverapi.to_do.dao.GetTodosDao;
 import animores.serverapi.to_do.dto.request.ToDoCreateRequest;
 import animores.serverapi.to_do.dto.request.ToDoPatchRequest;
 import animores.serverapi.to_do.dto.response.ToDoDetailResponse;
@@ -23,4 +24,7 @@ public interface ToDoService {
     void deleteToDoById(Long id, Long profileId);
 
     void checkToDo(Long toDoId, Long accountId);
+
+    List<GetTodosDao> getTodos(String start, String end, Boolean completed, Integer page,
+        Integer size);
 }
