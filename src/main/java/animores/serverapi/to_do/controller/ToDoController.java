@@ -6,6 +6,7 @@ import animores.serverapi.common.Response;
 import animores.serverapi.common.aop.UserInfo;
 import animores.serverapi.pet.entity.Pet;
 import animores.serverapi.pet.service.PetService;
+import animores.serverapi.to_do.dao.GetTodosDao;
 import animores.serverapi.to_do.dto.request.ToDoCreateRequest;
 import animores.serverapi.to_do.dto.request.ToDoPatchRequest;
 import animores.serverapi.to_do.dto.response.ToDoDetailResponse;
@@ -33,6 +34,17 @@ public class ToDoController {
     private final AccountService accountService;
     private final PetService petService;
     private final ToDoService toDoService;
+
+    @Operation(summary = "To Do 기간별 조회", description = "시작일~종료일 기준 To Do를 조회합니다.")
+    @GetMapping("/")
+    public Response<List<GetTodosDao>> getTodos(
+        @RequestParam(required = false) String start,
+        @RequestParam(required = false) String end,
+        @RequestParam(required = false) Boolean completed,
+        @RequestParam(required = false) Integer page,
+        @RequestParam(required = false) Integer size) {
+        return Response.success(toDoService.getTodos(start, end, completed, page, size));
+    }
 
     @Operation(summary = "To Do 생성", description = "To Do를 생성합니다.")
     @PostMapping
