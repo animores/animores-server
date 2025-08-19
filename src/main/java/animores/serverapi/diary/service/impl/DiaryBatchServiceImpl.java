@@ -48,7 +48,7 @@ public class DiaryBatchServiceImpl implements DiaryBatchService {
     private static final Random random = new Random();
 
     @Override
-    public void insertDiaryBatch(Integer count, Long accountId) {
+    public void insertDiaryBatch(Integer count, String accountId) {
         try {
             jobLauncher.run(
                 new JobBuilder("diaryBatchInsertJob", jobRepository)
@@ -65,7 +65,7 @@ public class DiaryBatchServiceImpl implements DiaryBatchService {
         }
     }
 
-    private Step diaryBatchInsertStep(Integer count, Long accountId) {
+    private Step diaryBatchInsertStep(Integer count, String accountId) {
         return new StepBuilder("diaryBatchInsertStep", jobRepository)
             .<Diary, Diary>chunk(100, transactionManager)
             .reader(
@@ -80,11 +80,11 @@ public class DiaryBatchServiceImpl implements DiaryBatchService {
         private int currentIdx = 0;
         private final AccountRepository accountRepository;
         private final List<Profile> profiles;
-        private final long accountId;
+        private final String accountId;
         private final int count;
 
         public DiaryBatchInsertFactory(AccountRepository accountRepository,
-            ProfileRepository profileRepository, Long accountId, int count) {
+            ProfileRepository profileRepository, String accountId, int count) {
             this.accountRepository = accountRepository;
             this.profiles = profileRepository.findAllByAccountIdAndDeletedAtIsNull(accountId);
             this.accountId = accountId;
@@ -193,7 +193,7 @@ public class DiaryBatchServiceImpl implements DiaryBatchService {
 
     // TODO: 다이어리 좋아요의 경우 중복 처리를 어떻게 해줄 지에 대한 고민이 필요함
     @Override
-    public void insertDiaryLikeBatch(Integer count, Long accountId) {
+    public void insertDiaryLikeBatch(Integer count, String accountId) {
         try {
             jobLauncher.run(
                 new JobBuilder("diaryLikeBatchInsertJob", jobRepository)
@@ -210,7 +210,7 @@ public class DiaryBatchServiceImpl implements DiaryBatchService {
         }
     }
 
-    private Step diaryLikeBatchInsertStep(Integer count, Long accountId) {
+    private Step diaryLikeBatchInsertStep(Integer count, String accountId) {
         return new StepBuilder("diaryLikeBatchInsertStep", jobRepository)
             .<Diary, DiaryLike>chunk(100, transactionManager)
             .reader(new JpaPagingItemReaderBuilder<Diary>()
@@ -245,7 +245,7 @@ public class DiaryBatchServiceImpl implements DiaryBatchService {
     }
 
     @Override
-    public void insertDiaryMediaBatch(Integer count, Long accountId, Long maxDiaryId) {
+    public void insertDiaryMediaBatch(Integer count, String accountId, Long maxDiaryId) {
         try {
             jobLauncher.run(
                 new JobBuilder("diaryMediaBatchInsertJob", jobRepository)
@@ -262,7 +262,7 @@ public class DiaryBatchServiceImpl implements DiaryBatchService {
         }
     }
 
-    private Step diaryMediaBatchInsertStep(Integer count, Long accountId, Long maxDiaryId) {
+    private Step diaryMediaBatchInsertStep(Integer count, String accountId, Long maxDiaryId) {
         return new StepBuilder("diaryMediaBatchInsertStep", jobRepository)
             .<Diary, Diary>chunk(100, transactionManager)
             .reader(new JpaPagingItemReaderBuilder<Diary>()

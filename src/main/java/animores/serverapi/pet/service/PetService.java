@@ -14,7 +14,7 @@ import java.util.List;
 
 public interface PetService {
 
-    List<Pet> checkAccountPets(Long accountId, List<Long> petIds);
+    List<Pet> checkAccountPets(String accountId, List<Long> petIds);
 
     List<SpeciesResponse> getSpecies();
 

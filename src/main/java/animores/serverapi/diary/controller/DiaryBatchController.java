@@ -24,7 +24,7 @@ public class DiaryBatchController {
     Integer count,
         @RequestParam
         @Parameter(description = "일지를 생성할 계정 id", required = true, example = "1")
-        Long accountId) {
+        String accountId) {
         diaryBatchService.insertDiaryBatch(count, accountId);
         return Response.success(null);
     }
@@ -48,7 +48,7 @@ public class DiaryBatchController {
     Integer count,
         @RequestParam
         @Parameter(description = "계정 id", required = true, example = "1")
-        Long accountId) {
+        String accountId) {
         diaryBatchService.insertDiaryLikeBatch(count, accountId);
         return Response.success(null);
     }
@@ -64,7 +64,7 @@ public class DiaryBatchController {
     Integer count,
         @RequestParam
         @Parameter(description = "계정 id", required = true, example = "1")
-        Long accountId,
+        String accountId,
         @RequestParam
         @Parameter(description = "일지 id", required = true, example = "1")
         Long maxDiaryId) {

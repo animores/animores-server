@@ -12,7 +12,7 @@ public interface ToDoRepository extends JpaRepository<ToDo, Long> {
 
     List<ToDo> findAllByDate(LocalDate date);
 
-    List<ToDo> findAllByAccountId(Long accountId);
+    List<ToDo> findAllByAccountId(String accountId);
 
-    Optional<ToDo> findByIdAndAccount_Id(Long id, Long accountId);
+    Optional<ToDo> findByIdAndAccount_Id(Long id, String accountId);
 }

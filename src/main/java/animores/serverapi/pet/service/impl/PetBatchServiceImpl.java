@@ -39,7 +39,7 @@ public class PetBatchServiceImpl implements PetBatchService {
     private final PetImageRepository petImageRepository;
 
     @Override
-    public void insertPetBatch(Integer count, Integer accountStartId) {
+    public void insertPetBatch(Integer count, String accountStartId) {
         try {
             jobLauncher.run(
                 new JobBuilder("petBatchInsertJob", jobRepository)
@@ -56,7 +56,7 @@ public class PetBatchServiceImpl implements PetBatchService {
         }
     }
 
-    private Step petBatchInsertStep(Integer count, Integer accountStartId) {
+    private Step petBatchInsertStep(Integer count, String accountStartId) {
         return new StepBuilder("petBatchInsertStep", jobRepository)
             .<Pet, Pet>chunk(100, transactionManager)
             .reader(
@@ -70,14 +70,14 @@ public class PetBatchServiceImpl implements PetBatchService {
     private static class PetBatchInsertFactory implements ItemReader<Pet> {
 
         private int currentIdx = 0;
-        private final int accountStartId;
+        private final String accountStartId;
         private final int count;
         private final AccountRepository accountRepository;
         private final BreedRepository breedRepository;
         private final PetImageRepository petImageRepository;
 
         public PetBatchInsertFactory(Integer count,
-            Integer accountStartId,
+            String accountStartId,
             AccountRepository accountRepository,
             BreedRepository breedRepository,
             PetImageRepository petImageRepository) {
@@ -96,7 +96,7 @@ public class PetBatchServiceImpl implements PetBatchService {
                 return Pet.builder()
                     .name(randomString.substring(0, 10))
                     .account(accountRepository.getReferenceById(
-                        (long) (currentIdx / 3 + accountStartId)))
+                        (currentIdx / 3 + accountStartId)))// TODO: account String 으로 바꿈
                     .breed(breedRepository.getReferenceById(1L))
                     .birthday(LocalDate.of(2021, 1, 1))
                     .image(petImageRepository.getReferenceById(1L))

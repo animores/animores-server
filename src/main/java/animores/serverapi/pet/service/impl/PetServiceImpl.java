@@ -41,7 +41,7 @@ public class PetServiceImpl implements PetService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Pet> checkAccountPets(Long accountId, List<Long> petIds) {
+    public List<Pet> checkAccountPets(String accountId, List<Long> petIds) {
         List<Pet> pets = petRepository.findAllByAccount_id(accountId);
 
         if (petIds == null || petIds.isEmpty()) {

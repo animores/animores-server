@@ -8,9 +8,9 @@ import java.util.List;
 
 public interface DiaryCustomRepository {
 
-    List<GetAllDiaryDao> getAllDiary(Long accountId, Long profileId, int page, int size);
+    List<GetAllDiaryDao> getAllDiary(String accountId, Long profileId, int page, int size);
 
-    Long getAllDiaryCount(Long accountId);
+    Long getAllDiaryCount(String accountId);
 
-    QueryResults<GetCalendarDiaryDao> getCalendarDiary(Long accountId, LocalDate date);
+    QueryResults<GetCalendarDiaryDao> getCalendarDiary(String accountId, LocalDate date);
 }

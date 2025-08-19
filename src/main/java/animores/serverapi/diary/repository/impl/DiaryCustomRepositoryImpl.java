@@ -35,7 +35,7 @@ public class DiaryCustomRepositoryImpl implements DiaryCustomRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<GetAllDiaryDao> getAllDiary(Long accountId, Long profileId, int page, int size) {
+    public List<GetAllDiaryDao> getAllDiary(String accountId, Long profileId, int page, int size) {
         return jpaQueryFactory
             .from(diary)
             .leftJoin(diaryMedia)
@@ -86,7 +86,7 @@ public class DiaryCustomRepositoryImpl implements DiaryCustomRepository {
             );
     }
 
-    public Long getAllDiaryCount(Long accountId) {
+    public Long getAllDiaryCount(String accountId) {
         return jpaQueryFactory
             .select(diary.count())
             .from(diary)
@@ -96,7 +96,7 @@ public class DiaryCustomRepositoryImpl implements DiaryCustomRepository {
     }
 
     @Override
-    public QueryResults<GetCalendarDiaryDao> getCalendarDiary(Long accountId, LocalDate date) {
+    public QueryResults<GetCalendarDiaryDao> getCalendarDiary(String accountId, LocalDate date) {
 
         LocalDateTime startDateTime = date.atStartOfDay();
         LocalDateTime endDateTime = date.atTime(LocalTime.MAX);

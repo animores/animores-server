@@ -16,7 +16,7 @@ public class PetCustomRepositoryImpl implements PetCustomRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<PetDao> findAllByAccount_IdWithImages(Long id) {
+    public List<PetDao> findAllByAccount_IdWithImages(String id) {
         return jpaQueryFactory.select(Projections.constructor(
                 PetDao.class,
                 pet.id,

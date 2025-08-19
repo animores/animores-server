@@ -10,5 +10,5 @@ import org.springframework.stereotype.Repository;
 public interface DiaryRepository extends JpaRepository<Diary, Long> {
 
     @EntityGraph(attributePaths = {"profile", "account"})
-    List<Diary> findByAccountId(Long accountId);
+    List<Diary> findByAccountId(String accountId);
 }

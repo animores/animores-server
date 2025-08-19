@@ -10,11 +10,11 @@ import java.util.Optional;
 @Repository
 public interface ProfileRepository extends JpaRepository<Profile, Long> {
 
-    List<Profile> findAllByAccountIdAndDeletedAtIsNull(Long id);
+    List<Profile> findAllByAccountIdAndDeletedAtIsNull(String id);
 
-    Optional<Profile> findByIdAndAccountIdAndDeletedAtIsNull(Long id, Long accountId);
+    Optional<Profile> findByIdAndAccountIdAndDeletedAtIsNull(Long id, String accountId);
 
-    Integer countByAccountIdAndDeletedAtIsNull(Long accountId);
+    Integer countByAccountIdAndDeletedAtIsNull(String accountId);
 
     Optional<Profile> findByIdAndDeletedAtIsNull(Long profileId);
 }

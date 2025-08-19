@@ -24,7 +24,7 @@ public class PetBatchController {
     Integer count,
         @RequestParam
         @Parameter(description = "반려동물을 생성할 계정 id 의 최솟값입니다. 이 변수 이상의 id 의 계정들에 반려동물이 생성됩니다.", required = true, example = "1")
-        Integer accountStartId) {
+        String accountStartId) {
         petBatchService.insertPetBatch(count, accountStartId);
         return Response.success(null);
     }

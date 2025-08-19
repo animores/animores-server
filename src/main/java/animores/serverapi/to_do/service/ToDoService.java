@@ -17,13 +17,13 @@ public interface ToDoService {
 
     ToDoPageResponse getAllToDo(Boolean done, List<Pet> pets, Integer page, Integer size);
 
-    ToDoDetailResponse getToDoById(Long id, Long accountId);
+    ToDoDetailResponse getToDoById(Long id, String accountId);
 
-    ToDoDetailResponse updateToDoById(Long id, ToDoPatchRequest request, Long accountId);
+    ToDoDetailResponse updateToDoById(Long id, ToDoPatchRequest request, String accountId);
 
     void deleteToDoById(Long id, Long profileId);
 
-    void checkToDo(Long toDoId, Long accountId);
+    void checkToDo(Long toDoId, String accountId);
 
     List<GetTodosDao> getTodos(String start, String end, Boolean completed, Integer page,
         Integer size);
