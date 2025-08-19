@@ -3,11 +3,13 @@ package animores.serverapi.to_do.service.impl;
 import animores.serverapi.account.entity.Account;
 import animores.serverapi.common.exception.CustomException;
 import animores.serverapi.common.exception.ExceptionCode;
+import animores.serverapi.diary.repository.TodoCustomRepository;
 import animores.serverapi.pet.entity.Pet;
 import animores.serverapi.pet.repository.PetRepository;
 import animores.serverapi.profile.entity.Profile;
 import animores.serverapi.profile.repository.ProfileRepository;
 import animores.serverapi.to_do.dao.GetToDoPageDao;
+import animores.serverapi.to_do.dao.GetTodosDao;
 import animores.serverapi.to_do.dto.request.ToDoCreateRequest;
 import animores.serverapi.to_do.dto.request.ToDoPatchRequest;
 import animores.serverapi.to_do.dto.response.PetResponse;
@@ -20,6 +22,7 @@ import animores.serverapi.to_do.repository.PetToDoRelationshipRepository;
 import animores.serverapi.to_do.repository.ToDoInstanceRepository;
 import animores.serverapi.to_do.repository.ToDoRepository;
 import animores.serverapi.to_do.service.ToDoService;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +42,7 @@ public class ToDoServiceImpl implements ToDoService {
     private final PetRepository petRepository;
     private final PetToDoRelationshipRepository petToDoRelationshipRepository;
     private final ToDoInstanceRepository toDoInstanceRepository;
+    private final TodoCustomRepository todoCustomRepository;
 
     @Override
     @Transactional
@@ -191,5 +195,16 @@ public class ToDoServiceImpl implements ToDoService {
             return;
         }
         toDoInstanceRepository.save(nextToDoInstance);
+    }
+
+    @Override
+    public List<GetTodosDao> getTodos(String start, String end, Boolean completed, Integer page,
+        Integer size) {
+        LocalDate startDate = (start != null) ? LocalDate.parse(start) : null;
+        LocalDate endDate = (end != null) ? LocalDate.parse(end) : null;
+
+        List<GetTodosDao> todos = todoCustomRepository.getTodos(startDate, endDate);
+
+        return todos;
     }
 }
