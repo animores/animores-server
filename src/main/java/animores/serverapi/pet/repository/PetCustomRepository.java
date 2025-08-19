@@ -5,5 +5,5 @@ import java.util.List;
 
 public interface PetCustomRepository {
 
-    List<PetDao> findAllByAccount_IdWithImages(Long id);
+    List<PetDao> findAllByAccount_IdWithImages(String id);
 }

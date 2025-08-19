@@ -56,7 +56,7 @@ class ToDoServiceImplTest {
     @InjectMocks
     private ToDoServiceImpl serviceUnderTest;
 
-    private static final Long ACCOUNT_ID = 1L;
+    private static final String ACCOUNT_ID = "1";
     private static final Long PROFILE_ID = 2L;
     private static final Long PET_1_ID = 3L;
     private static final Long PET_2_ID = 4L;
@@ -325,7 +325,7 @@ class ToDoServiceImplTest {
                 null)));
 
         // when
-        var result = serviceUnderTest.getToDoById(1L, 1L);
+        var result = serviceUnderTest.getToDoById(1L, "1");
 
         // then
         assertEquals("산책", result.title());
@@ -399,8 +399,8 @@ class ToDoServiceImplTest {
 
     static class TestAccount extends Account {
 
-        public TestAccount(Long id) {
-            super(id, null, null, null, null, false);
+        public TestAccount(String id) {
+            super(id,null, false);
         }
     }
 

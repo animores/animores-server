@@ -60,7 +60,7 @@ class PetServiceImplTest {
     private static final Long PET_ID = 1L;
     private static final Long BREED_ID = 2L;
     private static final Long SPECIES_ID = 3L;
-    private static final Long ACCOUNT_ID = 4L;
+    private static final String ACCOUNT_ID = "13";
     private static final Long PET_IMAGE_ID = 5L;
     private static final String BREED_NAME = "breed";
     private static final String PET_NAME = "pet";
@@ -200,8 +200,8 @@ class PetServiceImplTest {
 
     private static class TestAccount extends Account {
 
-        public TestAccount(Long id) {
-            super(id, null, null, null, null, false);
+        public TestAccount(String id) {
+            super(id, null, false);
         }
     }
 

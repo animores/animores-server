@@ -120,7 +120,7 @@ public class ToDoServiceImpl implements ToDoService {
 
     @Override
     @Transactional(readOnly = true)
-    public ToDoDetailResponse getToDoById(Long id, Long accountId) {
+    public ToDoDetailResponse getToDoById(Long id, String accountId) {
         ToDo toDo = toDoRepository.findByIdAndAccount_Id(id, accountId)
             .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_TO_DO));
         return ToDoDetailResponse.fromToDo(toDo);
@@ -128,7 +128,7 @@ public class ToDoServiceImpl implements ToDoService {
 
     @Override
     @Transactional
-    public ToDoDetailResponse updateToDoById(Long id, ToDoPatchRequest request, Long accountId) {
+    public ToDoDetailResponse updateToDoById(Long id, ToDoPatchRequest request, String accountId) {
         ToDo toDo = toDoRepository.findByIdAndAccount_Id(id, accountId)
             .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_TO_DO));
 
@@ -178,7 +178,7 @@ public class ToDoServiceImpl implements ToDoService {
 
     @Override
     @Transactional
-    public void checkToDo(Long toDoId, Long accountId) {
+    public void checkToDo(Long toDoId, String accountId) {
         ToDoInstance toDoInstance = toDoInstanceRepository.findByToDo_IdAndCompleteProfileIsNull(
                 toDoId)
             .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_TO_DO));

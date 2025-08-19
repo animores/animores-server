@@ -35,7 +35,7 @@ public class ProfileBatchServiceImpl implements ProfileBatchService {
     private final AccountRepository accountRepository;
 
     @Override
-    public void insertProfileBatch(Integer count, Integer accountStartId) {
+    public void insertProfileBatch(Integer count, String accountStartId) {
         try {
             jobLauncher.run(
                 new JobBuilder("profileBatchInsertJob", jobRepository)
@@ -52,7 +52,7 @@ public class ProfileBatchServiceImpl implements ProfileBatchService {
         }
     }
 
-    protected Step profileBatchInsertStep(Integer count, Integer accountStartId) {
+    protected Step profileBatchInsertStep(Integer count, String accountStartId) {
         return new StepBuilder("profileBatchInsertStep", jobRepository)
             .<Profile, Profile>chunk(100, transactionManager)
             .reader(new ProfileBatchInsertFactory(count, accountStartId, accountRepository))
@@ -64,11 +64,11 @@ public class ProfileBatchServiceImpl implements ProfileBatchService {
     private static class ProfileBatchInsertFactory implements ItemReader<Profile> {
 
         private int currentIdx = 0;
-        private final int accountStartId;
+        private final String accountStartId;
         private final int count;
         private final AccountRepository accountRepository;
 
-        public ProfileBatchInsertFactory(Integer count, Integer accountStartId,
+        public ProfileBatchInsertFactory(Integer count, String accountStartId,
             AccountRepository accountRepository) {
             this.count = count;
             this.accountRepository = accountRepository;
@@ -82,7 +82,7 @@ public class ProfileBatchServiceImpl implements ProfileBatchService {
                 String randomString = UUID.randomUUID().toString();
                 return Profile.create(
                     this.accountRepository.getReferenceById(
-                        (long) (currentIdx / 3 + accountStartId)),
+                        currentIdx / 3 + accountStartId),
                     new ProfileCreateRequest(
                         randomString.substring(0, 10) + currentIdx
                     ),

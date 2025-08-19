@@ -23,7 +23,7 @@ public class ProfileBatchController {
     Integer count,
         @RequestParam
         @Parameter(description = "프로필을 생성할 계정 id 의 최솟값입니다. 이 변수 이상의 id 의 계정들에 프로필이 생성됩니다.", required = true, example = "1")
-        Integer accountStartId) {
+        String accountStartId) {
         profileBatchService.insertProfileBatch(count, accountStartId);
     }
 }

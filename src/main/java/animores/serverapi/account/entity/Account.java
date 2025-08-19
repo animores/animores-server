@@ -1,9 +1,9 @@
 package animores.serverapi.account.entity;
 
-import animores.serverapi.account.dto.request.SignUpRequest;
-import animores.serverapi.account.type.Role;
 import animores.serverapi.common.BaseEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -14,53 +14,26 @@ import org.apache.commons.lang3.StringUtils;
 public class Account extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Enumerated(EnumType.STRING)
-    private Role role;
+    private String id;
 
-    private String email;
-
-    private String password;
-
+    @Column(unique = true, nullable = true)
     private String nickname;
 
-    private Boolean isAdPermission;
+    @Column(nullable = false)
+    private Boolean isAdPermission = false;
 
-    // 등록, 수정, 탈퇴일 생략
-
-    protected Account(Long id, Role role, String email, String password, String nickname,
-        boolean isAdPermission) {
+    protected Account(String id, String nickname, boolean isAdPermission) {
         this.id = id;
-        this.role = role;
-        this.email = email;
-        this.password = password;
         this.nickname = nickname;
         this.isAdPermission = isAdPermission;
     }
 
-    public static Account toEntity(SignUpRequest request) {
-        return new Account(
-            null,
-            Role.USER,
-            request.email(),
-            request.password(),
-            request.nickname(),
-            false
-        );
+    /** uid-only 자동 회원가입용 팩토리 */
+    public static Account createWithUid(String uid) {
+        return new Account(uid, null, false);
     }
 
-    public void update(Role role, String email, String password, String nickname,
-        Boolean isAdPermission) {
-        if (role != null) {
-            this.role = role;
-        }
-        if (StringUtils.isNotBlank(email)) {
-            this.email = email;
-        }
-        if (StringUtils.isNotBlank(password)) {
-            this.password = password;
-        }
+    public void update(String nickname, Boolean isAdPermission) {
         if (StringUtils.isNotBlank(nickname)) {
             this.nickname = nickname;
         }
@@ -68,5 +41,4 @@ public class Account extends BaseEntity {
             this.isAdPermission = isAdPermission;
         }
     }
-
 }

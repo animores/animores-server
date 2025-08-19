@@ -7,7 +7,6 @@ import com.google.firebase.FirebaseOptions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -15,20 +14,27 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * FirebaseConfig
+ *
+ * - Firebase Admin SDK 초기화
+ * - Spring Security 설정 (FirebaseTokenFilter 등록 포함)
+ */
 @Configuration
 public class FirebaseConfig {
 
-    // firebase 초기화
+    /**
+     * 서버 시작 시 Firebase Admin SDK 초기화
+     * (resources/firebase-service-account.json 필요)
+     */
     @PostConstruct
     public void initialize() throws IOException {
-        // resources 경로의 JSON 파일 불러오기
         InputStream serviceAccount = getClass()
                 .getClassLoader()
                 .getResourceAsStream("firebase-service-account.json");
 
-        // json 파일 누락
         if (serviceAccount == null) {
-            throw new IllegalStateException("json 파일 누락");
+            throw new IllegalStateException("firebase-service-account.json 누락");
         }
 
         FirebaseOptions options = FirebaseOptions.builder()
@@ -40,12 +46,17 @@ public class FirebaseConfig {
         }
     }
 
-    // Spring Security 필터 체인 등록
+    /**
+     * Spring Security 필터 체인 정의
+     * - 특정 경로는 permitAll()
+     * - 나머지는 인증 필요
+     * - FirebaseTokenFilter를 UsernamePasswordAuthenticationFilter 앞에 등록
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    FirebaseTokenFilter firebaseTokenFilter) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/public/**",
@@ -56,10 +67,9 @@ public class FirebaseConfig {
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
-                .headers(AbstractHttpConfigurer::disable)
+                .headers(h -> h.frameOptions(f -> f.sameOrigin())) // H2 콘솔 접근 허용
                 .addFilterBefore(firebaseTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
-
 }
