@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface TodoCustomRepository {
 
-    List<GetTodosDao> getTodos(LocalDate start, LocalDate end);
+    List<GetTodosDao> getTodos(Boolean completed, LocalDate start, LocalDate end, Integer page,
+        Integer size);
 
 }
