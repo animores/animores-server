@@ -203,7 +203,8 @@ public class ToDoServiceImpl implements ToDoService {
         LocalDate startDate = (start != null) ? LocalDate.parse(start) : null;
         LocalDate endDate = (end != null) ? LocalDate.parse(end) : null;
 
-        List<GetTodosDao> todos = todoCustomRepository.getTodos(startDate, endDate);
+        List<GetTodosDao> todos = todoCustomRepository.getTodos(completed, startDate, endDate, page,
+            size);
 
         return todos;
     }
