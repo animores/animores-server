@@ -4,8 +4,10 @@ import animores.serverapi.filter.FirebaseTokenFilter;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -23,15 +25,12 @@ import java.io.InputStream;
 @Configuration
 public class FirebaseConfig {
 
-    /**
-     * 서버 시작 시 Firebase Admin SDK 초기화
-     * (resources/firebase-service-account.json 필요)
-     */
+    @Value("${firebase.credentials}")
+    private Resource firebaseCreds; // file:/... 이면 FileSystemResource로 주입됨
+
     @PostConstruct
     public void initialize() throws IOException {
-        InputStream serviceAccount = getClass()
-                .getClassLoader()
-                .getResourceAsStream("firebase-service-account.json");
+        InputStream serviceAccount = firebaseCreds.getInputStream();
 
         if (serviceAccount == null) {
             throw new IllegalStateException("firebase-service-account.json 누락");

@@ -48,6 +48,9 @@ spring:
 server:
   url: ${server_url}
 
+firebase:
+  credentials: ${GOOGLE_APPLICATION_CREDENTIALS}
+
 management:
   endpoints:
     web:
