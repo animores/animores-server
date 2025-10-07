@@ -43,7 +43,9 @@ public class ToDoController {
         @RequestParam(required = false) Boolean completed,
         @RequestParam(required = false) Integer page,
         @RequestParam(required = false) Integer size) {
-        return Response.success(toDoService.getTodos(start, end, completed, page, size));
+        Account account = accountService.getAccountFromContext();
+
+        return Response.success(toDoService.getTodos(account, start, end, completed, page, size));
     }
 
     @Operation(summary = "To Do 생성", description = "To Do를 생성합니다.")

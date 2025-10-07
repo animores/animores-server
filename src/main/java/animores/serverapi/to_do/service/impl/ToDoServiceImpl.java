@@ -198,13 +198,13 @@ public class ToDoServiceImpl implements ToDoService {
     }
 
     @Override
-    public List<GetTodosDao> getTodos(String start, String end, Boolean completed, Integer page,
-        Integer size) {
+    public List<GetTodosDao> getTodos(Account account, String start, String end, Boolean completed,
+        Integer page, Integer size) {
         LocalDate startDate = (start != null) ? LocalDate.parse(start) : null;
         LocalDate endDate = (end != null) ? LocalDate.parse(end) : null;
 
-        List<GetTodosDao> todos = todoCustomRepository.getTodos(completed, startDate, endDate, page,
-            size);
+        List<GetTodosDao> todos = todoCustomRepository.getTodos(account, completed, startDate,
+            endDate, page, size);
 
         return todos;
     }

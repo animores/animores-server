@@ -25,6 +25,6 @@ public interface ToDoService {
 
     void checkToDo(Long toDoId, String accountId);
 
-    List<GetTodosDao> getTodos(String start, String end, Boolean completed, Integer page,
-        Integer size);
+    List<GetTodosDao> getTodos(Account account, String start, String end, Boolean completed,
+        Integer page, Integer size);
 }

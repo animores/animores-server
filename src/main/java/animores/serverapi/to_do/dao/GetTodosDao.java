@@ -5,12 +5,13 @@ import animores.serverapi.to_do.dto.RepeatUnit;
 import com.querydsl.core.annotations.QueryProjection;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import lombok.Getter;
 
 @Getter
 public class GetTodosDao {
 
-    private Long todoId;
+    private Long id;
     private LocalDate date;
     private LocalTime time;
     private Boolean isAllDay;
@@ -20,12 +21,13 @@ public class GetTodosDao {
     private Boolean isUsingAlarm;
     private RepeatUnit unit;
     private Integer intervalNum;
+    private List<GetTodosPetDao> pets;
 //    private List<WeekDay> weekDays;
 
 
     @QueryProjection
     public GetTodosDao(
-        Long todoId,
+        Long id,
         LocalDate date,
         LocalTime time,
         Boolean isAllDay,
@@ -34,9 +36,10 @@ public class GetTodosDao {
         String color,
         Boolean isUsingAlarm,
         RepeatUnit unit,
-        Integer intervalNum
+        Integer intervalNum,
+        List<GetTodosPetDao> pets
     ) {
-        this.todoId = todoId;
+        this.id = id;
         this.date = date;
         this.time = time;
         this.isAllDay = isAllDay;
@@ -46,5 +49,6 @@ public class GetTodosDao {
         this.isUsingAlarm = isUsingAlarm;
         this.unit = unit;
         this.intervalNum = intervalNum;
+        this.pets = pets;
     }
 }
