@@ -41,7 +41,7 @@ public class FirebaseTokenFilter extends OncePerRequestFilter {
         String uri = request.getRequestURI();
 
 
-        if ("/api/v1/pets/species".equals(uri) && "/api/v1/pets/breeds".equals(uri)) {
+        if ("/api/v1/pets/species".equals(uri) || "/api/v1/pets/breeds".equals(uri)) {
             UsernamePasswordAuthenticationToken auth =
                 new UsernamePasswordAuthenticationToken("admin-test", null, Collections.emptyList());
             SecurityContextHolder.getContext().setAuthentication(auth);
