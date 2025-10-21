@@ -38,6 +38,16 @@ public class FirebaseTokenFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
+        String uri = request.getRequestURI();
+
+
+        if ("/api/v1/pets/species".equals(uri) && "/api/v1/pets/breeds".equals(uri)) {
+            UsernamePasswordAuthenticationToken auth =
+                new UsernamePasswordAuthenticationToken("admin-test", null, Collections.emptyList());
+            SecurityContextHolder.getContext().setAuthentication(auth);
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         // ✅ 테스트용 우회 (헤더 userId=13 이면 관리자처럼 통과)
         String testHeader = request.getHeader("userId");
