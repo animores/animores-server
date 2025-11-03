@@ -10,9 +10,6 @@ import animores.serverapi.to_do.dto.request.ToDoCreateRequest;
 import animores.serverapi.to_do.dto.request.ToDoPatchRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -20,7 +17,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -62,12 +58,9 @@ public class ToDo extends BaseEntity {
     @Enumerated(EnumType.STRING)
     RepeatUnit unit;
     Integer intervalNum;
-    @ElementCollection(targetClass = WeekDay.class)
-    @CollectionTable(name = "to_do_week_day", joinColumns = @JoinColumn(name = "to_do_id"))
-    @Column(name = "week_day")
-    @Enumerated(EnumType.STRING)
+    @OneToMany(mappedBy = "toDo", cascade = CascadeType.ALL, orphanRemoval = true)
     @Schema(description = "반복 요일 목록, unit이 WEEK일 때만 사용")
-    List<WeekDay> weekDays;
+    private List<ToDoWeekDay> weekDays;
 
     public static ToDo fromRequest(ToDoCreateRequest request, Account account,
         Profile createProfile) {
@@ -87,7 +80,13 @@ public class ToDo extends BaseEntity {
         if (request.repeat() != null) {
             toDo.unit = request.repeat().unit();
             toDo.intervalNum = request.repeat().interval();
-            toDo.weekDays = request.repeat().weekDays().stream().map(WeekDay::fromString).toList();
+
+            if (request.repeat().weekDays() != null) {
+                toDo.weekDays = request.repeat().weekDays().stream()
+                    .map(WeekDay::fromString)
+                    .map(day -> new ToDoWeekDay(toDo, day))
+                    .toList();
+            }
         }
         return toDo;
     }

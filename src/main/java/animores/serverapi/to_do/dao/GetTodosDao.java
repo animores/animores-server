@@ -2,6 +2,7 @@ package animores.serverapi.to_do.dao;
 
 import animores.serverapi.pet.type.Tag;
 import animores.serverapi.to_do.dto.RepeatUnit;
+import animores.serverapi.to_do.dto.WeekDay;
 import com.querydsl.core.annotations.QueryProjection;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -20,10 +21,9 @@ public class GetTodosDao {
     private String color;
     private Boolean isUsingAlarm;
     private RepeatUnit unit;
+    private List<WeekDay> weekDays;
     private Integer intervalNum;
     private List<GetTodosPetDao> pets;
-//    private List<WeekDay> weekDays;
-
 
     @QueryProjection
     public GetTodosDao(
@@ -36,6 +36,7 @@ public class GetTodosDao {
         String color,
         Boolean isUsingAlarm,
         RepeatUnit unit,
+        List<WeekDay> weekDays,
         Integer intervalNum,
         List<GetTodosPetDao> pets
     ) {
@@ -47,6 +48,7 @@ public class GetTodosDao {
         this.tag = tag;
         this.color = color;
         this.isUsingAlarm = isUsingAlarm;
+        this.weekDays = weekDays;
         this.unit = unit;
         this.intervalNum = intervalNum;
         this.pets = pets;

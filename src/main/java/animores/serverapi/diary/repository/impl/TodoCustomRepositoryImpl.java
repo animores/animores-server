@@ -4,6 +4,7 @@ import static animores.serverapi.pet.entity.QPet.pet;
 import static animores.serverapi.to_do.entity.QPetToDoRelationship.petToDoRelationship;
 import static animores.serverapi.to_do.entity.QToDo.toDo;
 import static animores.serverapi.to_do.entity.QToDoInstance.toDoInstance;
+import static animores.serverapi.to_do.entity.QToDoWeekDay.toDoWeekDay;
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.group.GroupBy.list;
 
@@ -37,6 +38,7 @@ public class TodoCustomRepositoryImpl implements TodoCustomRepository {
                 .leftJoin(toDoInstance).on(toDoInstance.toDo.id.eq(toDo.id))
                 .leftJoin(petToDoRelationship).on(petToDoRelationship.toDo.id.eq(toDo.id))
                 .leftJoin(pet).on(petToDoRelationship.pet.id.eq(pet.id))
+                .leftJoin(toDoWeekDay).on(toDoWeekDay.toDo.id.eq(toDo.id))
                 .where(
                     toDo.account.id.eq(account.getId()),
                     completedCondition(completed),
@@ -57,6 +59,7 @@ public class TodoCustomRepositoryImpl implements TodoCustomRepository {
                             toDo.color,
                             toDo.isUsingAlarm,
                             toDo.unit,
+                            list(toDoWeekDay.weekDay),
                             toDo.intervalNum,
                             list(
                                 new QGetTodosPetDao(
@@ -74,7 +77,7 @@ public class TodoCustomRepositoryImpl implements TodoCustomRepository {
                 .values()
         );
 
-        List<GetTodosDao> cleaned = todos.stream()
+        return todos.stream()
             .map(todo -> new GetTodosDao(
                 todo.getId(),
                 todo.getDate(),
@@ -85,16 +88,15 @@ public class TodoCustomRepositoryImpl implements TodoCustomRepository {
                 todo.getColor(),
                 todo.getIsUsingAlarm(),
                 todo.getUnit(),
+                todo.getWeekDays() == null ? List.of() : todo.getWeekDays(),
                 todo.getIntervalNum(),
                 todo.getPets() == null
-                    ? new ArrayList<>()
+                    ? List.of()
                     : todo.getPets().stream()
                         .filter(p -> p.getId() != null && p.getName() != null)
                         .toList()
             ))
             .toList();
-
-        return cleaned;
     }
 
     private BooleanExpression dateCondition(LocalDate start, LocalDate end) {
