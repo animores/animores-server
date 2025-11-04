@@ -25,6 +25,7 @@ import animores.serverapi.to_do.dto.request.ToDoPatchRequest;
 import animores.serverapi.to_do.dto.response.ToDoPageResponse;
 import animores.serverapi.to_do.entity.PetToDoRelationship;
 import animores.serverapi.to_do.entity.ToDo;
+import animores.serverapi.to_do.entity.ToDoWeekDay;
 import animores.serverapi.to_do.repository.PetToDoRelationshipRepository;
 import animores.serverapi.to_do.repository.ToDoInstanceRepository;
 import animores.serverapi.to_do.repository.ToDoRepository;
@@ -447,11 +448,20 @@ class ToDoServiceImplTest {
                 isUsingAlarm,
                 repeat == null ? null : repeat.unit(),
                 repeat == null ? null : repeat.interval(),
-                repeat == null ? null : repeat.weekDays());
+                convertWeekDays(repeat));
         }
 
         public void setPetToDoRelationships(List<PetToDoRelationship> petToDoRelationships) {
             super.setPetToDoRelationships(petToDoRelationships);
+        }
+
+        private static List<ToDoWeekDay> convertWeekDays(Repeat repeat) {
+            if (repeat == null || repeat.weekDays() == null) {
+                return null;
+            }
+            return repeat.weekDays().stream()
+                .map(day -> new ToDoWeekDay(null, day))
+                .toList();
         }
     }
 }
