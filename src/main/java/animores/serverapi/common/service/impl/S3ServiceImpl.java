@@ -41,7 +41,7 @@ public class S3ServiceImpl implements S3Service {
             .bucket(bucketName)
             .contentType(file.getContentType())
             .contentLength(file.getSize())
-            .key(path + fileName + resolveExtension(file.getContentType()))
+            .key(path + fileName)
             .build();
         RequestBody requestBody = RequestBody.fromBytes(file.getBytes());
         s3Client.putObject(putObjectRequest, requestBody);
@@ -61,12 +61,4 @@ public class S3ServiceImpl implements S3Service {
         s3Client.deleteObjects(deleteObjectsRequest);
     }
 
-    private String resolveExtension(String contentType) {
-        return switch (contentType) {
-            case "image/jpeg" -> ".jpg";
-            case "image/png" -> ".png";
-            case "video/mp4" -> ".mp4";
-            default -> throw new IllegalArgumentException("Unsupported file type: " + contentType);
-        };
-    }
 }

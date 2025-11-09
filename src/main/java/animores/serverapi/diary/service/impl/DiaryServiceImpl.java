@@ -97,10 +97,7 @@ public class DiaryServiceImpl implements DiaryService {
         Diary diary = diaryRepository.save(Diary.create(account, profile, request.content()));
 
         if (files != null) {
-            List<String> fileNames = files.stream()
-                .map(file -> UUID.randomUUID().toString())
-                .toList();
-
+            List<String> fileNames = buildFileNamesWithExtension(files);
             s3Service.uploadFilesToS3(files, DIARY_PATH, fileNames);
             List<DiaryMedia> diaryMedias = createDiaryMedias(diary, fileNames, files);
             diaryMediaRepository.saveAll(diaryMedias);
@@ -130,9 +127,7 @@ public class DiaryServiceImpl implements DiaryService {
         authorizationService.validateProfileAccess(account, profile);
         authorizationService.validateDiaryAccess(diary, profile);
 
-        List<String> fileNames = files.stream()
-            .map(file -> UUID.randomUUID().toString())
-            .toList();
+        List<String> fileNames = buildFileNamesWithExtension(files);
         s3Service.uploadFilesToS3(files, DIARY_PATH, fileNames);
         diaryMediaRepository.saveAll(createDiaryMedias(diary, fileNames, files));
         reorderDiaryMedia(diary.getId(), DiaryMediaType.I);
@@ -159,10 +154,7 @@ public class DiaryServiceImpl implements DiaryService {
         );
         diaryMediaRepository.deleteAll(mediaListToDelete);
 
-        List<String> fileNames = files.stream()
-            .map(file -> UUID.randomUUID().toString())
-            .toList();
-
+        List<String> fileNames = buildFileNamesWithExtension(files);
         s3Service.uploadFilesToS3(files, DIARY_PATH, fileNames);
         diaryMediaRepository.saveAll(createDiaryMedias(diary, fileNames, files));
         reorderDiaryMedia(diary.getId(), DiaryMediaType.I);
@@ -259,6 +251,21 @@ public class DiaryServiceImpl implements DiaryService {
             .mapToObj(i -> DiaryMedia.create(diary, DIARY_PATH + fileNames.get(i), i,
                 DiaryMediaType.checkType(fileList.get(i).getContentType()))
             ).toList();
+    }
+
+    private List<String> buildFileNamesWithExtension(List<MultipartFile> files) {
+        return files.stream()
+            .map(file -> UUID.randomUUID() + resolveExtension(file.getContentType()))
+            .toList();
+    }
+
+    private String resolveExtension(String contentType) {
+        return switch (contentType) {
+            case "image/jpeg" -> ".jpg";
+            case "image/png" -> ".png";
+            case "video/mp4" -> ".mp4";
+            default -> throw new IllegalArgumentException("Unsupported file type: " + contentType);
+        };
     }
 
     public void reorderDiaryMedia(Long diaryId, DiaryMediaType type) {
