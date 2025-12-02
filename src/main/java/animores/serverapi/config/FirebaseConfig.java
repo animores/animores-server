@@ -24,10 +24,12 @@ import java.io.InputStream;
  */
 @Configuration
 public class FirebaseConfig {
+
+    @Value("${firebase.credentials}")
+    private Resource firebaseCreds; // file:/... 이면 FileSystemResource로 주입됨
+
     public void initialize() throws IOException {
-        InputStream serviceAccount = getClass()
-                .getClassLoader()
-                .getResourceAsStream("firebase-service-account.json");
+        InputStream serviceAccount = firebaseCreds.getInputStream();
 
         if (serviceAccount == null) {
             throw new IllegalStateException("firebase-service-account.json 누락");
