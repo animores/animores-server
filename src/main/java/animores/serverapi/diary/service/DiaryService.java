@@ -20,6 +20,9 @@ public interface DiaryService {
 
     GetAllDiaryResponse getAllDiary(Account account, Long profileId, int page, int size);
 
+    GetAllDiaryResponse getDiaryByPeriod(Account account, Long profileId, String start,
+        String end, Integer page, Integer size);
+
     GetCalendarDiaryResponse getCalendarDiary(Account account, Long profileId, LocalDate date);
 
     void addDiary(Account account, AddDiaryRequest request, List<MultipartFile> files)

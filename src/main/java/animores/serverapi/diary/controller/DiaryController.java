@@ -57,6 +57,22 @@ public class DiaryController {
     }
 
     @UserInfo
+    @GetMapping("/")
+    @Operation(summary = "기간별 일지 목록 조회", description = "시작일~종료일 기준 일지 목록을 조회합니다.")
+    public Response<GetAllDiaryResponse> getDiaryByPeriod(
+        @RequestParam("profileId") @Parameter(description = "프로필 아이디", required = true, example = "1") Long profileId,
+        @RequestParam(required = false) @Parameter(description = "조회 시작일 (yyyy-MM-dd)", required = false, example = "2024-01-01") String start,
+        @RequestParam(required = false) @Parameter(description = "조회 종료일 (yyyy-MM-dd)", required = false, example = "2024-01-31") String end,
+        @RequestParam(required = false) @Parameter(description = "페이지 번호 (1부터 시작)", required = false, example = "1") Integer page,
+        @RequestParam(required = false) @Parameter(description = "페이지별 개수", required = false, example = "15") Integer size) {
+        Account account = accountService.getAccountFromContext();
+
+        return Response.success(
+            diaryService.getDiaryByPeriod(account, profileId, start, end, page, size));
+    }
+
+
+    @UserInfo
     @GetMapping("/calendar")
     @Operation(summary = "일지 캘린더 목록 조회 (개발중)", description = "캘린더의 일지 목록을 조회합니다.")
     public Response<GetCalendarDiaryResponse> getCalendarDiary(
