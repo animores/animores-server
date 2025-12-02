@@ -24,13 +24,10 @@ import java.io.InputStream;
  */
 @Configuration
 public class FirebaseConfig {
-
-    @Value("${firebase.credentials}")
-    private Resource firebaseCreds; // file:/... 이면 FileSystemResource로 주입됨
-
-    @PostConstruct
     public void initialize() throws IOException {
-        InputStream serviceAccount = firebaseCreds.getInputStream();
+        InputStream serviceAccount = getClass()
+                .getClassLoader()
+                .getResourceAsStream("firebase-service-account.json");
 
         if (serviceAccount == null) {
             throw new IllegalStateException("firebase-service-account.json 누락");
@@ -62,7 +59,8 @@ public class FirebaseConfig {
                                 "/h2-console/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
-                                "/swagger-resources/**"
+                                "/swagger-resources/**",
+                                "/api/v1/account/check-nickname/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
