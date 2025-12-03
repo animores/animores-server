@@ -74,6 +74,26 @@ public class DiaryServiceImpl implements DiaryService {
 
     @Override
     @Transactional(readOnly = true)
+    public GetAllDiaryResponse getDiaryByPeriod(Account account, Long profileId, String start,
+        String end, Integer page, Integer size) {
+        Profile profile = findProfileById(profileId);
+        authorizationService.validateProfileAccess(account, profile);
+
+        LocalDate startDate = start != null ? LocalDate.parse(start) : null;
+        LocalDate endDate = end != null ? LocalDate.parse(end) : null;
+        int pageValue = (page == null || page < 1) ? 1 : page;
+        int sizeValue = (size == null || size < 1) ? 10 : size;
+
+        List<GetAllDiaryDao> diaries = diaryCustomRepository.getDiaryByPeriod(account.getId(),
+            profileId, startDate, endDate, pageValue, sizeValue);
+        Long totalCount = diaryCustomRepository.getDiaryByPeriodCount(account.getId(), profileId,
+            startDate, endDate);
+
+        return new GetAllDiaryResponse(totalCount, diaries);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public GetCalendarDiaryResponse getCalendarDiary(Account account, Long profileId,
         LocalDate date) {
         Profile profile = findProfileById(profileId);
