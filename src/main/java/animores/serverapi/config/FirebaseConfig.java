@@ -28,7 +28,6 @@ public class FirebaseConfig {
     @Value("${firebase.credentials}")
     private Resource firebaseCreds; // file:/... 이면 FileSystemResource로 주입됨
 
-    @PostConstruct
     public void initialize() throws IOException {
         InputStream serviceAccount = firebaseCreds.getInputStream();
 
@@ -62,7 +61,8 @@ public class FirebaseConfig {
                                 "/h2-console/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
-                                "/swagger-resources/**"
+                                "/swagger-resources/**",
+                                "/api/v1/account/check-nickname/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
